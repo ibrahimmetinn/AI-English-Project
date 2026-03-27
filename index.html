@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GramLab — English Grammar Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#13161d;--surface:#1a1e28;--surface2:#212633;--surface3:#282e3d;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.11);
+  --text:#d8dce8;--text2:#7e8aa0;--text3:#4a5268;
+  --accent:#3a7fd4;--accent2:#5a9be0;
+  --green:#3aab6e;--green-bg:rgba(58,171,110,0.1);
+  --red:#c95c5c;--red-bg:rgba(201,92,92,0.1);
+  --gold:#c8962a;--streak:#b87030;
+}
+body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(19,22,29,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:10px 0}
+.topbar-inner{max-width:760px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-size:1.1rem;font-weight:700;color:var(--text)}
+.logo span{color:var(--accent)}
+.logo small{font-size:10px;font-weight:300;color:var(--text3);display:block;margin-top:-2px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.streak-badge{display:none;align-items:center;gap:5px;background:rgba(184,112,48,0.1);border:1px solid rgba(184,112,48,0.22);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:500;color:var(--streak)}
+.score-badge{display:none;background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:4px 13px;font-size:12px;color:var(--text2)}
+.score-badge strong{color:var(--text);font-size:13px}
+.btn-pdf{background:var(--surface2);color:var(--text2);border:1px solid var(--border2);border-radius:7px;padding:6px 12px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px}
+.btn-pdf:hover{color:var(--text);border-color:var(--accent)}
+.btn-back{display:none;background:var(--surface2);color:var(--text2);border:1px solid var(--border2);border-radius:7px;padding:6px 12px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:.2s;align-items:center;gap:5px}
+.btn-back:hover{color:var(--text);border-color:var(--accent)}
+.btn-back.visible{display:flex}
+
+/* LAYOUT */
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 80px}
+
+/* ONBOARD */
+#onboard{padding:28px 0}
+.onboard-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:14px}
+.onboard-title{font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.02em}
+.onboard-sub{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:22px}
+.topics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:22px}
+.topic-info-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px}
+.topic-info-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.t-name{font-size:11px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.04em}
+.btn-tr{background:var(--accent);border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;transition:.15s;font-family:'Roboto',sans-serif;white-space:nowrap;letter-spacing:.02em;box-shadow:0 2px 6px rgba(58,127,212,0.3);display:inline-flex;align-items:center;gap:4px}
+.btn-tr:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-tr.open{background:#c8962a;box-shadow:0 2px 6px rgba(200,150,42,0.3)}
+.t-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.t-tr{display:none;margin-top:8px;padding:8px 10px;background:rgba(58,127,212,0.06);border-left:2px solid var(--accent);border-radius:0 6px 6px 0;font-size:11px;color:var(--text);line-height:1.6}
+.t-tr.show{display:block}
+.t-tr mark{background:rgba(200,150,42,0.2);color:#e8b84a;padding:0 3px;border-radius:3px;font-style:normal}
+.t-tr strong{color:var(--accent2);font-weight:600}
+
+/* MODE SELECT */
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.mode-card{background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:.18s;text-align:left;user-select:none}
+.mode-card:hover{border-color:rgba(58,127,212,0.4);background:var(--surface3)}
+.mode-card.selected{border-color:var(--accent);background:rgba(58,127,212,0.07)}
+.mode-icon{font-size:20px;margin-bottom:7px}
+.mode-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.mode-desc{font-size:11px;color:var(--text2);line-height:1.5}
+
+/* TEST TYPE TABS */
+.test-tabs{display:flex;gap:8px;margin-bottom:22px}
+.test-tab{flex:1;background:var(--surface2);border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:.18s;text-align:center;user-select:none}
+.test-tab:hover{border-color:rgba(58,127,212,0.4)}
+.test-tab.selected{border-color:var(--accent);background:rgba(58,127,212,0.07)}
+.test-tab-icon{font-size:18px;margin-bottom:5px}
+.test-tab-name{font-size:12px;font-weight:700;color:var(--text)}
+.test-tab-desc{font-size:10px;color:var(--text2);margin-top:2px}
+
+.btn-start{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px 32px;font-family:'Roboto',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;width:100%}
+.btn-start:hover{background:var(--accent2);box-shadow:0 6px 20px rgba(58,127,212,0.25)}
+
+/* PROGRESS */
+.progress-section{padding:12px 0 6px}
+.prog-meta{display:flex;justify-content:space-between;margin-bottom:5px}
+.prog-label,.prog-pct{font-size:11px;color:var(--text3);font-weight:500}
+.prog-outer{height:2px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.prog-inner{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease}
+
+/* SECTION DIVIDER */
+.section-div{display:flex;align-items:center;gap:12px;margin:26px 0 12px}
+.section-div-line{flex:1;height:1px;background:var(--border)}
+.section-div-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.05em;text-transform:uppercase}
+
+/* QUESTION CARD */
+.q-wrap{margin-bottom:11px;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;transition:.2s}
+.q-card.answered-correct{border-color:rgba(58,171,110,0.22)}
+.q-card.answered-wrong{border-color:rgba(201,92,92,0.18)}
+
+/* DETECTIVE */
+.detective-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent2);margin-bottom:7px}
+.detective-hint{font-size:12px;color:var(--text2);margin-bottom:11px;line-height:1.55;background:rgba(58,127,212,0.05);border:1px solid rgba(58,127,212,0.1);border-radius:8px;padding:8px 11px}
+.topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.topic-btn{background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:.14s;text-align:left;display:flex;align-items:center;gap:7px;font-family:'Roboto',sans-serif;width:100%}
+.topic-btn:hover:not(.locked){border-color:var(--accent);color:var(--text);background:rgba(58,127,212,0.07)}
+.topic-btn.correct-topic{border-color:var(--green)!important;background:var(--green-bg)!important;color:var(--green)!important}
+.topic-btn.wrong-topic{border-color:var(--red)!important;background:var(--red-bg)!important;color:var(--red)!important}
+.topic-btn.locked{pointer-events:none;opacity:.7}
+.topic-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.topic-reveal{margin-top:9px;padding:7px 11px;border-radius:7px;font-size:12px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);display:none}
+.topic-reveal.show{display:block}
+.topic-reveal span{color:var(--accent2);font-weight:600}
+
+/* QUESTION PHASE */
+.question-phase{padding-top:15px;border-top:1px solid var(--border);margin-top:15px}
+.question-phase.hidden{display:none}
+.q-number{font-size:10px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+.q-text{font-size:15px;font-weight:400;line-height:1.7;color:var(--text);margin-bottom:14px}
+.q-text mark{background:rgba(58,127,212,0.15);color:var(--accent2);padding:1px 5px;border-radius:4px;font-style:normal}
+.options-grid{display:flex;flex-direction:column;gap:7px}
+.opt-btn{display:flex;align-items:center;gap:11px;padding:10px 13px;border:1.5px solid var(--border2);border-radius:9px;background:var(--surface2);cursor:pointer;transition:.14s;font-family:'Roboto',sans-serif;font-size:13px;color:var(--text2);text-align:left;width:100%}
+.opt-btn:hover:not(.locked){border-color:var(--accent);color:var(--text);background:rgba(58,127,212,0.07)}
+.opt-key{width:22px;height:22px;border-radius:6px;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0;transition:.14s}
+.opt-text{flex:1;line-height:1.4}
+.opt-btn.correct{border-color:var(--green)!important;background:var(--green-bg)!important}
+.opt-btn.correct .opt-key{background:var(--green);border-color:var(--green);color:#fff}
+.opt-btn.correct .opt-text{color:var(--green);font-weight:500}
+.opt-btn.wrong{border-color:var(--red)!important;background:var(--red-bg)!important}
+.opt-btn.wrong .opt-key{background:var(--red);border-color:var(--red);color:#fff}
+.opt-btn.wrong .opt-text{color:var(--red)}
+.opt-btn.locked{pointer-events:none}
+
+/* EXPLANATION */
+.exp-block{margin-top:13px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.exp-verdict{padding:10px 13px;font-size:13px;font-weight:500;line-height:1.5}
+.exp-verdict.ok{background:rgba(58,171,110,0.07);border-bottom:1px solid rgba(58,171,110,0.14);color:#6dcc9a}
+.exp-verdict.no{background:rgba(201,92,92,0.07);border-bottom:1px solid rgba(201,92,92,0.14);color:#e08080}
+.exp-all{background:var(--surface);padding:11px 13px}
+.exp-title{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.exp-row{display:flex;gap:8px;margin-bottom:7px;font-size:12px;line-height:1.55}
+.exp-row:last-child{margin-bottom:0}
+.exp-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0;margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+.badge-ok{background:rgba(58,171,110,0.15);color:var(--green)}
+.badge-no{background:rgba(201,92,92,0.15);color:var(--red)}
+.badge-info{background:rgba(255,255,255,0.06);color:var(--text3)}
+.exp-row-text{color:var(--text2)}
+.exp-row-text strong{color:var(--text);font-weight:500}
+
+/* VOCAB CARD (no detective phase) */
+.vocab-q-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;transition:.2s;margin-bottom:11px;animation:fadeUp .25s ease}
+.vocab-q-card.answered-correct{border-color:rgba(58,171,110,0.22)}
+.vocab-q-card.answered-wrong{border-color:rgba(201,92,92,0.18)}
+.vocab-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#5a9be0;background:rgba(58,127,212,0.1);border:1px solid rgba(58,127,212,0.18);border-radius:5px;padding:3px 9px;margin-bottom:9px}
+
+/* TIMER */
+.timer-bar-wrap{height:2px;background:var(--surface3);border-radius:2px;margin-bottom:14px;overflow:hidden}
+.timer-bar{height:100%;border-radius:2px;transition:width .1s linear;background:var(--gold)}
+.timer-bar.danger{background:var(--red)}
+
+/* RESULTS */
+#results-screen{display:none;padding:28px 0;animation:fadeUp .35s ease}
+.results-hero{text-align:center;margin-bottom:24px}
+.big-ring{width:110px;height:110px;border-radius:50%;margin:0 auto 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;background:var(--surface)}
+.big-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.big-ring-num{font-size:2rem;font-weight:700;line-height:1;position:relative;z-index:1}
+.big-ring-sub{font-size:11px;color:var(--text3);position:relative;z-index:1}
+.results-title{font-size:1.3rem;font-weight:700;margin-bottom:4px}
+.results-sub{font-size:13px;color:var(--text2);line-height:1.6;max-width:400px;margin:0 auto 18px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:18px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px 8px;text-align:center}
+.stat-val{font-size:1.25rem;font-weight:700}
+.stat-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.review-section{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:16px}
+.review-title{font-size:12px;font-weight:700;margin-bottom:10px;color:var(--red)}
+.review-item{padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);line-height:1.6}
+.review-item:last-child{border-bottom:none}
+.review-item strong{color:var(--text)}
+.results-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn-retry{background:var(--surface2);color:var(--text);border:1.5px solid var(--border2);border-radius:9px;padding:10px 20px;font-family:'Roboto',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.btn-retry:hover{border-color:var(--accent);color:var(--accent2)}
+.btn-dl{background:var(--accent);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-family:'Roboto',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:7px}
+.btn-dl:hover{background:var(--accent2);box-shadow:0 6px 16px rgba(58,127,212,0.25)}
+
+/* TOAST */
+.toast{position:fixed;top:58px;left:50%;transform:translateX(-50%) translateY(-10px);background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:7px 16px;font-size:12px;font-weight:500;z-index:999;opacity:0;transition:.25s;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.streak-t{border-color:rgba(184,112,48,0.35);background:rgba(184,112,48,0.1);color:var(--streak)}
+.toast.correct-t{border-color:rgba(58,171,110,0.3);background:rgba(58,171,110,0.08);color:var(--green)}
+
+
+.dict-card{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;transition:.15s}
+.dict-card:hover{border-color:rgba(58,127,212,0.3);background:var(--surface3)}
+.dict-word{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.dict-tr{font-size:12px;color:var(--accent2);margin-top:1px}
+.dict-type{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+
+/* VOCAB QUIZ CARD */
+.vq-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:11px;animation:fadeUp .25s ease}
+.vq-word{font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-.01em}
+.vq-type{font-size:11px;color:var(--text3);margin-bottom:14px;text-transform:uppercase;letter-spacing:.05em}
+.vq-opts{display:flex;flex-direction:column;gap:7px}
+.vq-opt{background:var(--surface2);border:1.5px solid var(--border2);border-radius:9px;padding:11px 14px;cursor:pointer;font-family:'Roboto',sans-serif;font-size:13px;color:var(--text2);text-align:left;width:100%;transition:.14s;display:flex;gap:10px;align-items:flex-start}
+.vq-opt:hover:not(.locked){border-color:var(--accent);color:var(--text);background:rgba(58,127,212,0.07)}
+.vq-opt.correct{border-color:var(--green)!important;background:var(--green-bg)!important;color:var(--green)!important;font-weight:500}
+.vq-opt.wrong{border-color:var(--red)!important;background:var(--red-bg)!important;color:var(--red)!important}
+.vq-opt.reveal{border-color:rgba(58,171,110,0.4)!important;background:rgba(58,171,110,0.05)!important}
+.vq-opt.locked{pointer-events:none}
+.vq-exp{margin-top:12px;padding:10px 13px;border-radius:9px;font-size:12px;line-height:1.6;border:1px solid var(--border)}
+.vq-exp.ok{background:rgba(58,171,110,0.07);color:#6dcc9a;border-color:rgba(58,171,110,0.14)}
+.vq-exp.no{background:rgba(201,92,92,0.07);color:#e08080;border-color:rgba(201,92,92,0.14)}
+
+@media(max-width:580px){
+  .onboard-title{font-size:1.15rem}
+  .topics-grid,.mode-row,.test-tabs{grid-template-columns:1fr;flex-direction:column}
+  .test-tabs{flex-direction:column}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .topic-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">Gram<span>Lab</span><small>produced by Ibrahim Metin</small></div>
+    <div class="topbar-right">
+      <div class="streak-badge" id="streak-badge">🔥 <span id="streak-count">0</span> streak</div>
+      <div class="score-badge" id="score-badge"><strong id="hdr-score">0</strong>/<span id="hdr-total">0</span></div>
+      <button class="btn-back" id="btn-back" onclick="goHome()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="onboard">
+    <div class="onboard-card">
+      <div class="onboard-title">English Grammar & Vocabulary Test</div>
+      <div class="onboard-sub">A2-level test. Review the topics below before you start. Click <strong style="color:var(--accent2)">TR</strong> on any topic to read the Turkish explanation with highlights.</div>
+
+      <div class="topics-grid">
+
+        <div class="topic-info-card">
+          <div class="topic-info-header"><div class="t-name">Simple Past</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
+          <div class="t-desc">Completed actions in the past. Uses V2 form (went, played). Questions use "did".</div>
+          <div class="t-tr"><strong>Geçmiş Zaman (Simple Past)</strong><br>Bitmiş geçmiş eylemler için kullanılır. Olumlu cümlede fiil <mark>2. haline (V2)</mark> gelir: go→<mark>went</mark>, play→<mark>played</mark>. Olumsuz ve sorularda <mark>did/didn't</mark> gelir ve fiil <mark>yalın hale</mark> döner.<br><br>✦ <strong>She <mark>went</mark> to school.</strong><br>✦ <strong>Did she <mark>go</mark>?</strong></div>
+        </div>
+
+        <div class="topic-info-card">
+          <div class="topic-info-header"><div class="t-name">Present Simple & Continuous</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
+          <div class="t-desc">Simple = habits & routines. Continuous = actions happening right now (is doing).</div>
+          <div class="t-tr"><strong>Şimdiki Zamanlar</strong><br><mark>Present Simple</mark>: Alışkanlıklar ve genel gerçekler için. Anahtar kelimeler: <mark>always, usually, every day</mark>.<br><mark>Present Continuous</mark>: Şu an devam eden eylemler. Anahtar kelimeler: <mark>now, at the moment, right now</mark> + <mark>is/are + V-ing</mark>.<br><br>✦ She <mark>drinks</mark> coffee every morning. (alışkanlık)<br>✦ She <mark>is drinking</mark> coffee now. (şu an)</div>
+        </div>
+
+        <div class="topic-info-card">
+          <div class="topic-info-header"><div class="t-name">Future: Will & Be going to</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
+          <div class="t-desc">Will = instant decisions & promises. Be going to = plans & predictions with evidence.</div>
+          <div class="t-tr"><strong>Gelecek Zaman</strong><br><mark>Will</mark>: Konuşma anında verilen <mark>ani kararlar</mark>, söz vermek, tahmin. "Şimdi karar verdim!"<br><mark>Be going to</mark>: <mark>Önceden planlanmış</mark> eylemler veya <mark>görsel kanıta dayalı</mark> tahminler. "Bakıyorum ve görüyorum ki..."<br><br>✦ I'll help you! (ani karar → <mark>will</mark>)<br>✦ I'm going to visit Paris. (bilet aldı → <mark>be going to</mark>)</div>
+        </div>
+
+        <div class="topic-info-card">
+          <div class="topic-info-header"><div class="t-name">Question Tags</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
+          <div class="t-desc">Short questions at the end. Positive sentence → negative tag, and vice versa.</div>
+          <div class="t-tr"><strong>Eklenti Soruları</strong><br>Cümle <mark>olumlu (+)</mark> ise tag <mark>olumsuz (-)</mark>, cümle <mark>olumsuz (-)</mark> ise tag <mark>olumlu (+)</mark> olur.<br>İstisna: <mark>"I am..."</mark> cümlelerinin tag'i <mark>"aren't I?"</mark> olur.<br>Emir cümlesinin tag'i: <mark>"will you?"</mark><br><br>✦ She is late, <mark>isn't she?</mark><br>✦ You don't know, <mark>do you?</mark><br>✦ I am right, <mark>aren't I?</mark></div>
+        </div>
+
+        <div class="topic-info-card">
+          <div class="topic-info-header"><div class="t-name">So / Neither / Too / Either</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
+          <div class="t-desc">"Me too" in English. Positive: So do I / I do too. Negative: Neither do I / I don't either.</div>
+          <div class="t-tr"><strong>"Ben de" Yapısı</strong><br>Olumlu "Ben de": <mark>So + yardımcı + özne</mark> (So do I) veya özne + yardımcı + <mark>too</mark> (I do, too).<br>Olumsuz "Ben de": <mark>Neither + yardımcı + özne</mark> (Neither do I) veya özne + yardımcı(olumsuz) + <mark>either</mark> (I don't, either).<br><br>✦ A: I love this. B: <mark>So do I.</mark> / I do, <mark>too.</mark><br>✦ A: I can't swim. B: <mark>Neither can I.</mark></div>
+        </div>
+
+        <div class="topic-info-card">
+          <div class="topic-info-header"><div class="t-name">Comparatives & Superlatives</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
+          <div class="t-desc">Two things: bigger than / more expensive than. Best of all: the biggest / the most.</div>
+          <div class="t-tr"><strong>Karşılaştırmalar</strong><br><mark>Comparative</mark> (iki şey): Kısa sıfat → <mark>-er than</mark> (bigger than). Uzun sıfat → <mark>more ... than</mark> (more expensive than).<br><mark>Superlative</mark> (en üstün): Kısa sıfat → <mark>the ...-est</mark> (the fastest). Uzun sıfat → <mark>the most ...</mark> (the most beautiful).<br><br>✦ My bag is <mark>heavier than</mark> yours.<br>✦ This is <mark>the most difficult</mark> test.</div>
+        </div>
+
+        <div class="topic-info-card">
+          <div class="topic-info-header"><div class="t-name">Pronouns</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
+          <div class="t-desc">Possessive adjective: my car. Possessive pronoun: it's mine. Reflexive: himself.</div>
+          <div class="t-tr"><strong>Zamirler</strong><br><mark>Possessive Adjective</mark> (my, your, his...): Yanına mutlaka isim ister → <mark>my car</mark>, <mark>her bag</mark>.<br><mark>Possessive Pronoun</mark> (mine, yours, hers...): İsim istemez, ismin yerini tutar → It's <mark>mine</mark>.<br><mark>Reflexive</mark> (myself, himself...): Özne ve nesne aynı kişi → She hurt <mark>herself</mark>.<br><br>✦ This is <mark>my</mark> book. / This book is <mark>mine</mark>.</div>
+        </div>
+
+        <div class="topic-info-card">
+          <div class="topic-info-header"><div class="t-name">Quantifiers</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
+          <div class="t-desc">Much/a little = uncountable. Many/a few = countable. Few/little = not enough.</div>
+          <div class="t-tr"><strong>Miktar Belirleyiciler</strong><br><mark>Many</mark> / <mark>a few</mark>: Sayılabilir çoğullar (books, eggs).<br><mark>Much</mark> / <mark>a little</mark>: Sayılamayanlar (water, money, time).<br><mark>A few / A little</mark>: Az ama <mark>yeterli</mark> (olumlu anlam).<br><mark>Few / Little</mark>: Az ve <mark>yetersiz</mark> (olumsuz anlam).<br><br><strong>Either / Neither (İki Seçenek)</strong><br><mark>Either</mark>: İkisinden <mark>herhangi biri</mark> olur → olumlu/kabul. <em>Take either one.</em><br><mark>Neither</mark>: <mark>İkisi de değil</mark> → olumsuz/ret. <em>Neither option worked.</em><br><mark>Both</mark>: <mark>İkisi birden</mark> → olumlu/toplam. <em>Both books were great.</em><br><br>✦ A: Tea or coffee? B: <mark>Either</mark> — I don't mind.<br>✦ <mark>Neither</mark> restaurant was open — both were closed.<br>✦ I read <mark>both</mark> books and loved them.</div>
+        </div>
+
+        <div class="topic-info-card">
+          <div class="topic-info-header"><div class="t-name">Vocabulary — Unit 4</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
+          <div class="t-desc">Key words: evidence, cautious, sarcastic, appropriate, globalize. Used in context.</div>
+          <div class="t-tr"><strong>Kelimeler</strong><br><mark>Evidence</mark> (isim): kanıt, delil → strong <mark>evidence</mark><br><mark>Cautious</mark> (sıfat): dikkatli, ihtiyatlı → be <mark>cautious</mark><br><mark>Sarcastic</mark> (sıfat): alaycı → a <mark>sarcastic</mark> tone<br><mark>Appropriate</mark> (sıfat): uygun → <mark>appropriate</mark> behaviour<br><mark>Globalize</mark> (fiil): küreselleştirmek → to <mark>globalize</mark> culture</div>
+        </div>
+
+      </div>
+
+
+      <div id="dict-section" style="margin-bottom:22px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em">📖 Vocabulary Dictionary</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="dict-search" type="text" placeholder="Search word..." oninput="filterDict(this.value)"
+              style="background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:5px 11px;font-size:12px;color:var(--text);font-family:'Roboto',sans-serif;outline:none;width:160px"/>
+            <button onclick="toggleDict()" id="dict-toggle-btn"
+              style="background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Roboto',sans-serif;transition:.15s">
+              Show ▾
+            </button>
+          </div>
+        </div>
+        <div id="dict-body" style="display:none">
+          <div id="dict-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:7px;max-height:420px;overflow-y:auto;padding-right:4px"></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:22px">
+        <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📄 Quick PDF Export</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">📝 Grammar Worksheet</div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.5">All grammar questions + answer key with explanations.</div>
+            <button onclick="exportGrammarPDF()" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">Download ↓</button>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">📚 Vocabulary Cards</div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.5">Word list printout style.</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+              <label style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer">
+                <input type="radio" name="vocab-pdf-style" value="cards" checked style="accent-color:var(--accent)"> Flash cards
+              </label>
+              <label style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer">
+                <input type="radio" name="vocab-pdf-style" value="list" style="accent-color:var(--accent)"> Word list
+              </label>
+              <label style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer">
+                <input type="radio" name="vocab-pdf-style" value="test" style="accent-color:var(--accent)"> Fill gaps
+              </label>
+            </div>
+            <button onclick="exportVocabPDF()" style="width:100%;background:#2d7a4f;color:#fff;border:none;border-radius:8px;padding:8px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">Download ↓</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Select Test Type</div>
+      <div class="test-tabs" id="test-tabs">
+        <div class="test-tab selected" id="tab-grammar" onclick="selectTestType('grammar')">
+          <div class="test-tab-icon">📝</div>
+          <div class="test-tab-name">Grammar Test</div>
+          <div class="test-tab-desc">25 questions · Detective mode</div>
+        </div>
+        <div class="test-tab" id="tab-vocab" onclick="selectTestType('vocab')">
+          <div class="test-tab-icon">📚</div>
+          <div class="test-tab-name">Vocabulary Quiz</div>
+          <div class="test-tab-desc">20 words · Meanings & usage</div>
+        </div>
+        <div class="test-tab" id="tab-mixed" onclick="selectTestType('mixed')">
+          <div class="test-tab-icon">🎯</div>
+          <div class="test-tab-name">Mixed Test</div>
+          <div class="test-tab-desc">All topics combined</div>
+        </div>
+      </div>
+
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Select Mode</div>
+      <div class="mode-row">
+        <div class="mode-card selected" id="mode-learn" onclick="selectMode('learn')">
+          <div class="mode-icon">🧠</div>
+          <div class="mode-name">Learning Mode</div>
+          <div class="mode-desc">Full explanations for every option. No time pressure.</div>
+        </div>
+        <div class="mode-card" id="mode-speed" onclick="selectMode('speed')">
+          <div class="mode-icon">⚡</div>
+          <div class="mode-name">Speed Mode</div>
+          <div class="mode-desc">20 seconds per question. Score and streak focused.</div>
+        </div>
+      </div>
+
+      <button class="btn-start" onclick="startQuiz()">Start Test →</button>
+    </div>
+  </div>
+
+  <div id="quiz-screen" style="display:none">
+    <div class="progress-section">
+      <div class="prog-meta">
+        <span class="prog-label" id="prog-label">0 / 0 completed</span>
+        <span class="prog-pct" id="prog-pct">0%</span>
+      </div>
+      <div class="prog-outer"><div class="prog-inner" id="prog-inner" style="width:0%"></div></div>
+    </div>
+    <div id="q-container"></div>
+  </div>
+
+  <div id="results-screen"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const LETTERS = ['A','B','C','D'];
+
+// ── TOPIC TR TOGGLE ──
+function toggleTR(btn) {
+  const card = btn.closest('.topic-info-card');
+  const box = card.querySelector('.t-tr');
+  const isOpen = box.classList.contains('show');
+  box.classList.toggle('show', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  btn.innerHTML = isOpen ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg> TR' : '✕ Kapat';
+}
+
+// ── STATE ──
+let selectedMode = 'learn';
+let selectedTestType = 'grammar';
+let activeQuestions = [];
+let answered = {};
+let score = 0;
+let streak = 0;
+let bestStreak = 0;
+let timers = {};
+
+function selectMode(m) {
+  selectedMode = m;
+  document.getElementById('mode-learn').classList.toggle('selected', m === 'learn');
+  document.getElementById('mode-speed').classList.toggle('selected', m === 'speed');
+}
+
+function selectTestType(t) {
+  selectedTestType = t;
+  ['grammar','vocab','mixed'].forEach(x => {
+    document.getElementById('tab-'+x).classList.toggle('selected', x === t);
+  });
+}
+
+// ── GRAMMAR QUESTIONS ──
+
+const TOPIC_DEFS = {
+  'Simple Past': {tr:'Geçmiş Zaman', def:'Geçmişte tamamlanmış eylemler için kullanılır. Fiil 2. haline (V2) gelir.'},
+  'Present Continuous': {tr:'Şimdiki Sürekli', def:'Şu an devam eden eylemler için. Yapı: is/are + V-ing.'},
+  'Present Simple': {tr:'Geniş Zaman', def:'Alışkanlıklar ve genel gerçekler için kullanılır.'},
+  'Future: Will': {tr:'Will ile Gelecek', def:'Ani kararlar, söz verme ve tahminler için kullanılır.'},
+  'Future: Be going to': {tr:'Be going to ile Gelecek', def:'Önceden planlanmış eylemler ve kanıta dayalı tahminler.'},
+  'Question Tags': {tr:'Eklenti Soruları', def:'Cümle sonuna eklenen kısa sorulardır. (+) cümle → (-) tag.'},
+  'So / Neither / Too': {tr:'Ben de / Ben de değil', def:'Olumlu: So do I / too. Olumsuz: Neither do I / either.'},
+  'Comparatives': {tr:'Karşılaştırma', def:'İki şeyi kıyaslar. Kısa: -er than. Uzun: more ... than.'},
+  'Superlatives': {tr:'En Üstünlük', def:'En iyi/kötüyü anlatır. Kısa: the -est. Uzun: the most.'},
+  'Pronouns': {tr:'Zamirler', def:'my=sıfat, mine=zamir, myself=dönüşlü zamir.'},
+  'Quantifiers': {tr:'Miktar Belirleyiciler', def:'many/a few=sayılabilir. much/a little=sayılamayan. either=ikisinden biri (olumlu). neither=ikisi de değil (olumsuz).'},
+};
+
+const grammarQuestions = [
+  {type:'grammar',tag:'Simple Past',q:"She ___ her keys yesterday and was locked out all night.",opts:['losted','lose','lost','has lost'],ans:2,
+   topicHint:'Something happened yesterday. Which tense talks about finished past actions?',topicHintTR:'Dün olan bir şeyden bahsediliyor. Bitmiş geçmiş eylemler hangi zamanla anlatılır?',
+   explanations:["'Losted' does not exist. Irregular verbs never take -ed.","'Lose' is the base form (V1). Simple Past needs V2.","Correct. 'Lost' is the V2 of 'lose'. Use V2 in positive Simple Past.","'Has lost' is Present Perfect — cannot be used with 'yesterday'."]},
+  {type:'grammar',tag:'Simple Past',q:"They ___ university students when they first met.",opts:['was','are','were','be'],ans:2,
+   topicHint:"A past state is described. Which form of 'to be' goes with a plural subject?",topicHintTR:"Geçmişteki bir durum anlatılıyor. 'To be' fiilinin çoğul özneyle kullanılan hali hangisi?",
+   explanations:["'Was' is for singular subjects: I/he/she/it.","'Are' is Present Tense, not past.","Correct. 'Were' is used with plural subjects (they) in Simple Past.","'Be' is the base form — cannot be used in a conjugated sentence."]},
+  {type:'grammar',tag:'Simple Past',q:"___ they arrive on time for the meeting last week?",opts:['Did','Does','Were','Has'],ans:0,
+   topicHint:"A past question with an action verb. Which auxiliary forms Simple Past questions?",topicHintTR:"Geçmişe ait bir eylem sorusu. Simple Past sorularını hangi yardımcı fiil kurar?",
+   explanations:["Correct. 'Did' forms Simple Past questions. The main verb stays base form (V1).","'Does' forms Present Simple questions, not past.","'Were' is for 'to be' questions, not action verbs like 'arrive'.","'Has' forms Present Perfect questions."]},
+  {type:'grammar',tag:'Present Continuous',q:"Shh! The baby ___ right now — don't make noise.",opts:['sleeps','is sleeping','slept','has slept'],ans:1,
+   topicHint:"'Right now' is a clue. Which tense describes an action at this exact moment?",topicHintTR:"'Right now' ipucu veriyor. Tam şu anda devam eden eylemi hangi zaman anlatır?",
+   explanations:["'Sleeps' is Present Simple — used for habits, not 'right now'.","Correct. 'Is sleeping' = Present Continuous. 'Right now' signals an ongoing action.","'Slept' is Simple Past.","'Has slept' is Present Perfect."]},
+  {type:'grammar',tag:'Present Simple',q:"My grandmother ___ tea every single morning without fail.",opts:['is drinking','drinks','drank','has drunk'],ans:1,
+   topicHint:"'Every morning' signals a regular habit. Which tense is used for habits?",topicHintTR:"'Every morning' ifadesi düzenli alışkanlığa işaret ediyor. Alışkanlıklar için hangi zaman kullanılır?",
+   explanations:["'Is drinking' = right now action. 'Every morning' is a routine, not current.","Correct. 'Drinks' = Present Simple. Used for regular habits and routines.","'Drank' is Simple Past.","'Has drunk' is Present Perfect."]},
+  {type:'grammar',tag:'Future: Will',q:"A: We have no bread left! B: Don't worry, I ___ get some.",opts:['am going to','will','am getting','got'],ans:1,
+   topicHint:"A decision made at this very moment, not planned before. Which future form?",topicHintTR:"O an verilen ani bir karar, önceden planlanmamış. Hangi gelecek zaman formu kullanılır?",
+   explanations:["'Am going to' is for plans made before speaking.","Correct. 'Will' = spontaneous decision made at the moment of speaking.","'Am getting' can suggest a near plan but sounds unnatural here.","'Got' is Simple Past."]},
+  {type:'grammar',tag:'Future: Be going to',q:"She has already bought the tickets — she ___ visit Paris next month.",opts:['will','is going to','visits','visited'],ans:1,
+   topicHint:"There is evidence of a plan (tickets already bought). Which future form fits?",topicHintTR:"Somut bir kanıt var (bilet zaten alındı). Önceden planlanmış eylem için hangi gelecek zaman?",
+   explanations:["'Will' is for instant decisions or predictions. Pre-made plan needs 'be going to'.","Correct. 'Is going to' = planned action with evidence (she bought the tickets).","'Visits' is Present Simple — does not refer to future here.","'Visited' is Simple Past."]},
+  {type:'grammar',tag:'Question Tags',q:"You haven't seen my phone, ___?",opts:['have you',"haven't you",'do you','did you'],ans:0,
+   topicHint:"The sentence is negative. What is the question tag rule?",topicHintTR:"Cümle olumsuz. Olumsuz cümlelerde soru tag'i nasıl olur?",
+   explanations:["Correct. Negative sentence → positive tag. Auxiliary is 'have' → 'have you'.","Double negative — breaks the rule.","'Do you' is for Present Simple. 'Haven't' signals Present Perfect.","'Did you' is for Simple Past. 'Haven't' signals Present Perfect."]},
+  {type:'grammar',tag:'Question Tags',q:"I am the only one who noticed, ___?",opts:["am I not","aren't I","isn't I","don't I"],ans:1,
+   topicHint:"'I am...' has a special exception for question tags. Which is it?",topicHintTR:"'I am...' ile başlayan cümlelerin tag'inde özel bir istisna var. Hangisi?",
+   explanations:["'Am I not' is grammatically correct but very formal, rarely used.","Correct. 'Aren't I' is the accepted exception for 'I am' sentences.","'Isn't I' is completely wrong. 'Isn't' is never used with 'I'.","'Don't I' is for action verbs, not 'to be'."]},
+  {type:'grammar',tag:'Question Tags',q:"Sit down and be quiet, ___?",opts:['do you','are you','will you','shall you'],ans:2,
+   topicHint:"This is an imperative (command) sentence. Commands have a special tag.",topicHintTR:"Bu bir emir cümlesi. Emir cümlelerinin özel bir tag'i vardır. Hangisi?",
+   explanations:["'Do you' is for action questions, not imperatives.","'Are you' is a 'to be' question — not an imperative tag.","Correct. 'Will you' is the standard tag for imperative sentences.","'Shall you' does not exist as a question tag in English."]},
+  {type:'grammar',tag:'So / Neither / Too',q:"A: I have never been to Japan. B: ___ have I.",opts:['So','Too','Neither','Either'],ans:2,
+   topicHint:"A negative experience is shared. How do you say 'me neither' in English?",topicHintTR:"Olumsuz bir deneyim paylaşılıyor. 'Ben de değil' anlamını İngilizce nasıl ifade ederiz?",
+   explanations:["'So' is for positive agreement (So do I).","'Too' goes at the end of positive sentences (I do, too).","Correct. 'Neither have I' = negative agreement. Neither + auxiliary + subject.","'Either' is correct but goes at the end: 'I haven't, either'."]},
+  {type:'grammar',tag:'So / Neither / Too',q:"A: I love hiking in the mountains. B: I do, ___.",opts:['neither','either','so','too'],ans:3,
+   topicHint:"Positive agreement. Which word goes at the END of the sentence?",topicHintTR:"Olumlu bir katılım var. Cümlenin SONUNA hangi kelime gelir?",
+   explanations:["'Neither' is for negative agreement.","'Either' is for negative sentences (I don't, either).","'So' goes at the beginning: 'So do I' — not at the end.","Correct. 'Too' goes at the end of positive agreement: 'I do, too'."]},
+  {type:'grammar',tag:'Comparatives',q:"This assignment is ___ the previous one — I can't finish it.",opts:['more difficult than','the most difficult','difficult than','difficulter than'],ans:0,
+   topicHint:"Two things compared. 'Difficult' is a long adjective. How do we compare it?",topicHintTR:"İki şey karşılaştırılıyor. 'Difficult' uzun bir sıfattır. Karşılaştırma nasıl yapılır?",
+   explanations:["Correct. Long adjectives use 'more ... than' for comparatives.","'The most difficult' is superlative — best/worst of all, not a comparison of two.","'Difficult than' is incomplete — 'more' is missing.","'Difficulter' does not exist. Long adjectives use 'more', not '-er'."]},
+  {type:'grammar',tag:'Superlatives',q:"That was ___ meal I have ever had in my life.",opts:['more delicious','the most delicious','most delicious','the deliciousest'],ans:1,
+   topicHint:"The very best experience of all time. Which form shows the highest degree?",topicHintTR:"Tüm zamanların en iyi deneyimi. En üstün dereceyi hangi yapı gösterir?",
+   explanations:["'More delicious' is comparative — compares two things, not the best of all.","Correct. 'The most delicious' = superlative for long adjectives. Always use 'the'.","'Most delicious' is wrong without 'the'. Superlatives always need 'the'.","'The deliciousest' does not exist. Only short adjectives take '-est'."]},
+  {type:'grammar',tag:'Comparatives',q:"My brother is ___ than me — he reaches the top shelf easily.",opts:['more tall','taller','tallest','the taller'],ans:1,
+   topicHint:"A short adjective comparing two people. What is the correct comparative form?",topicHintTR:"Kısa bir sıfatla iki kişi karşılaştırılıyor. Doğru karşılaştırma formu hangisi?",
+   explanations:["'More tall' is wrong. Short adjectives use '-er', not 'more'.","Correct. 'Taller' = short adjective comparative. tall → taller + than.","'Tallest' is superlative. Cannot use with 'than'.","'The taller' with article only works in 'the taller of the two' — not here."]},
+  {type:'grammar',tag:'Pronouns',q:"That laptop on the desk isn't mine — it must be ___.",opts:['your','yours','yourself','you'],ans:1,
+   topicHint:"You need a pronoun that shows ownership without a noun after it.",topicHintTR:"Yanına isim almadan sahipliği gösteren bir zamire ihtiyaç var. Hangisi?",
+   explanations:["'Your' is a possessive adjective — it must be followed by a noun (your laptop).","Correct. 'Yours' is a possessive pronoun — replaces the noun, no noun needed after it.","'Yourself' is a reflexive pronoun — used when subject and object are the same person.","'You' is a personal pronoun — subject or object position."]},
+  {type:'grammar',tag:'Pronouns',q:"She accidentally cut ___ while slicing the vegetables.",opts:['her','hers','herself','she'],ans:2,
+   topicHint:"The subject and the object are the same person. Which pronoun type is this?",topicHintTR:"Özne ve nesne aynı kişi. Bu durum hangi zamir türünü gerektirir?",
+   explanations:["'Her' is an object pronoun — someone else does the action to her.","'Hers' is a possessive pronoun — used for ownership.","Correct. 'Herself' = reflexive pronoun. Subject (she) and object are the same person.","'She' is a subject pronoun — cannot be in object position."]},
+  {type:'grammar',tag:'Quantifiers',q:"There isn't ___ time left — we need to hurry right now.",opts:['many','few','some','much'],ans:3,
+   topicHint:"Is 'time' countable or uncountable? The sentence is negative.",topicHintTR:"'Time' sayılabilir mi sayılamaz mı? Cümle olumsuz, hangi niceleyici kullanılır?",
+   explanations:["'Many' is used with countable nouns. 'Time' is uncountable.","'Few' is for countable nouns and positive sentences.","'Some' is for positive sentences. In negatives use 'any' or 'much'.","Correct. 'Much' is for uncountable nouns (time, money, water) in negatives/questions."]},
+  {type:'grammar',tag:'Quantifiers',q:"I have ___ money saved — just enough for a coffee.",opts:['a few','few','a little','little'],ans:2,
+   topicHint:"'Money' is uncountable. Is the amount enough or not enough?",topicHintTR:"'Money' sayılamaz bir isim. Miktar yeterli mi yoksa yetersiz mi?",
+   explanations:["'A few' is for countable nouns (a few coins). 'Money' is uncountable.","'Few' is for countable nouns and has a negative meaning (not enough).","Correct. 'A little' = uncountable + positive meaning (small but enough).","'Little' = uncountable + negative meaning (very small, not enough)."]},
+  {type:'grammar',tag:'Quantifiers',q:"___ of the two options sounds good to me — I'll take either one.",opts:['Neither','Either','Both','None'],ans:1,
+   topicHint:"Two options are available and both are acceptable. Which word means 'any one of the two'?",topicHintTR:"İki seçenek var ve ikisi de kabul edilebilir. 'Her ikisinden biri' anlamına gelen kelime hangisi?",
+   explanations:["'Neither' means not one AND not the other — negative. Here the speaker is happy with any option.","Correct. 'Either' = any one of two (both acceptable). 'I'll take either one' means both are fine.","'Both' means the two together, not one of them.","'None' is used for more than two options or with zero out of many."]},
+  {type:'grammar',tag:'Quantifiers',q:"A: Do you want tea or coffee? B: ___ — I don't mind at all.",opts:['Neither','Either','None','Both'],ans:1,
+   topicHint:"The speaker is happy with both options — any one is fine. Two choices, positive attitude.",topicHintTR:"Konuşmacı her iki seçenekten de memnun — ikisi de olur. İki seçenek, olumlu tutum.",
+   explanations:["'Neither' would mean 'I don't want either one' — a refusal, not acceptance.","Correct. 'Either' = I'm happy with any one of the two options available.","'None' refers to zero out of many — not used for two options this way.","'Both' means I want both tea AND coffee at the same time."]},
+  {type:'grammar',tag:'Quantifiers',q:"A: Was it Monday or Tuesday when she called? B: ___ — it was Wednesday.",opts:['Either','Neither','Both','None'],ans:1,
+   topicHint:"Not Monday, not Tuesday — both options are wrong. Two options, both rejected.",topicHintTR:"Ne Pazartesi ne de Salı — her iki seçenek de yanlış. İki seçenek, ikisi de reddediliyor.",
+   explanations:["'Either' would suggest one of them is correct — but neither was.","Correct. 'Neither' = not this one AND not that one. Both options are rejected.","'Both' would mean it was both Monday and Tuesday — impossible.","'None' is for more than two options."]},
+  {type:'grammar',tag:'Quantifiers',q:"I've read ___ of his books — every single one was brilliant.",opts:['either','neither','both','none'],ans:2,
+   topicHint:"Two books, and the person enjoyed them together. All two, not just one.",topicHintTR:"İki kitap var ve ikisi de beğenildi. Sadece biri değil, ikisi birden.",
+   explanations:["'Either' = any one of two, not 'all two together'.","'Neither' = not one and not the other — negative meaning.","Correct. 'Both' = the two together. Both books were read and enjoyed.","'None' = zero out of many — opposite of what is meant here."]},
+  {type:'grammar',tag:'Quantifiers',q:"___ of the restaurants was open — we had to cook at home.",opts:['Either','Neither','Both','Some'],ans:1,
+   topicHint:"They tried two restaurants. Neither one was open. Both options failed.",topicHintTR:"İki restoran denediler. İkisi de açık değildi. Her iki seçenek de başarısız oldu.",
+   explanations:["'Either' here would be ambiguous — 'neither' is the clear negative choice for two options.","Correct. 'Neither of the restaurants' = not this one AND not that one. Both were closed.","'Both were open' would be the positive version — opposite of what happened.","'Some' is used for more than two or uncountable amounts."]},
+
+  {type:'grammar',tag:'Simple Past',q:"___ he finish his homework before midnight last night?",opts:['Did','Does','Was','Has'],ans:0,
+   topicHint:"Past question with action verb 'finish'. Which auxiliary is needed?",topicHintTR:"Geçmişe ait eylem sorusu, fiil 'finish'. Hangi yardımcı gerekir?",
+   explanations:["Correct. 'Did' forms Simple Past questions. Main verb stays in base form.","'Does' forms Present Simple questions.","'Was' is for 'to be' verbs — 'finish' is an action verb.","'Has' forms Present Perfect questions."]},
+  {type:'grammar',tag:'Present Simple',q:"Water ___ at 100 degrees Celsius.",opts:['is boiling','boil','boils','boiled'],ans:2,
+   topicHint:"A scientific fact that is always true. Which tense expresses general truths?",topicHintTR:"Her zaman doğru olan bilimsel bir gerçek. Genel gerçekler hangi zamanla ifade edilir?",
+   explanations:["'Is boiling' = right now. A scientific fact needs Present Simple.","'Boil' is missing the 3rd person singular -s.","Correct. 'Boils' = Present Simple, 3rd person singular. Used for scientific facts.","'Boiled' is Simple Past — scientific facts are always true, not just in the past."]},
+  {type:'grammar',tag:'Future: Will',q:"I think it ___ rain tomorrow. The sky looks clear.",opts:['is going to','will','rains','rained'],ans:1,
+   topicHint:"A prediction based on opinion, not visible evidence. Which future form?",topicHintTR:"Görsel kanıta değil kişisel görüşe dayalı bir tahmin. Hangi gelecek zaman formu?",
+   explanations:["'Is going to' needs visible evidence (dark clouds). Opinion/thought uses 'will'.","Correct. 'Will' = prediction based on opinion/belief (I think…).","'Rains' is Present Simple — doesn't express future prediction here.","'Rained' is Simple Past."]},
+  {type:'grammar',tag:'Question Tags',q:"Let's take a break, ___?",opts:['will we','shall we','do we','are we'],ans:1,
+   topicHint:"'Let's...' is a suggestion. What tag is used with suggestions?",topicHintTR:"'Let's...' bir öneri cümlesi. Önerilerle hangi tag kullanılır?",
+   explanations:["'Will we' is for imperative commands, not 'let's' suggestions.","Correct. 'Shall we' is the tag used with 'Let's...' suggestions.","'Do we' is for Present Simple questions — not correct here.","'Are we' is for 'to be' present questions."]},
+  {type:'grammar',tag:'Comparatives',q:"She is ___ student in the whole class — everyone likes her.",opts:['friendlier','more friendly','the friendliest','most friendly'],ans:2,
+   topicHint:"She is the best of ALL students. Which degree is this?",topicHintTR:"Tüm öğrenciler arasında en iyisi. Bu hangi derece yapısıdır?",
+   explanations:["'Friendlier' is comparative — for comparing two people.","'More friendly' is also comparative — two people only.","Correct. 'The friendliest' = superlative of a short adjective. The best of all.","'Most friendly' is wrong — superlatives need 'the'."]},
+  {type:'grammar',tag:'Pronouns',q:"The children should do the project ___. The teacher won't help.",opts:['theirself','themselves','theirs','they'],ans:1,
+   topicHint:"The children do it independently, by their own effort. Which pronoun?",topicHintTR:"Çocuklar bunu kendi başlarına yapıyor. Kendi kendine eylemi hangi zamir anlatır?",
+   explanations:["'Theirself' does not exist in standard English.","Correct. 'Themselves' = reflexive pronoun for plural 'they'. They do it on their own.","'Theirs' is a possessive pronoun — used for ownership.","'They' is a subject pronoun — cannot be in object/reflexive position here."]},
+];
+
+// ── VOCABULARY QUIZ ──
+// All words with Turkish meanings as options
+const ALL_VOCAB = [
+  {word:'SPEND',      tr:'harcamak',         type:'verb',    q:'She decided to ___ all her savings on a new laptop.',     opts:['kazanmak','harcamak','biriktirmek','ödünç almak'],    ans:1},
+  {word:'PREPARE',    tr:'hazırlamak',        type:'verb',    q:'The chef began to ___ the ingredients for dinner.',       opts:['yemek yemek','temizlemek','hazırlamak','pişirmek'],   ans:2},
+  {word:'STRANGE',    tr:'garip/tuhaf',       type:'adj',     q:'There was a ___ noise coming from the basement.',        opts:['tanıdık','normal','garip/tuhaf','sessiz'],            ans:2},
+  {word:'RUIN',       tr:'mahvetmek/yok etmek',type:'verb',  q:'The heavy rain completely ___ the outdoor event.',       opts:['geliştirmek','mahvetmek/yok etmek','düzeltmek','ertelemek'],ans:1},
+  {word:'COMPETITION',tr:'yarışma/rekabet',   type:'noun',    q:'She won first place in the national singing ___.',       opts:['sergi','tören','yarışma/rekabet','konser'],           ans:2},
+  {word:'DAMAGE',     tr:'hasar/zarar',       type:'noun',    q:'The storm caused serious ___ to the old building.',     opts:['fayda','onarım','hasar/zarar','koruma'],             ans:2},
+  {word:'CRASH INTO', tr:'çarpmak',           type:'phrasal', q:'The driver lost control and ___ a fence.',              opts:['geçmek','kaçmak','çarpmak','durmak'],                ans:2},
+  {word:'FAMOUS FOR', tr:'ile meşhur',        type:'phrase',  q:'Paris is ___ its beautiful architecture and cuisine.',  opts:['korkulan','ile meşhur','küçümsenen','bilinen'],      ans:1},
+  {word:'HUMID',      tr:'nemli/rutubetli',   type:'adj',     q:'The tropical rainforest is extremely ___ all year.',    opts:['soğuk','kuru','sıcak','nemli/rutubetli'],            ans:3},
+  {word:'SURROUND',   tr:'çevrelemek/sarmak', type:'verb',    q:'Tall mountains completely ___ the small village.',      opts:['geçmek','yıkmak','çevrelemek/sarmak','gizlemek'],   ans:2},
+  {word:'OCCASION',   tr:'özel durum/vesile', type:'noun',    q:'A wedding is a very special ___ for every family.',     opts:['sorun','özel durum/vesile','görev','kural'],         ans:1},
+  {word:'PARTICIPATE',tr:'katılmak',          type:'verb',    q:'Everyone is welcome to ___ in the discussion.',        opts:['izlemek','ayrılmak','katılmak','engellemek'],        ans:2},
+  {word:'PUT ON',     tr:'giymek/takmak',     type:'phrasal', q:'Please ___ your coat before going outside.',           opts:['çıkarmak','yıkamak','giymek/takmak','bulmak'],      ans:2},
+  {word:'PRESENT',    tr:'sunmak/takdim etmek',type:'verb',   q:'She was asked to ___ her findings to the committee.',  opts:['gizlemek','sunmak/takdim etmek','silmek','okumak'], ans:1},
+  {word:'EXHAUSTED',  tr:'bitkin/yorgun',     type:'adj',     q:'After the marathon, the runners were completely ___.',  opts:['enerjik','heyecanlı','bitkin/yorgun','mutlu'],       ans:2},
+  {word:'RESPECT',    tr:'saygı duymak',      type:'verb',    q:'It is important to ___ other people\'s opinions.',     opts:['görmezden gelmek','eleştirmek','saygı duymak','reddetmek'],ans:2},
+  {word:'GATHER',     tr:'toplamak/bir araya gelmek',type:'verb',q:'People began to ___ in the square to watch the show.',opts:['dağılmak','uyumak','toplamak/bir araya gelmek','kaçmak'],ans:2},
+  {word:'CARVE',      tr:'oymak/yontmak',     type:'verb',    q:'The artist used a knife to ___ the wooden figure.',    opts:['boyamak','oymak/yontmak','kırmak','süslemek'],       ans:1},
+  {word:'BOTHER',     tr:'rahatsız etmek',    type:'verb',    q:'Does loud music ___ you when you are studying?',       opts:['yardım etmek','rahatsız etmek','eğlendirmek','uyandırmak'],ans:1},
+  {word:'HEAD FOR',   tr:'yönelmek/gitmek',   type:'phrasal', q:'After the meeting, everyone ___ the exit.',            opts:['kaçmak','yönelmek/gitmek','oturmak','beklemek'],     ans:1},
+  {word:'INDICATE',   tr:'göstermek/belirtmek',type:'verb',   q:'The sign ___ that the road was closed.',              opts:['saklamak','göstermek/belirtmek','silmek','değiştirmek'],ans:1},
+  {word:'PERMANENT',  tr:'kalıcı/sürekli',    type:'adj',     q:'The tattoo is ___ and cannot be removed easily.',      opts:['geçici','değişken','kalıcı/sürekli','yenilenen'],    ans:2},
+  {word:'TREAT',      tr:'davranmak/ağırlamak',type:'verb',   q:'She likes to ___ her friends to dinner on birthdays.', opts:['reddetmek','davranmak/ağırlamak','görmezden gelmek','şikayet etmek'],ans:1},
+  {word:'RUSH',       tr:'acele etmek',       type:'verb',    q:'Don\'t ___ — we have plenty of time before the train.',opts:['yavaşlamak','dinlenmek','acele etmek','oturmak'],    ans:2},
+  {word:'COLLEAGUE',  tr:'meslektaş/iş arkadaşı',type:'noun',q:'My ___ helped me finish the report before the deadline.',opts:['rakip','meslektaş/iş arkadaşı','patron','müşteri'],ans:1},
+  {word:'TALENTED',   tr:'yetenekli',         type:'adj',     q:'She is a very ___ musician who plays three instruments.',opts:['isteksiz','yetenekli','sıradan','tecrübesiz'],      ans:1},
+  {word:'SCULPTURE',  tr:'heykel',            type:'noun',    q:'The museum displayed a beautiful marble ___ from ancient Greece.',opts:['resim','fotoğraf','heykel','çizim'],      ans:2},
+  {word:'RELEASE',    tr:'yayımlamak/serbest bırakmak',type:'verb',q:'The band plans to ___ their new album next month.',opts:['iptal etmek','yayımlamak/serbest bırakmak','satmak','gizlemek'],ans:1},
+  {word:'AUDIENCE',   tr:'izleyici/seyirci kitlesi',type:'noun',q:'The ___ applauded loudly at the end of the performance.',opts:['oyuncu','izleyici/seyirci kitlesi','yönetmen','müzisyen'],ans:1},
+  {word:'RECEIVE',    tr:'almak/teslim almak', type:'verb',   q:'Did you ___ the package I sent you last week?',        opts:['göndermek','almak/teslim almak','kaybetmek','reddetmek'],ans:1},
+  {word:'REMAIN',     tr:'kalmak/olmaya devam etmek',type:'verb',q:'Please ___ seated until the plane has landed.',    opts:['kalkmak','hareket etmek','kalmak/olmaya devam etmek','yürümek'],ans:2},
+  {word:'CONTRIBUTE', tr:'katkıda bulunmak',  type:'verb',    q:'Everyone can ___ to the success of the project.',     opts:['engellemek','çalmak','katkıda bulunmak','görmezden gelmek'],ans:2},
+  {word:'CEILING',    tr:'tavan',             type:'noun',    q:'There was a water stain on the ___ after the heavy rain.',opts:['zemin','duvar','pencere','tavan'],               ans:3},
+  {word:'SIGNIFICANT',tr:'önemli/anlamlı',    type:'adj',     q:'There has been a ___ improvement in her health.',      opts:['küçük','önemsiz','önemli/anlamlı','belirsiz'],       ans:2},
+  {word:'PERHAPS',    tr:'belki/muhtemelen',  type:'adv',     q:'___ we should leave early to avoid the traffic.',      opts:['kesinlikle','asla','belki/muhtemelen','her zaman'],  ans:2},
+  {word:'RUN INTO',   tr:'tesadüfen karşılaşmak',type:'phrasal',q:'I didn\'t expect to ___ my old teacher at the market.',opts:['kaçmak','aramak','tesadüfen karşılaşmak','takip etmek'],ans:2},
+  {word:'BRUTALITY',  tr:'vahşet/zulüm',      type:'noun',    q:'The documentary showed the ___ of war in great detail.',opts:['kibarlık','cömertlik','vahşet/zulüm','dürüstlük'], ans:2},
+  {word:'CONTEMPORARY',tr:'çağdaş/modern',    type:'adj',     q:'The gallery focuses on ___ art from the last 20 years.',opts:['antik','eski','çağdaş/modern','tarihi'],           ans:2},
+  {word:'TUITION',    tr:'öğretim ücreti/ders',type:'noun',   q:'University ___ fees have increased significantly this year.',opts:['burs','öğretim ücreti/ders','indirim','maaş'],ans:1},
+  {word:'FUNDAMENTAL',tr:'temel/esas',        type:'adj',     q:'Understanding grammar is ___ to learning a language.',  opts:['gereksiz','opsiyonel','temel/esas','zor'],           ans:2},
+  {word:'PURCHASE',   tr:'satın almak',       type:'verb',    q:'You can ___ tickets online or at the door.',           opts:['satmak','kaybetmek','satın almak','iade etmek'],     ans:2},
+  {word:'SCHEDULE',   tr:'program/takvim',    type:'noun',    q:'Check the ___ to find out when the next bus leaves.',  opts:['bilet','harita','program/takvim','rehber'],          ans:2},
+  {word:'REFUND',     tr:'para iadesi/geri ödemek',type:'noun',q:'She asked for a ___ after the concert was cancelled.', opts:['indirim','ödeme','para iadesi/geri ödemek','ceza'],ans:2},
+  {word:'CONCERN',    tr:'endişe/ilgilendirmek',type:'noun',  q:'There is growing ___ about pollution in the city.',    opts:['sevinç','ilgisizlik','endişe/ilgilendirmek','güven'],ans:2},
+  {word:'TRAIN',      tr:'eğitmek/antrenman yapmak',type:'verb',q:'The coach will ___ the team for the championship.',  opts:['dinlendirmek','eğitmek/antrenman yapmak','izlemek','yönetmek'],ans:1},
+  {word:'RECOVER',    tr:'iyileşmek/toparlanmak',type:'verb', q:'It took her three weeks to fully ___ from the illness.',opts:['hastalanmak','iyileşmek/toparlanmak','şikayet etmek','dinlenmek'],ans:1},
+  {word:'VARIETY',    tr:'çeşitlilik',        type:'noun',    q:'The menu offers a wide ___ of vegetarian dishes.',     opts:['eksiklik','çeşitlilik','tekrar','seçenek'],          ans:1},
+  {word:'AVOID',      tr:'kaçınmak/uzak durmak',type:'verb',  q:'Try to ___ eating too much sugar for better health.',  opts:['sevmek','seçmek','kaçınmak/uzak durmak','istemek'],ans:2},
+  {word:'PROPER',     tr:'uygun/doğru/düzgün',type:'adj',     q:'Make sure you have ___ equipment before climbing.',    opts:['eksik','yanlış','uygun/doğru/düzgün','tehlikeli'],  ans:2},
+  {word:'EXPECTATION',tr:'beklenti',          type:'noun',    q:'The movie failed to meet the audience\'s ___.',        opts:['hayal kırıklığı','başarı','beklenti','ilgi'],        ans:2},
+  {word:'HAND IN',    tr:'teslim etmek',      type:'phrasal', q:'Please ___ your homework before Friday.',              opts:['almak','kaybetmek','teslim etmek','unutmak'],        ans:2},
+  {word:'INTENTION',  tr:'niyet/amaç',        type:'noun',    q:'His ___ was to finish the project by the end of the week.',opts:['sonuç','başarısızlık','niyet/amaç','engel'],    ans:2},
+  {word:'PREDICTION',tr:'tahmin/öngörü',      type:'noun',    q:'The weather ___ says it will snow tomorrow.',          opts:['haber','gerçek','tahmin/öngörü','hata'],            ans:2},
+  {word:'PROOF',      tr:'kanıt/ispat',       type:'noun',    q:'You need ___ of identity to open a bank account.',    opts:['şüphe','soru','kanıt/ispat','problem'],             ans:2},
+  {word:'PROVE',      tr:'kanıtlamak/ispatlamak',type:'verb', q:'The lawyer tried to ___ that her client was innocent.', opts:['inkar etmek','kanıtlamak/ispatlamak','sormak','gizlemek'],ans:1},
+  {word:'EVIDENCE',   tr:'delil/kanıt',       type:'noun',    q:'The detective found important ___ at the crime scene.', opts:['şüphe','dedektif','delil/kanıt','hata'],            ans:2},
+  {word:'CAUTIOUS',   tr:'dikkatli/ihtiyatlı',type:'adj',     q:'Be ___ when crossing the road at night.',              opts:['dikkatsiz','aceleci','dikkatli/ihtiyatlı','cesur'],  ans:2},
+  {word:'APPROPRIATE',tr:'uygun',             type:'adj',     q:'Please use ___ language in formal situations.',        opts:['uygunsuz','alaycı','uygun','sıradan'],              ans:2},
+];
+
+// Shuffle and deduplicate by word for quiz session
+function getVocabQuestions(count) {
+  const shuffled = [...ALL_VOCAB].sort(() => Math.random() - 0.5);
+  const seen = new Set();
+  const result = [];
+  for (const q of shuffled) {
+    if (!seen.has(q.word) && result.length < count) {
+      seen.add(q.word);
+      result.push({...q, type:'vocab'});
+    }
+  }
+  return result;
+}
+
+function startQuiz() {
+  const vq = getVocabQuestions(20);
+  if (selectedTestType === 'grammar') {
+    activeQuestions = [...grammarQuestions];
+  } else if (selectedTestType === 'vocab') {
+    activeQuestions = vq;
+  } else {
+    activeQuestions = [...grammarQuestions, ...vq].sort(() => Math.random() - 0.5);
+  }
+
+  answered = {};
+  score = 0;
+  streak = 0;
+  bestStreak = 0;
+  Object.keys(timers).forEach(k => clearInterval(timers[k]));
+  timers = {};
+
+  document.getElementById('onboard').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('score-badge').style.display = 'flex';
+  document.getElementById('streak-badge').style.display = 'none';
+  document.getElementById('btn-back').classList.add('visible');
+  document.getElementById('hdr-score').textContent = 0;
+  document.getElementById('hdr-total').textContent = activeQuestions.length;
+
+  renderAll();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function renderAll() {
+  const container = document.getElementById('q-container');
+  let html = '';
+  let lastType = null;
+
+  activeQuestions.forEach((q, qi) => {
+    if (selectedTestType === 'mixed' && q.type !== lastType) {
+      const label = q.type === 'vocab' ? 'Vocabulary Quiz' : 'Grammar Test';
+      html += `<div class="section-div"><div class="section-div-line"></div><div class="section-div-label">${label}</div><div class="section-div-line"></div></div>`;
+      lastType = q.type;
+    }
+    if (q.type === 'vocab') {
+      html += renderVocabCard(q, qi);
+    } else {
+      html += renderGrammarCard(q, qi);
+    }
+  });
+
+  container.innerHTML = html;
+  updateProgress();
+}
+
+function renderGrammarCard(q, qi) {
+  const state = answered[qi];
+  const topicCandidates = getTopicCandidates(q.tag);
+  let topicGrid = '';
+  topicCandidates.forEach(t => {
+    let cls = '';
+    if (state) {
+      if (t === q.tag) cls = 'correct-topic locked';
+      else if (t === state.topicAns && t !== q.tag) cls = 'wrong-topic locked';
+      else cls = 'locked';
+    }
+    const trName = TOPIC_DEFS[t] ? TOPIC_DEFS[t].tr : '';
+    topicGrid += `<button class="topic-btn ${cls}" onclick="answerTopic(${qi},'${t}')"><span class="topic-dot"></span><span style="flex:1"><span style="display:block;font-size:12px">${t}</span>${trName ? `<span style="display:block;font-size:10px;opacity:.65;margin-top:1px">${trName}</span>` : ''}</span></button>`;
+  });
+
+  const qState = state ? state.optAns : null;
+  let optsHtml = '';
+  q.opts.forEach((opt, oi) => {
+    let cls = '';
+    if (qState !== null) {
+      if (oi === q.ans) cls = 'correct locked';
+      else if (oi === qState) cls = 'wrong locked';
+      else cls = 'locked';
+    }
+    optsHtml += `<button class="opt-btn ${cls}" onclick="answerOpt(${qi},${oi})"><span class="opt-key">${LETTERS[oi]}</span><span class="opt-text">${opt}</span></button>`;
+  });
+
+  let expHtml = qState !== null ? buildExpHtml(q, qState) : '';
+  const timerHtml = (selectedMode === 'speed' && !state) ? `<div class="timer-bar-wrap"><div class="timer-bar" id="tbar-${qi}" style="width:100%"></div></div>` : '';
+  const qPhaseClass = (state && state.topicAns !== undefined) ? '' : 'hidden';
+
+  return `<div class="q-wrap" id="qwrap-${qi}">
+    <div class="q-card ${state ? (state.optAns === q.ans ? 'answered-correct' : 'answered-wrong') : ''}" id="qcard-${qi}">
+      ${timerHtml}
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+          <div class="detective-label" style="margin-bottom:0">Which topic does this question belong to?</div>
+          <div style="font-size:10px;color:var(--text3);font-style:italic">Hangi konu?</div>
+        </div>
+        <div class="detective-hint" style="position:relative">
+          <span id="hint-en-${qi}">${q.topicHint}</span>
+          <span id="hint-tr-${qi}" style="display:none;color:var(--text);font-style:italic">${q.topicHintTR || q.topicHint}</span>
+          <button onclick="toggleHintTR(${qi})" id="hint-tr-btn-${qi}"
+            style="position:absolute;top:50%;right:0;transform:translateY(-50%);background:var(--accent);border:none;border-radius:5px;padding:2px 9px;font-size:10px;font-weight:700;color:#fff;cursor:pointer;font-family:'Roboto',sans-serif;letter-spacing:.03em;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg> TR</button>
+          <span style="display:inline-block;width:40px"></span>
+        </div>
+        <div class="topic-grid">${topicGrid}</div>
+        <div class="topic-reveal ${state ? 'show' : ''}" id="topicrev-${qi}">
+          Topic: <span>${q.tag}</span>
+          ${(() => { const d = TOPIC_DEFS[q.tag]; return d ? `<span style="color:var(--text3);font-weight:400;margin-left:4px;">· ${d.tr}</span><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.5">${d.def}</div>` : ''; })()}
+        </div>
+      </div>
+      <div class="question-phase ${qPhaseClass}" id="qphase-${qi}">
+        <div class="q-number">Question ${qi + 1} of ${activeQuestions.length} · <span style="color:var(--accent2)">${q.tag}</span></div>
+        <div class="q-text">${q.q.replace('___', '<mark>___</mark>')}</div>
+        <div class="options-grid">${optsHtml}</div>
+        ${expHtml}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderVocabCard(q, qi) {
+  const state = answered[qi];
+  const isAnswered = state !== undefined && state !== null;
+  let optsHtml = '';
+  q.opts.forEach((opt, oi) => {
+    let cls = '';
+    if (isAnswered) {
+      if (oi === q.ans) cls = 'correct locked';
+      else if (oi === state && oi !== q.ans) cls = 'wrong locked';
+      else cls = 'reveal locked';
+    }
+    optsHtml += `<button class="vq-opt ${cls}" onclick="answerVocab(${qi},${oi})">
+      <span style="min-width:20px;height:20px;border-radius:5px;background:var(--surface3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0">${LETTERS[oi]}</span>
+      <span>${opt}</span>
+    </button>`;
+  });
+
+  const timerHtml = (selectedMode === 'speed' && !isAnswered) ? `<div class="timer-bar-wrap"><div class="timer-bar" id="tbar-${qi}" style="width:100%"></div></div>` : '';
+  let expHtml = '';
+  if (isAnswered) {
+    const ok = state === q.ans;
+    expHtml = `<div class="vq-exp ${ok ? 'ok' : 'no'}">${ok ? '✓ Correct!' : '✗ Wrong!'} — ${q.explanation}</div>`;
+  }
+
+  return `<div class="vq-card ${isAnswered ? (state === q.ans ? 'answered-correct' : 'answered-wrong') : ''}" id="qcard-${qi}">
+    ${timerHtml}
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="background:rgba(58,127,212,0.12);border:1px solid rgba(58,127,212,0.2);border-radius:7px;padding:5px 12px;font-size:10px;font-weight:700;color:var(--accent2);letter-spacing:.05em;text-transform:uppercase">Vocabulary Word</div>
+      <div style="font-size:10px;color:var(--text3);font-style:italic">Kelime Sorusu</div>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:3px">
+      <div class="vq-word">${q.word}</div>
+      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">${q.wordType}</div>
+    </div>
+    <div style="font-size:14px;color:var(--text);line-height:1.65;margin-bottom:13px">${q.q.replace('___', '<mark>___</mark>')}</div>
+    <div class="vq-opts">${optsHtml}</div>
+    ${expHtml}
+  </div>`;
+}
+
+function getTopicCandidates(correct) {
+  const pool = ['Simple Past','Present Continuous','Present Simple','Future: Will','Future: Be going to','Question Tags','So / Neither / Too','Comparatives','Superlatives','Pronouns','Quantifiers'];
+  const result = [correct];
+  const others = pool.filter(t => t !== correct);
+  while (result.length < 4 && others.length) {
+    const i = Math.floor(Math.random() * others.length);
+    result.push(others.splice(i, 1)[0]);
+  }
+  return result.sort(() => Math.random() - 0.5);
+}
+
+function buildExpHtml(q, qState) {
+  const ok = qState === q.ans;
+  return `<div class="exp-block">
+    <div class="exp-verdict ${ok ? 'ok' : 'no'}">${ok ? '✓ Correct!' : '✗ Wrong!'} — ${q.explanations[q.ans]}</div>
+    <div class="exp-all">
+      <div class="exp-title">All options explained</div>
+      ${q.opts.map((opt, oi) => {
+        let badge, bc;
+        if (oi === q.ans) { badge = 'CORRECT'; bc = 'badge-ok'; }
+        else if (oi === qState && oi !== q.ans) { badge = 'YOUR ANSWER'; bc = 'badge-no'; }
+        else { badge = LETTERS[oi]; bc = 'badge-info'; }
+        return `<div class="exp-row"><span class="exp-badge ${bc}">${badge}</span><span class="exp-row-text"><strong>${opt}:</strong> ${q.explanations[oi]}</span></div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function answerTopic(qi, chosen) {
+  if (answered[qi] && answered[qi].topicAns !== undefined) return;
+  if (!answered[qi]) answered[qi] = {};
+  answered[qi].topicAns = chosen;
+  answered[qi].optAns = null;
+
+  const q = activeQuestions[qi];
+  const card = document.getElementById('qcard-' + qi);
+  card.querySelectorAll('.topic-btn').forEach(btn => {
+    btn.classList.add('locked');
+    const t = btn.querySelector('span:last-child') ? btn.textContent.trim() : btn.textContent.trim();
+    const btnText = btn.textContent.trim();
+    if (btnText === q.tag) btn.classList.add('correct-topic');
+    else if (btnText === chosen && chosen !== q.tag) btn.classList.add('wrong-topic');
+  });
+
+  const rev = document.getElementById('topicrev-' + qi);
+  if (rev) rev.classList.add('show');
+
+  const qphase = document.getElementById('qphase-' + qi);
+  if (qphase) {
+    qphase.classList.remove('hidden');
+    setTimeout(() => qphase.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+
+  if (selectedMode === 'speed') startTimer(qi);
+  showToast(chosen === q.tag ? '🔍 Topic identified correctly!' : '🔍 Topic: ' + q.tag, chosen === q.tag ? 'correct-t' : '');
+}
+
+function answerOpt(qi, oi) {
+  if (!answered[qi] || answered[qi].optAns !== null) return;
+  if (answered[qi].optAns !== undefined && answered[qi].optAns !== null) return;
+  clearTimer(qi);
+  answered[qi].optAns = oi;
+  const q = activeQuestions[qi];
+  const ok = oi === q.ans;
+  handleScore(ok);
+
+  const card = document.getElementById('qcard-' + qi);
+  card.classList.add(ok ? 'answered-correct' : 'answered-wrong');
+  card.querySelectorAll('.opt-btn').forEach((btn, idx) => {
+    btn.classList.add('locked');
+    if (idx === q.ans) btn.classList.add('correct');
+    else if (idx === oi) btn.classList.add('wrong');
+  });
+  document.getElementById('qphase-' + qi).insertAdjacentHTML('beforeend', buildExpHtml(q, oi));
+  setTimeout(() => {
+    const e = document.getElementById('qphase-' + qi).querySelector('.exp-block');
+    if (e) e.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 150);
+
+  updateProgress();
+  document.getElementById('hdr-score').textContent = score;
+  checkFinished();
+}
+
+function answerVocab(qi, oi) {
+  if (answered[qi] !== undefined && answered[qi] !== null) return;
+  clearTimer(qi);
+  answered[qi] = oi;
+  const q = activeQuestions[qi];
+  const ok = oi === q.ans;
+  handleScore(ok);
+
+  const card = document.getElementById('qcard-' + qi);
+  card.classList.add(ok ? 'answered-correct' : 'answered-wrong');
+  card.querySelectorAll('.vq-opt').forEach((btn, idx) => {
+    btn.classList.add('locked');
+    if (idx === q.ans) btn.classList.add('correct');
+    else if (idx === oi && !ok) btn.classList.add('wrong');
+    else btn.classList.add('reveal');
+  });
+
+  const expHtml = `<div class="vq-exp ${ok ? 'ok' : 'no'}">${ok ? '✓ Correct!' : '✗ Wrong!'} — ${q.explanation}</div>`;
+  card.insertAdjacentHTML('beforeend', expHtml);
+  setTimeout(() => {
+    const e = card.querySelector('.vq-exp');
+    if (e) e.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 150);
+
+  updateProgress();
+  document.getElementById('hdr-score').textContent = score;
+  checkFinished();
+}
+
+function handleScore(ok) {
+  if (ok) {
+    score++;
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+    if (streak >= 3) {
+      showToast('🔥 ' + streak + ' in a row!', 'streak-t');
+      const sb = document.getElementById('streak-badge');
+      sb.style.display = 'flex';
+      document.getElementById('streak-count').textContent = streak;
+    }
+  } else {
+    streak = 0;
+    document.getElementById('streak-badge').style.display = 'none';
+  }
+}
+
+function checkFinished() {
+  const done = activeQuestions.filter((q, qi) => {
+    if (q.type === 'vocab') return answered[qi] !== undefined && answered[qi] !== null;
+    return answered[qi] && answered[qi].optAns !== null;
+  }).length;
+  if (done === activeQuestions.length) setTimeout(showResults, 700);
+}
+
+function startTimer(qi) {
+  const bar = document.getElementById('tbar-' + qi);
+  if (!bar) return;
+  const total = 20000, start = Date.now();
+  timers[qi] = setInterval(() => {
+    const pct = Math.max(0, 100 - ((Date.now() - start) / total) * 100);
+    bar.style.width = pct + '%';
+    if (pct < 30) bar.classList.add('danger');
+    if (pct <= 0) {
+      clearTimer(qi);
+      const q = activeQuestions[qi];
+      if (q.type === 'vocab') {
+        if (answered[qi] === undefined || answered[qi] === null) answerVocab(qi, -1);
+      } else {
+        if (answered[qi] && answered[qi].optAns === null) answerOpt(qi, -1);
+      }
+    }
+  }, 100);
+}
+
+function clearTimer(qi) {
+  if (timers[qi]) { clearInterval(timers[qi]); delete timers[qi]; }
+}
+
+function updateProgress() {
+  const done = activeQuestions.filter((q, qi) => {
+    if (q.type === 'vocab') return answered[qi] !== undefined && answered[qi] !== null;
+    return answered[qi] && answered[qi].optAns !== null;
+  }).length;
+  const pct = Math.round((done / activeQuestions.length) * 100);
+  document.getElementById('prog-inner').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = done + ' / ' + activeQuestions.length + ' completed';
+  document.getElementById('prog-pct').textContent = pct + '%';
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function showResults() {
+  const total = activeQuestions.length;
+  const pct = Math.round((score / total) * 100);
+  const wrong = total - score;
+  const gramTotal = activeQuestions.filter(q => q.type === 'grammar').length;
+  const vocTotal = activeQuestions.filter(q => q.type === 'vocab').length;
+  const gramScore = activeQuestions.filter((q, qi) => q.type === 'grammar' && answered[qi] && answered[qi].optAns === q.ans).length;
+  const vocScore = activeQuestions.filter((q, qi) => q.type === 'vocab' && answered[qi] === q.ans).length;
+  const topicHits = activeQuestions.filter((q, qi) => q.type === 'grammar' && answered[qi] && answered[qi].topicAns === q.tag).length;
+
+  const ringColor = pct >= 80 ? '#3aab6e' : pct >= 55 ? '#c8962a' : '#c95c5c';
+  const circ = 2 * Math.PI * 50;
+  const dash = circ * (pct / 100);
+  const msg = pct >= 80 ? 'Excellent work! 🎉' : pct >= 55 ? 'Good effort! 👏' : 'Keep going! 💪';
+  const sub = pct >= 80 ? 'Your grammar and vocabulary are very strong. Try Speed Mode!' :
+              pct >= 55 ? 'Nice result. Review the questions you got wrong.' :
+              'Read the explanations carefully and try again.';
+
+  const wrongItems = activeQuestions.map((q, qi) => {
+    let isWrong = false;
+    let sel = '(time up)';
+    if (q.type === 'vocab') {
+      if (answered[qi] !== q.ans) { isWrong = true; sel = answered[qi] >= 0 ? q.opts[answered[qi]] : '(time up)'; }
+    } else {
+      if (!answered[qi] || answered[qi].optAns !== q.ans) { isWrong = true; sel = answered[qi] && answered[qi].optAns >= 0 ? q.opts[answered[qi].optAns] : '(time up)'; }
+    }
+    if (!isWrong) return '';
+    return `<div class="review-item"><strong>${qi + 1}. ${q.tag || q.word}</strong> — You chose: "${sel}" → Correct: "${q.opts[q.ans]}"<br><span style="font-size:11px;color:var(--text3)">${q.q}</span></div>`;
+  }).filter(Boolean).join('');
+
+  let statsHtml = `
+    <div class="stat-card"><div class="stat-val" style="color:var(--green)">${score}</div><div class="stat-lbl">Correct</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--red)">${wrong}</div><div class="stat-lbl">Wrong</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--gold)">${bestStreak}</div><div class="stat-lbl">Best Streak</div></div>
+    <div class="stat-card"><div class="stat-val">${pct}%</div><div class="stat-lbl">Score</div></div>`;
+  if (gramTotal > 0) statsHtml += `<div class="stat-card"><div class="stat-val">${gramScore}/${gramTotal}</div><div class="stat-lbl">Grammar</div></div>`;
+  if (vocTotal > 0) statsHtml += `<div class="stat-card"><div class="stat-val">${vocScore}/${vocTotal}</div><div class="stat-lbl">Vocabulary</div></div>`;
+  if (gramTotal > 0) statsHtml += `<div class="stat-card"><div class="stat-val" style="color:var(--accent2)">${topicHits}/${gramTotal}</div><div class="stat-lbl">Topic ID</div></div>`;
+  statsHtml += `<div class="stat-card"><div class="stat-val" style="font-size:.95rem">${selectedMode === 'speed' ? '⚡' : '🧠'}</div><div class="stat-lbl">Mode</div></div>`;
+
+  document.getElementById('results-screen').innerHTML = `
+    <div class="results-hero">
+      <div class="big-ring">
+        <svg width="110" height="110" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/>
+          <circle cx="55" cy="55" r="50" fill="none" stroke="${ringColor}" stroke-width="6" stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
+        </svg>
+        <div class="big-ring-num" style="color:${ringColor}">${score}</div>
+        <div class="big-ring-sub">/ ${total}</div>
+      </div>
+      <div class="results-title">${msg}</div>
+      <div class="results-sub">${sub}</div>
+      <div class="stats-grid">${statsHtml}</div>
+      ${wrongItems ? `<div class="review-section"><div class="review-title">Questions to review</div>${wrongItems}</div>` : `<div class="review-section" style="text-align:center;color:var(--green);padding:20px">🎯 All correct! Outstanding!</div>`}
+      <div class="results-btns">
+        <button class="btn-retry" onclick="goHome()">← Back to Start</button>
+        <button class="btn-retry" onclick="retryQuiz()">↺ Try Again</button>
+        <button class="btn-dl" onclick="exportGrammarPDF()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          📝 Grammar PDF
+        </button>
+        <button class="btn-dl" style="background:#2d7a4f" onclick="exportVocabPDF()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          📚 Vocab PDF
+        </button>
+      </div>
+    </div>`;
+
+  document.getElementById('results-screen').style.display = 'block';
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('results-screen').scrollIntoView({ behavior: 'smooth' });
+}
+
+function goHome() {
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('onboard').style.display = 'block';
+  document.getElementById('score-badge').style.display = 'none';
+  document.getElementById('streak-badge').style.display = 'none';
+  document.getElementById('btn-back').classList.remove('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function retryQuiz() {
+  document.getElementById('results-screen').style.display = 'none';
+  startQuiz();
+}
+
+function openPDF(html) {
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if (win) win.addEventListener('load', () => { win.focus(); win.print(); });
+  else { const a = document.createElement('a'); a.href = url; a.download = 'gramlab.html'; a.click(); }
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+}
+
+const PDF_STYLE = `@page{size:A4;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#1a1a2e;font-size:11px}
+.cover{background:#13161d;color:#d8dce8;padding:14px 18px;border-radius:8px;margin-bottom:16px}
+.cover h1{font-size:15px;margin-bottom:4px}.cover p{font-size:9px;color:#7e8aa0;line-height:1.6}
+.sec{font-size:12px;font-weight:700;border-bottom:2px solid #13161d;padding-bottom:4px;margin-bottom:12px}
+.key{font-size:12px;font-weight:700;border-bottom:2px solid #3aab6e;padding-bottom:4px;margin-bottom:12px}
+.pb{page-break-before:always}
+.foot{position:fixed;bottom:0;left:0;right:0;text-align:center;font-size:8px;color:#bbb;padding:4px;background:#fff;border-top:1px solid #eee}`;
+
+// ── GRAMMAR PDF ──
+function exportGrammarPDF() {
+  const tarih = new Date().toLocaleDateString('en-GB');
+  const qs = grammarQuestions;
+  let questionRows = '';
+  qs.forEach((q, qi) => {
+    let optsHtml = '';
+    q.opts.forEach((opt, oi) => {
+      optsHtml += '<div style="display:inline-flex;align-items:center;gap:6px;margin-right:14px;margin-top:4px;">'
+        + '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;border:1.5px solid #aaa;flex-shrink:0;"></span>'
+        + '<span style="font-size:11px;color:#333;">' + LETTERS[oi] + ') ' + opt + '</span></div>';
+    });
+    questionRows += '<div style="break-inside:avoid;margin-bottom:11px;padding:9px 12px;border:1px solid #e0e0e0;border-radius:7px;">'
+      + '<div style="font-size:12px;font-weight:700;color:#1a1a2e;margin-bottom:5px;">' + (qi+1) + '. '
+      + '<span style="background:#f0eaff;color:#5c35c4;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:6px">' + q.tag + '</span>'
+      + q.q + '</div>'
+      + '<div style="display:flex;flex-wrap:wrap;">' + optsHtml + '</div></div>';
+  });
+  // Answer table
+  let answerRows = '<table style="width:100%;border-collapse:collapse;margin-bottom:18px;">';
+  for (let r = 0; r < Math.ceil(qs.length/5); r++) {
+    answerRows += '<tr>';
+    for (let col = 0; col < 5; col++) {
+      const qi = r*5+col;
+      if (qi >= qs.length) { answerRows += '<td></td>'; continue; }
+      answerRows += '<td style="padding:5px 7px;border:1px solid #e0e0e0;vertical-align:top;">'
+        + '<div style="font-size:9px;font-weight:700;color:#555;margin-bottom:2px;">' + (qi+1) + '. <span style="color:#888;font-weight:400">' + qs[qi].tag + '</span></div>'
+        + '<div style="font-size:11px;font-weight:700;color:#1a6b35;background:#e8f7ef;border-radius:4px;padding:2px 7px;display:inline-block;">' + LETTERS[qs[qi].ans] + ') ' + qs[qi].opts[qs[qi].ans] + '</div>'
+        + '</td>';
+    }
+    answerRows += '</tr>';
+  }
+  answerRows += '</table>';
+  // Explanations
+  let expRows = '';
+  qs.forEach((q, qi) => {
+    expRows += '<div style="break-inside:avoid;margin-bottom:8px;padding:7px 11px;border-left:3px solid #3a7fd4;background:#f0f4ff;border-radius:0 6px 6px 0;">'
+      + '<span style="font-size:10px;font-weight:700;color:#1a1a2e;">' + (qi+1) + '. ' + q.opts[q.ans] + '</span>'
+      + '<span style="font-size:9px;color:#777;margin-left:7px;">' + q.tag + '</span>'
+      + '<div style="font-size:10px;color:#1a3a6e;margin-top:2px;line-height:1.5;">' + q.explanations[q.ans] + '</div></div>';
+  });
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>GramLab Grammar Worksheet</title>'
+    + '<style>' + PDF_STYLE + '</style></head><body>'
+    + '<div class="cover"><h1>GramLab — Grammar Worksheet</h1>'
+    + '<p>Date: ' + tarih + ' &nbsp;|&nbsp; ' + qs.length + ' questions<br>'
+    + 'Name: _____________________________ &nbsp;&nbsp; Class: _________ &nbsp;&nbsp; Score: _____ / ' + qs.length + '</p></div>'
+    + '<div class="sec">Grammar Questions</div>' + questionRows
+    + '<div class="pb"></div>'
+    + '<div class="cover" style="background:#0d1a3a;"><h1>Answer Key — Grammar</h1><p>produced by Ibrahim Metin | ' + tarih + '</p></div>'
+    + '<div class="key">Answer Table</div>' + answerRows
+    + '<div class="key" style="margin-top:14px;">Explanations</div>' + expRows
+    + '<div class="foot">GramLab Grammar Worksheet | produced by Ibrahim Metin</div>'
+    + '</body></html>';
+  openPDF(html);
+}
+
+// ── VOCAB PDF ──
+function exportVocabPDF() {
+  const tarih = new Date().toLocaleDateString('en-GB');
+  const style = document.querySelector('input[name="vocab-pdf-style"]:checked')?.value || 'cards';
+  // Deduplicate ALL_VOCAB by word
+  const seen = new Set(); const words = [];
+  ALL_VOCAB.forEach(w => { if (!seen.has(w.word)) { seen.add(w.word); words.push(w); } });
+  words.sort((a,b) => a.word.localeCompare(b.word));
+
+  let body = '';
+
+  if (style === 'list') {
+    // Simple 3-column table: Word | TR | Type
+    body = '<table style="width:100%;border-collapse:collapse;">'
+      + '<tr style="background:#13161d;color:#d8dce8;">'
+      + '<th style="padding:6px 9px;font-size:11px;text-align:left;font-weight:700">Word</th>'
+      + '<th style="padding:6px 9px;font-size:11px;text-align:left;font-weight:700">Turkish</th>'
+      + '<th style="padding:6px 9px;font-size:10px;text-align:left;font-weight:700">Type</th></tr>';
+    words.forEach((w, i) => {
+      const bg = i%2===0 ? '#fff' : '#f8f8f8';
+      body += '<tr style="background:' + bg + ';">'
+        + '<td style="padding:5px 9px;border-bottom:1px solid #eee;font-weight:700;font-size:11px">' + w.word + '</td>'
+        + '<td style="padding:5px 9px;border-bottom:1px solid #eee;color:#1a56c4;font-size:11px">' + w.tr + '</td>'
+        + '<td style="padding:5px 9px;border-bottom:1px solid #eee;color:#888;font-size:10px;text-transform:uppercase">' + w.type + '</td></tr>';
+    });
+    body += '</table>';
+
+  } else if (style === 'cards') {
+    // Flash card grid: 3 per row, word on top, TR on bottom
+    body = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
+    words.forEach(w => {
+      body += '<div style="break-inside:avoid;border:1.5px solid #dde;border-radius:8px;padding:10px 12px;background:#fff;">'
+        + '<div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:3px">' + w.word + '</div>'
+        + '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">' + w.type + '</div>'
+        + '<div style="border-top:1px dashed #dde;padding-top:6px;font-size:12px;color:#1a56c4;font-weight:500">' + w.tr + '</div>'
+        + '</div>';
+    });
+    body += '</div>';
+
+  } else {
+    // Fill-in-the-gaps test: sentence with blank, Turkish hint in bracket
+    const qs = words.filter(w => {
+      const match = ALL_VOCAB.find(v => v.word === w.word);
+      return match && match.q;
+    });
+    body = '';
+    qs.forEach((w, i) => {
+      const full = ALL_VOCAB.find(v => v.word === w.word);
+      body += '<div style="break-inside:avoid;margin-bottom:10px;padding:8px 12px;border:1px solid #e0e0e0;border-radius:7px;">'
+        + '<span style="font-size:10px;font-weight:700;color:#888;margin-right:6px">' + (i+1) + '.</span>'
+        + '<span style="font-size:12px;color:#1a1a2e">' + full.q + '</span>'
+        + '<span style="font-size:10px;color:#1a56c4;margin-left:8px">(' + w.tr + ')</span>'
+        + '</div>';
+    });
+    // Answer key at end
+    body += '<div style="page-break-before:always;font-size:12px;font-weight:700;border-bottom:2px solid #3aab6e;padding-bottom:4px;margin-bottom:12px;margin-top:0">Answer Key</div>';
+    body += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">';
+    qs.forEach((w, i) => {
+      body += '<div style="font-size:10px;padding:4px 8px;background:#e8f7ef;border-radius:4px;color:#1a6b35;font-weight:700">'
+        + (i+1) + '. ' + w.word + '</div>';
+    });
+    body += '</div>';
+  }
+
+  const styleTitles = {cards:'Flash Cards', list:'Word List', test:'Fill in the Gaps'};
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>GramLab Vocabulary</title>'
+    + '<style>' + PDF_STYLE + '</style></head><body>'
+    + '<div class="cover" style="background:#0a2e1a;"><h1>GramLab — Vocabulary: ' + styleTitles[style] + '</h1>'
+    + '<p>' + words.length + ' words &nbsp;|&nbsp; Date: ' + tarih + ' &nbsp;|&nbsp; produced by Ibrahim Metin</p></div>'
+    + body
+    + '<div class="foot">GramLab Vocabulary | produced by Ibrahim Metin</div>'
+    + '</body></html>';
+  openPDF(html);
+}
+
+// ── DICTIONARY ──
+let dictOpen = false;
+function toggleDict() {
+  dictOpen = !dictOpen;
+  document.getElementById('dict-body').style.display = dictOpen ? 'block' : 'none';
+  document.getElementById('dict-toggle-btn').textContent = dictOpen ? 'Hide ▴' : 'Show ▾';
+  if (dictOpen && !document.getElementById('dict-grid').innerHTML) renderDict('');
+}
+function filterDict(val) {
+  if (!dictOpen) { dictOpen = true; document.getElementById('dict-body').style.display='block'; document.getElementById('dict-toggle-btn').textContent='Hide ▴'; }
+  renderDict(val);
+}
+function renderDict(query) {
+  const q = query.toLowerCase().trim();
+  const items = ALL_VOCAB.filter(w => !q || w.word.toLowerCase().includes(q) || w.tr.includes(q));
+  const sorted = [...items].sort((a,b) => a.word.localeCompare(b.word));
+  // Deduplicate by word
+  const seen = new Set(); const uniq = [];
+  sorted.forEach(w => { if (!seen.has(w.word)) { seen.add(w.word); uniq.push(w); } });
+  document.getElementById('dict-grid').innerHTML = uniq.map(w =>
+    `<div class="dict-card">
+      <div class="dict-word">${w.word}</div>
+      <div class="dict-tr">${w.tr}</div>
+      <div class="dict-type">${w.type}</div>
+    </div>`
+  ).join('') || '<div style="color:var(--text3);font-size:12px;padding:8px">No results.</div>';
+}
+
+function toggleHintTR(qi) {
+  const en = document.getElementById('hint-en-'+qi);
+  const tr = document.getElementById('hint-tr-'+qi);
+  const btn = document.getElementById('hint-tr-btn-'+qi);
+  if (!en || !tr) return;
+  const isEn = en.style.display !== 'none';
+  en.style.display = isEn ? 'none' : 'inline';
+  tr.style.display = isEn ? 'inline' : 'none';
+  btn.innerHTML = isEn ? '↩ EN' : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg> TR';
+  btn.style.background = isEn ? '#c8962a' : 'var(--accent)';
+}
+
+</script>
+</body>
+</html>
