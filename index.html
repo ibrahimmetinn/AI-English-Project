@@ -390,6 +390,9 @@ body.discipline-theme #results-screen {
 .ps-gate-badge.locked{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.08)}
 .ps-reset-btn{width:100%;background:rgba(201,92,92,0.07);border:1px solid rgba(201,92,92,0.15);color:#a05050;border-radius:9px;padding:10px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:.15s;margin-top:4px}
 .ps-reset-btn:hover{background:rgba(201,92,92,0.14);color:#c06060}
+
+/* Achievement toast */
+#ach-toast { pointer-events: none; }
 </style>
 
 <!-- Firebase SDK -->
@@ -502,6 +505,12 @@ body.discipline-theme #results-screen {
         <div style="font-size:11px;color:rgba(255,255,255,0.3)">Son oynama</div>
         <div style="font-size:11px;color:#806880" id="ps-last-played">—</div>
       </div>
+    </div>
+
+    <!-- Rozetler -->
+    <div class="ps-section">
+      <div class="ps-section-title">Rozetler</div>
+      <div id="ps-achievements-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:4px 0"></div>
     </div>
 
     <!-- Tehlikeli Alan -->
@@ -898,8 +907,14 @@ async function loadUserStatsFromFirestore(uid) {
         totalSessions: d.totalSessions || 0,
         totalCorrect: d.totalCorrect || 0,
         lastPlayed: (d.lastPlayed && d.lastPlayed.toDate) ? d.lastPlayed.toDate().toISOString() : null,
+        quizComplete: d.quizComplete || {},
+        bestStreak: d.bestStreak || 0,
       };
       try { localStorage.setItem(DISC_STATS_KEY, JSON.stringify(stats)); } catch(e) {}
+      // Achievements de Firestore'dan yükle
+      if (d.achievements) {
+        try { localStorage.setItem(ACH_KEY, JSON.stringify(d.achievements)); } catch(e) {}
+      }
       _updateDropStats(stats);
       setSyncBadge('ok');
       // Profil ekranı açıksa güncelle
@@ -945,6 +960,90 @@ function setSyncBadge(state) {
   b.textContent = state === 'syncing' ? 'senkronize ediliyor...' : 'senkronize';
 }
 
+
+// ─── PROFİL EKRANI FONKSİYONLARI ───
+function openProfileScreen() {
+  const screen = document.getElementById('profile-screen');
+  if (!screen) return;
+  screen.classList.add('open');
+  _renderProfileScreen();
+}
+
+function closeProfileScreen() {
+  const screen = document.getElementById('profile-screen');
+  if (screen) screen.classList.remove('open');
+}
+
+function _renderProfileScreen() {
+  const user = _currentUser;
+  const psAvatar = document.getElementById('ps-avatar');
+  const psName = document.getElementById('ps-display-name');
+  const psEmail = document.getElementById('ps-email-big');
+  if (psAvatar) {
+    if (user && user.photoURL) {
+      psAvatar.innerHTML = '<img src="' + user.photoURL + '" style="width:100%;height:100%;object-fit:cover">';
+    } else {
+      psAvatar.textContent = user ? (user.displayName||'?')[0].toUpperCase() : '?';
+    }
+  }
+  if (psName) psName.textContent = (user && user.displayName) || 'Kullanici';
+  if (psEmail) psEmail.textContent = (user && user.email) || '';
+  _refreshProfileScreen(getDisciplineStats());
+}
+
+function _refreshProfileScreen(stats) {
+  function set(id, v) { var e = document.getElementById(id); if(e) e.textContent = v; }
+  set('ps-best-gate', stats.bestGate > 0 ? stats.bestGate + '. Kapi' : '—');
+  set('ps-cleared', (stats.completedGates||[]).length > 0 ? stats.completedGates.length + ' / 4' : '—');
+  set('ps-sessions', stats.totalSessions || '—');
+  set('ps-correct', stats.totalCorrect || '—');
+  if (stats.lastPlayed) {
+    var d = new Date(stats.lastPlayed);
+    set('ps-last-played', d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}));
+  }
+
+  // Kapı listesi
+  var list = document.getElementById('ps-gate-list');
+  if (list && typeof DISCIPLINE_GATES !== 'undefined') {
+    var completed = stats.completedGates || [];
+    var attempts = stats.gateAttempts || {};
+    list.innerHTML = DISCIPLINE_GATES.map(function(g) {
+      var done = completed.indexOf(g.id) !== -1;
+      var tries = attempts[String(g.id)] || 0;
+      return '<div class="ps-gate-row">'
+        + '<div class="ps-gate-icon" style="filter:drop-shadow(0 0 6px ' + g.theme.gateGlow + ')">' + g.icon + '</div>'
+        + '<div class="ps-gate-info">'
+        + '<div class="ps-gate-name" style="color:' + (done ? g.theme.gateColor : 'rgba(255,255,255,0.4)') + '">' + g.id + '. Kapi — ' + g.gateTitle + '</div>'
+        + '<div class="ps-gate-sub">' + g.name + (tries > 0 ? ' · ' + tries + ' deneme' : '') + '</div>'
+        + '</div>'
+        + '<div class="ps-gate-badge ' + (done ? 'done' : 'locked') + '">' + (done ? '✓ Gecildi' : '🔒 Kilitli') + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  // Rozetler
+  var achGrid = document.getElementById('ps-achievements-grid');
+  if (achGrid && typeof ACHIEVEMENTS !== 'undefined') {
+    var achs = getAchievements();
+    achGrid.innerHTML = ACHIEVEMENTS.map(function(ach) {
+      var unlocked = !!achs[ach.id];
+      var dateStr = unlocked && achs[ach.id].unlockedAt
+        ? new Date(achs[ach.id].unlockedAt).toLocaleDateString('tr-TR') : null;
+      return '<div title="' + ach.name + ': ' + ach.desc + '" style="text-align:center">'
+        + '<div style="width:52px;height:52px;margin:0 auto 5px;border-radius:50%;border:1.5px solid '
+        + (unlocked ? ach.color : 'rgba(255,255,255,0.07)') + ';overflow:hidden;transition:.3s;'
+        + (unlocked ? 'box-shadow:0 0 14px ' + ach.glow + ';' : 'filter:grayscale(1) brightness(0.25);')
+        + '">' + ach.icon + '</div>'
+        + '<div style="font-size:8px;color:' + (unlocked ? ach.color : 'rgba(255,255,255,0.18)') + ';font-weight:' + (unlocked ? '700' : '400') + ';line-height:1.2;word-break:break-word">'
+        + ach.name + '</div>'
+        + (dateStr ? '<div style="font-size:7px;color:rgba(255,255,255,0.18);margin-top:1px">' + dateStr + '</div>' : '')
+        + '</div>';
+    }).join('');
+  }
+
+  _updateDropStats(stats);
+}
+
 function _updateDropStats(s) {
   function set(id, v) { const e = document.getElementById(id); if(e) e.textContent = v; }
   set('pd-best-gate', s.bestGate > 0 ? s.bestGate + '. Kapi' : '-');
@@ -956,6 +1055,223 @@ function _updateDropStats(s) {
 window.addEventListener('load', function() {
   setTimeout(function() { if (!window._currentUser) showAuthOverlay(); }, 1800);
 });
+
+
+
+// ═══════════════════════════════════════════════════════════════
+// ACHİEVEMENT / ROZET SİSTEMİ
+// ═══════════════════════════════════════════════════════════════
+const ACHIEVEMENTS = [
+  {
+    id: 'gate1',
+    name: 'Zihin Kapısı',
+    desc: '1. Kapıyı geç — Karma Sınav',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#1a0f1e" stroke="#c878d8" stroke-width="1.5"/>
+      <ellipse cx="24" cy="20" rx="5" ry="8" fill="#c878d8" opacity="0.9"/>
+      <ellipse cx="17" cy="26" rx="4" ry="6.5" fill="#c878d8" opacity="0.7" transform="rotate(-30 17 26)"/>
+      <ellipse cx="31" cy="26" rx="4" ry="6.5" fill="#c878d8" opacity="0.7" transform="rotate(30 31 26)"/>
+      <ellipse cx="13" cy="34" rx="3" ry="5" fill="#c878d8" opacity="0.5" transform="rotate(-45 13 34)"/>
+      <ellipse cx="35" cy="34" rx="3" ry="5" fill="#c878d8" opacity="0.5" transform="rotate(45 35 34)"/>
+      <circle cx="24" cy="20" r="2" fill="#fff" opacity="0.8"/>
+    </svg>`,
+    color: '#c878d8',
+    glow: 'rgba(200,120,220,0.5)',
+    check: function(stats) { return (stats.completedGates||[]).includes(1); }
+  },
+  {
+    id: 'gate2',
+    name: 'Dil Ustası',
+    desc: '2. Kapıyı geç — TR→EN Çeviri',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#080f0a" stroke="#50b478" stroke-width="1.5"/>
+      <path d="M14 30 Q17 14 24 12 Q31 14 34 30" stroke="#50b478" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M16 22 Q24 26 32 22" stroke="#50b478" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M20 34 Q24 38 28 34" stroke="#50b478" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <line x1="14" y1="34" x2="34" y2="34" stroke="#50b478" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="24" y1="12" x2="24" y2="34" stroke="#50b478" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    color: '#50b478',
+    glow: 'rgba(80,180,120,0.5)',
+    check: function(stats) { return (stats.completedGates||[]).includes(2); }
+  },
+  {
+    id: 'gate3',
+    name: 'Gramer Gurusu',
+    desc: '3. Kapıyı geç — Grammar Sınavı',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#040d06" stroke="#1e9646" stroke-width="1.5"/>
+      <path d="M24 10 L24 22 M20 14 L24 10 L28 14" stroke="#1e9646" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M24 22 L16 32 M24 22 L32 32" stroke="#1e9646" stroke-width="2" stroke-linecap="round"/>
+      <path d="M14 36 L16 32 L20 36" stroke="#1e9646" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M28 36 L32 32 L36 36" stroke="#1e9646" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="24" cy="22" r="2.5" fill="#1e9646"/>
+    </svg>`,
+    color: '#1e9646',
+    glow: 'rgba(30,150,70,0.5)',
+    check: function(stats) { return (stats.completedGates||[]).includes(3); }
+  },
+  {
+    id: 'gate4',
+    name: 'Güç Ustası',
+    desc: '4. Kapıyı geç — Cümle Tamamlama',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#020a02" stroke="#00e650" stroke-width="1.5"/>
+      <path d="M27 10 L18 26 L24 26 L21 38 L32 20 L26 20 Z" fill="#00e650" stroke="#00e650" stroke-width="0.5" stroke-linejoin="round"/>
+    </svg>`,
+    color: '#00e650',
+    glow: 'rgba(0,230,80,0.6)',
+    check: function(stats) { return (stats.completedGates||[]).includes(4); }
+  },
+  {
+    id: 'might_guy',
+    name: 'Might Guy Ruhu',
+    desc: 'Disiplin Modunu tüm kapılarla tamamla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#0a0608" stroke="#ff6020" stroke-width="1.5"/>
+      <path d="M24 8 L26 18 L36 16 L28 24 L34 34 L24 28 L14 34 L20 24 L12 16 L22 18 Z" fill="#ff6020" stroke="#ffaa40" stroke-width="0.8" stroke-linejoin="round"/>
+      <path d="M24 14 L25.4 19.4 L31 18.3 L26.8 22 L29.4 27.4 L24 24.4 L18.6 27.4 L21.2 22 L17 18.3 L22.6 19.4 Z" fill="#ffcc60" opacity="0.7"/>
+    </svg>`,
+    color: '#ff6020',
+    glow: 'rgba(255,100,30,0.65)',
+    check: function(stats) { return (stats.completedGates||[]).length >= 4; }
+  },
+  {
+    id: 'streak5',
+    name: 'Seri Avcısı',
+    desc: '5 soruyu art arda doğru cevapla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#0f0804" stroke="#ff8030" stroke-width="1.5"/>
+      <path d="M22 10 Q26 16 22 20 Q28 16 26 24 Q30 18 28 28 Q32 22 28 32 Q24 36 20 38 Q26 32 22 28 Q20 34 16 36 Q20 28 18 24 Q16 30 14 28 Q18 22 20 18 Q16 22 16 16 Q20 14 22 10 Z" fill="#ff8030" stroke="#ffaa60" stroke-width="0.5"/>
+    </svg>`,
+    color: '#ff8030',
+    glow: 'rgba(255,130,50,0.5)',
+    check: function(stats) { return (stats.bestStreak||0) >= 5; }
+  },
+  {
+    id: 'vocab_done',
+    name: 'Kelime Avcısı',
+    desc: 'Vocabulary Quiz testini tamamla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#080c14" stroke="#378add" stroke-width="1.5"/>
+      <rect x="14" y="12" width="20" height="26" rx="2" fill="none" stroke="#378add" stroke-width="1.5"/>
+      <line x1="18" y1="19" x2="30" y2="19" stroke="#378add" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="18" y1="24" x2="30" y2="24" stroke="#378add" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="18" y1="29" x2="25" y2="29" stroke="#378add" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M17 13 C17 11 19 10 19 12" stroke="#378add" stroke-width="1.2" fill="none"/>
+      <path d="M22 13 C22 11 24 10 24 12" stroke="#378add" stroke-width="1.2" fill="none"/>
+      <path d="M27 13 C27 11 29 10 29 12" stroke="#378add" stroke-width="1.2" fill="none"/>
+    </svg>`,
+    color: '#378add',
+    glow: 'rgba(55,138,221,0.5)',
+    check: function(stats) { return (stats.quizComplete||{}).vocab === true; }
+  },
+  {
+    id: 'grammar_done',
+    name: 'Dedektif',
+    desc: 'Grammar Testini tamamla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#0c0e12" stroke="#9090cc" stroke-width="1.5"/>
+      <circle cx="21" cy="21" r="7" fill="none" stroke="#9090cc" stroke-width="2"/>
+      <line x1="26.5" y1="26.5" x2="34" y2="34" stroke="#9090cc" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="19" cy="19" r="2" fill="#9090cc" opacity="0.6"/>
+    </svg>`,
+    color: '#9090cc',
+    glow: 'rgba(144,144,204,0.5)',
+    check: function(stats) { return (stats.quizComplete||{}).grammar === true; }
+  },
+  {
+    id: 'translate_done',
+    name: 'Çevirmen',
+    desc: 'TR→EN testini tamamla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#04100c" stroke="#50b478" stroke-width="1.5"/>
+      <text x="13" y="22" font-size="10" fill="#50b478" font-weight="bold" font-family="monospace">TR</text>
+      <path d="M20 24 L28 24" stroke="#50b478" stroke-width="1.5" stroke-linecap="round" marker-end="url(#ach-arrow)"/>
+      <text x="29" y="32" font-size="10" fill="#50b478" font-weight="bold" font-family="monospace">EN</text>
+      <defs><marker id="ach-arrow" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto"><path d="M0 0 L4 2 L0 4 Z" fill="#50b478"/></marker></defs>
+    </svg>`,
+    color: '#50b478',
+    glow: 'rgba(80,180,120,0.5)',
+    check: function(stats) { return (stats.quizComplete||{}).translate === true; }
+  },
+  {
+    id: 'vocab100_done',
+    name: 'Yüzlük',
+    desc: '100 Kelime Sınavını tamamla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#0a0a06" stroke="#c8b840" stroke-width="1.5"/>
+      <text x="24" y="29" font-size="14" fill="#c8b840" font-weight="bold" font-family="monospace" text-anchor="middle">100</text>
+      <path d="M14 34 L24 10 L34 34" stroke="#c8b840" stroke-width="1" fill="none" opacity="0.4"/>
+    </svg>`,
+    color: '#c8b840',
+    glow: 'rgba(200,184,60,0.5)',
+    check: function(stats) { return (stats.quizComplete||{}).vocab100 === true; }
+  },
+];
+
+const ACH_KEY = 'gramlab_achievements';
+
+function getAchievements() {
+  try { return JSON.parse(localStorage.getItem(ACH_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+
+function saveAchievements(achs) {
+  try { localStorage.setItem(ACH_KEY, JSON.stringify(achs)); } catch(e) {}
+  // Firestore'a da yaz
+  if (_currentUser && window._fbDoc) {
+    const ref = window._fbDoc(window._fbDb, 'users', _currentUser.uid);
+    window._fbSetDoc(ref, { achievements: achs }, { merge: true }).catch(()=>{});
+  }
+}
+
+function checkAndUnlockAchievements() {
+  const stats = getDisciplineStats();
+  const achs = getAchievements();
+  const newlyUnlocked = [];
+
+  ACHIEVEMENTS.forEach(function(ach) {
+    if (!achs[ach.id] && ach.check(stats)) {
+      achs[ach.id] = { unlockedAt: new Date().toISOString() };
+      newlyUnlocked.push(ach);
+    }
+  });
+
+  if (newlyUnlocked.length > 0) {
+    saveAchievements(achs);
+    // Rozet bildirimi göster — sırayla
+    newlyUnlocked.forEach(function(ach, i) {
+      setTimeout(function() { showAchievementToast(ach); }, i * 2500);
+    });
+  }
+  return achs;
+}
+
+function showAchievementToast(ach) {
+  // Mevcut toast'u genişlet veya özel bir tane göster
+  const existing = document.getElementById('ach-toast');
+  if (existing) existing.remove();
+
+  const div = document.createElement('div');
+  div.id = 'ach-toast';
+  div.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(145deg,#1a0f1e,#221428);border:1.5px solid ' + ach.color + ';border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:12px;z-index:9999;box-shadow:0 8px 32px ' + ach.glow + ';opacity:0;transition:all .4s ease;max-width:300px;';
+  div.innerHTML = '<div style="width:40px;height:40px;flex-shrink:0">' + ach.icon + '</div>'
+    + '<div><div style="font-size:10px;font-weight:700;color:' + ach.color + ';text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">🏅 Rozet Kazandın!</div>'
+    + '<div style="font-size:13px;font-weight:800;color:#e0d0e8">' + ach.name + '</div>'
+    + '<div style="font-size:10.5px;color:rgba(255,255,255,0.4);margin-top:1px">' + ach.desc + '</div></div>';
+
+  document.body.appendChild(div);
+  setTimeout(function() {
+    div.style.opacity = '1';
+    div.style.transform = 'translateX(-50%) translateY(0)';
+  }, 50);
+  setTimeout(function() {
+    div.style.opacity = '0';
+    div.style.transform = 'translateX(-50%) translateY(20px)';
+    setTimeout(function() { if (div.parentNode) div.remove(); }, 400);
+  }, 3500);
+}
 
 
 const MIGHT_GUY_SVG = ``;const LETTERS = ['A','B','C','D'];
@@ -1919,6 +2235,18 @@ function showToast(msg, type) {
 
 function showResults() {
   checkAndMarkUnits();
+  // Quiz tamamlandı — hangi test türü tamamlandı kaydet
+  const stats = getDisciplineStats();
+  if (!stats.quizComplete) stats.quizComplete = {};
+  if (selectedTestType === 'vocab')    stats.quizComplete.vocab    = true;
+  if (selectedTestType === 'grammar')  stats.quizComplete.grammar  = true;
+  if (selectedTestType === 'translate')stats.quizComplete.translate = true;
+  if (selectedTestType === 'vocab100') stats.quizComplete.vocab100 = true;
+  if (selectedTestType === 'mixed')    stats.quizComplete.mixed    = true;
+  // bestStreak kaydet
+  if (bestStreak > (stats.bestStreak||0)) stats.bestStreak = bestStreak;
+  saveDisciplineStats(stats);
+  setTimeout(checkAndUnlockAchievements, 500);
   const total = activeQuestions.length;
   const pct = Math.round((score / total) * 100);
   const wrong = total - score;
@@ -2788,6 +3116,7 @@ function showGateClear(gateIdx) {
   }).length;
   const attempts = disciplineGateAttempts[gateIdx] || 0;
   recordGateClear(gateIdx, partScore, gate.questions);
+  setTimeout(checkAndUnlockAchievements, 500);
   const container = document.getElementById('q-container');
 
   container.innerHTML = `<div style="text-align:center;padding:24px 0">
