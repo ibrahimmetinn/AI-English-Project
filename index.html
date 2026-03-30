@@ -415,6 +415,27 @@ body.discipline-theme #results-screen {
 .dbg-log-line{font-size:10px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.5}
 .dbg-log-line:last-child{border-bottom:none}
 .dbg-ts{color:rgba(255,255,255,0.2);margin-right:6px}
+
+/* ── Leaderboard ── */
+.lb-wrap{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.lb-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.06);font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:.08em}
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,0.04);transition:.15s}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:rgba(255,255,255,0.03)}
+.lb-row.me{background:rgba(200,130,220,0.07);border-left:2px solid #c878d8}
+.lb-rank{font-size:12px;font-weight:800;min-width:24px;text-align:center}
+.lb-rank.gold{color:#f0c040}
+.lb-rank.silver{color:#b0b8c8}
+.lb-rank.bronze{color:#c08050}
+.lb-rank.other{color:rgba(255,255,255,0.25)}
+.lb-avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;background:rgba(200,130,220,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#c878d8}
+.lb-name{flex:1;font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-gate{font-size:11px;font-weight:700;min-width:60px;text-align:center}
+.lb-score{font-size:11px;color:rgba(255,255,255,0.35);min-width:40px;text-align:right}
+.lb-loading{text-align:center;padding:20px;font-size:12px;color:rgba(255,255,255,0.3)}
+.lb-tab-row{display:flex;gap:6px;margin-bottom:10px}
+.lb-tab{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:7px;font-family:'Roboto',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);cursor:pointer;transition:.15s;text-align:center}
+.lb-tab.active{background:rgba(200,130,220,0.12);border-color:rgba(200,130,220,0.3);color:#c878d8}
 </style>
 
 <!-- Firebase SDK -->
@@ -425,7 +446,7 @@ body.discipline-theme #results-screen {
     signInWithPopup, signInWithRedirect, getRedirectResult,
     signOut, onAuthStateChanged
   } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-  import { getFirestore, doc, getDoc, setDoc, serverTimestamp }
+  import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, orderBy, limit }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const firebaseConfig = {
@@ -454,6 +475,11 @@ body.discipline-theme #results-screen {
 
   import { onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
   window._fbOnSnapshot = onSnapshot;
+  window._fbCollection = collection;
+  window._fbGetDocs = getDocs;
+  window._fbQuery = query;
+  window._fbOrderBy = orderBy;
+  window._fbLimit = limit;
 
   // Redirect sonucunu kontrol et (sayfa yenilendikten sonra)
   getRedirectResult(auth).then(result => {
@@ -1154,14 +1180,37 @@ async function saveStatsToFirestore(uid, stats) {
     await window._fbSetDoc(ref, Object.assign({}, stats, {
       lastPlayed: new Date(),
       displayName: _currentUser ? (_currentUser.displayName || '') : '',
+      photoURL: _currentUser ? (_currentUser.photoURL || '') : '',
       email: _currentUser ? (_currentUser.email || '') : '',
       achievements: achs,
       quizComplete: stats.quizComplete || {},
       bestStreak: stats.bestStreak || 0,
     }), { merge: true });
+    // Leaderboard'u da guncelle
+    await _updateLeaderboard(uid, stats, achs);
   } catch(e) {
-    // Firestore yoksa veya hata varsa sessizce geç — UI'ı bozma
-    console.warn('Firestore write failed (Firestore kurulu degil olabilir):', e.code, e.message);
+    console.warn('Firestore write failed:', e.code, e.message);
+  }
+}
+
+async function _updateLeaderboard(uid, stats, achs) {
+  if (!window._fbDoc || !window._fbSetDoc) return;
+  try {
+    var lbRef = window._fbDoc(window._fbDb, 'leaderboard', uid);
+    await window._fbSetDoc(lbRef, {
+      uid: uid,
+      displayName: _currentUser ? (_currentUser.displayName || 'Anonim') : 'Anonim',
+      photoURL: _currentUser ? (_currentUser.photoURL || '') : '',
+      bestGate: stats.bestGate || 0,
+      completedGates: (stats.completedGates || []).length,
+      totalCorrect: stats.totalCorrect || 0,
+      totalSessions: stats.totalSessions || 0,
+      bestStreak: stats.bestStreak || 0,
+      achievementCount: achs ? Object.keys(achs).length : 0,
+      lastPlayed: new Date(),
+    }, { merge: true });
+  } catch(e) {
+    console.warn('Leaderboard write failed:', e.message);
   }
 }
 
@@ -2814,6 +2863,123 @@ function buildGatePool(gateIdx) {
   return [...gq,...vq,...tq].sort(()=>Math.random()-0.5).slice(0,20);
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// LEADERBOARD
+// ═══════════════════════════════════════════════════════════════
+var _lbCache = null;
+var _lbLastFetch = 0;
+var _lbTab = 'gate'; // 'gate' | 'correct' | 'streak'
+
+async function fetchLeaderboard(forceRefresh) {
+  const now = Date.now();
+  if (!forceRefresh && _lbCache && (now - _lbLastFetch) < 60000) return _lbCache;
+  if (!window._fbCollection || !window._fbGetDocs || !window._fbQuery || !window._fbOrderBy) return null;
+  try {
+    var col = window._fbCollection(window._fbDb, 'leaderboard');
+    var q = window._fbQuery(col, window._fbOrderBy('bestGate', 'desc'), window._fbLimit(50));
+    var snap = await window._fbGetDocs(q);
+    var rows = [];
+    snap.forEach(function(doc) { rows.push(doc.data()); });
+    _lbCache = rows;
+    _lbLastFetch = now;
+    return rows;
+  } catch(e) {
+    console.warn('Leaderboard fetch failed:', e.message);
+    return null;
+  }
+}
+
+function _lbGateColor(gate) {
+  var colors = ['','#c878d8','#50b478','#1e9646','#00e650'];
+  return colors[gate] || 'rgba(255,255,255,0.3)';
+}
+function _lbGateIcon(gate) {
+  return ['—','🌸','🌿','🌲','⚡'][gate] || '—';
+}
+
+function renderLeaderboard(rows, containerId) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (!rows || rows.length === 0) {
+    el.innerHTML = '<div class="lb-loading">Henuz kayit yok</div>';
+    return;
+  }
+
+  // Sıralama — aktif tab'a göre
+  var sorted = rows.slice().sort(function(a, b) {
+    if (_lbTab === 'correct') return (b.totalCorrect||0) - (a.totalCorrect||0);
+    if (_lbTab === 'streak')  return (b.bestStreak||0)   - (a.bestStreak||0);
+    // gate: bestGate desc, sonra totalCorrect desc
+    if ((b.bestGate||0) !== (a.bestGate||0)) return (b.bestGate||0) - (a.bestGate||0);
+    return (b.totalCorrect||0) - (a.totalCorrect||0);
+  });
+
+  var myUid = _currentUser ? _currentUser.uid : null;
+
+  var html = '<div class="lb-header"><span>#</span><span style="flex:1">Kullanici</span>'
+    + (_lbTab === 'gate'    ? '<span style="min-width:60px;text-align:center">Kapi</span><span style="min-width:40px;text-align:right">Dogru</span>' : '')
+    + (_lbTab === 'correct' ? '<span style="min-width:60px;text-align:center">Dogru</span><span style="min-width:40px;text-align:right">Kapi</span>' : '')
+    + (_lbTab === 'streak'  ? '<span style="min-width:60px;text-align:center">Streak</span><span style="min-width:40px;text-align:right">Dogru</span>' : '')
+    + '</div>';
+
+  sorted.forEach(function(row, i) {
+    var rank = i + 1;
+    var rankCls = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : 'other';
+    var rankTxt = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+    var isMe = myUid && row.uid === myUid;
+    var name = (row.displayName || 'Anonim').split(' ')[0]; // sadece isim
+    var avatarHtml = row.photoURL
+      ? '<img src="' + row.photoURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'
+      : name[0].toUpperCase();
+    var gate = row.bestGate || 0;
+    var gateHtml = gate > 0
+      ? '<span style="color:' + _lbGateColor(gate) + ';font-weight:800">' + _lbGateIcon(gate) + ' ' + gate + '. Kapi</span>'
+      : '<span style="color:rgba(255,255,255,0.2)">—</span>';
+
+    var col1, col2;
+    if (_lbTab === 'gate') {
+      col1 = gateHtml;
+      col2 = '<span style="color:rgba(255,255,255,0.4)">' + (row.totalCorrect||0) + '</span>';
+    } else if (_lbTab === 'correct') {
+      col1 = '<span style="color:#50c878;font-weight:800">' + (row.totalCorrect||0) + '</span>';
+      col2 = gateHtml;
+    } else {
+      col1 = '<span style="color:#ff8030;font-weight:800">🔥 ' + (row.bestStreak||0) + '</span>';
+      col2 = '<span style="color:rgba(255,255,255,0.4)">' + (row.totalCorrect||0) + '</span>';
+    }
+
+    html += '<div class="lb-row' + (isMe ? ' me' : '') + '">'
+      + '<div class="lb-rank ' + rankCls + '">' + rankTxt + '</div>'
+      + '<div class="lb-avatar">' + avatarHtml + '</div>'
+      + '<div class="lb-name">' + name + (isMe ? ' <span style="font-size:9px;color:#c878d8">(sen)</span>' : '') + '</div>'
+      + '<div class="lb-gate">' + col1 + '</div>'
+      + '<div class="lb-score">' + col2 + '</div>'
+      + '</div>';
+  });
+
+  el.innerHTML = html;
+}
+
+async function openLeaderboard(containerId, refresh) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '<div class="lb-loading">Yukleniyorr...</div>';
+  var rows = await fetchLeaderboard(refresh);
+  renderLeaderboard(rows, containerId);
+}
+
+function switchLbTab(tab, containerId) {
+  _lbTab = tab;
+  ['lb-tab-gate','lb-tab-correct','lb-tab-streak'].forEach(function(id) {
+    var e = document.getElementById(id);
+    if (e) e.classList.toggle('active', id === 'lb-tab-' + tab);
+  });
+  if (_lbCache) renderLeaderboard(_lbCache, containerId);
+  else openLeaderboard(containerId, false);
+}
+
+
 function showDisciplineLobby() {
   document.getElementById('onboard').style.display = 'none';
   document.getElementById('quiz-screen').style.display = 'none';
@@ -2881,26 +3047,51 @@ function showDisciplineLobby() {
   }).join('');
 
   document.getElementById('results-screen').innerHTML = `
-    <div style="text-align:center;padding:20px 0">
-      <div style="font-size:2.2rem;margin-bottom:8px;filter:drop-shadow(0 0 14px rgba(255,140,0,0.8))">⚔️</div>
-      <div style="font-size:1.5rem;font-weight:800;letter-spacing:.06em;background:linear-gradient(135deg,#c8c8d8,#e8e8f0,#a0a0b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">DİSİPLİN MODU</div>
-      <div style="font-size:11px;color:#6060a0;margin-bottom:20px">4 Kapı · Her kapıda farklı tema ve zorluk</div>
+    <div style="padding:20px 0">
+      <!-- Başlık -->
+      <div style="text-align:center;margin-bottom:14px">
+        <div style="font-size:2rem;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,140,0,0.8))">⚔️</div>
+        <div style="font-size:1.4rem;font-weight:800;letter-spacing:.06em;background:linear-gradient(135deg,#c8c8d8,#e8e8f0,#a0a0b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">DİSİPLİN MODU</div>
+        <div style="font-size:11px;color:#6060a0">4 Kapı · Her kapıda farklı tema ve zorluk</div>
+      </div>
 
       ${_statsHtml}
 
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;text-align:left">
+      <!-- Kapılar -->
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;text-align:left">
         ${gateCards}
       </div>
 
-      <div style="background:linear-gradient(145deg,#1e1616,#261a1a);border:1px solid rgba(200,80,80,0.22);border-radius:11px;padding:11px 16px;display:flex;align-items:flex-start;gap:10px;text-align:left;margin-bottom:20px">
-        <div style="font-size:18px;flex-shrink:0">⚠️</div>
-        <div style="font-size:10.5px;color:#907070;line-height:1.5">Yanlış cevapta bölüm baştan başlar. Tüm soruları sıfır hatayla geçmen gerekir.</div>
+      <!-- Uyarı -->
+      <div style="background:linear-gradient(145deg,#1e1616,#261a1a);border:1px solid rgba(200,80,80,0.22);border-radius:10px;padding:9px 13px;display:flex;align-items:flex-start;gap:8px;text-align:left;margin-bottom:12px">
+        <div style="font-size:15px;flex-shrink:0">⚠️</div>
+        <div style="font-size:10px;color:#907070;line-height:1.5">Yanlış cevapta bölüm baştan başlar. Tüm soruları sıfır hatayla geçmen gerekir.</div>
       </div>
 
-      <button onclick="startDiscipline()" style="width:100%;background:linear-gradient(145deg,#2a2a30,#38383e,#2a2a30);border:1px solid rgba(180,180,210,0.28);border-radius:13px;padding:15px;font-family:'Roboto',sans-serif;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.08em;color:#e0e0f0;box-shadow:0 4px 20px rgba(0,0,0,0.4)">
+      <!-- Başla -->
+      <button onclick="startDiscipline()" style="width:100%;background:linear-gradient(145deg,#2a2a30,#38383e);border:1px solid rgba(180,180,210,0.28);border-radius:12px;padding:14px;font-family:'Roboto',sans-serif;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.08em;color:#e0e0f0;box-shadow:0 4px 20px rgba(0,0,0,0.4);margin-bottom:20px">
         ⚔️ &nbsp; MEYDAN OKUMAYA BAŞLA
       </button>
+
+      <!-- Leaderboard -->
+      <div style="text-align:left">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.07em">🏆 Liderlik Tablosu</div>
+          <button onclick="openLeaderboard('lb-container', true)" style="background:none;border:none;font-size:10px;color:#c878d8;cursor:pointer;font-family:'Roboto',sans-serif">↺ Yenile</button>
+        </div>
+        <div class="lb-tab-row">
+          <button id="lb-tab-gate" class="lb-tab active" onclick="switchLbTab('gate','lb-container')">🚪 Kapı</button>
+          <button id="lb-tab-correct" class="lb-tab" onclick="switchLbTab('correct','lb-container')">✓ Doğru</button>
+          <button id="lb-tab-streak" class="lb-tab" onclick="switchLbTab('streak','lb-container')">🔥 Streak</button>
+        </div>
+        <div class="lb-wrap">
+          <div id="lb-container"><div class="lb-loading">Yükleniyor...</div></div>
+        </div>
+      </div>
     </div>`;
+
+  // Leaderboard yükle (kısa gecikmeyle DOM hazır olsun)
+  setTimeout(function() { openLeaderboard('lb-container', false); }, 300);
 }
 
 let disciplineType = 'mixed';
