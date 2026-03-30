@@ -797,6 +797,164 @@ body.discipline-theme #results-screen {
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════════════════════════════════════════════════════
+// SYNC DEBUG PANEL
+// ═══════════════════════════════════════════════════════════════
+var _debugOpen = false;
+
+function toggleDebugPanel() {
+  _debugOpen = !_debugOpen;
+  var box = document.getElementById('sync-debug-box');
+  if (box) {
+    box.classList.toggle('open', _debugOpen);
+    if (_debugOpen) {
+      box.style.position = 'fixed';
+      box.style.top = '56px';
+      box.style.right = '12px';
+      box.style.zIndex = '9001';
+    }
+  }
+  var panel = document.getElementById('sync-panel');
+  if (panel) panel.style.display = _debugOpen ? 'block' : 'none';
+  if (_debugOpen) refreshDebugPanel();
+}
+
+function dbgLog(msg, type) {
+  var log = document.getElementById('dbg-log');
+  if (!log) return;
+  var ts = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var cls = type === 'ok' ? 'dbg-ok' : type === 'warn' ? 'dbg-warn' : type === 'err' ? 'dbg-err' : '';
+  var line = document.createElement('div');
+  line.className = 'dbg-log-line';
+  line.innerHTML = '<span class="dbg-ts">' + ts + '</span><span class="' + cls + '">' + msg + '</span>';
+  log.insertBefore(line, log.firstChild);
+  while (log.children.length > 20) log.removeChild(log.lastChild);
+}
+
+function _fmtStats(stats) {
+  if (!stats) return '<span class="dbg-err">null</span>';
+  var lines = [
+    'bestGate: <span class="dbg-ok">' + (stats.bestGate||0) + '</span>',
+    'completedGates: <span class="dbg-ok">' + JSON.stringify(stats.completedGates||[]) + '</span>',
+    'totalSessions: <span class="dbg-ok">' + (stats.totalSessions||0) + '</span>',
+    'totalCorrect: <span class="dbg-ok">' + (stats.totalCorrect||0) + '</span>',
+    'bestStreak: <span class="dbg-ok">' + (stats.bestStreak||0) + '</span>',
+    'quizComplete: <span class="dbg-ok">' + JSON.stringify(stats.quizComplete||{}) + '</span>',
+  ];
+  if (stats.lastPlayed) lines.push('lastPlayed: <span class="dbg-warn">' + new Date(stats.lastPlayed).toLocaleString('tr-TR') + '</span>');
+  return lines.join('<br>');
+}
+
+function _fmtAch(achs) {
+  if (!achs || Object.keys(achs).length === 0) return '<span class="dbg-warn">Henuz rozet yok</span>';
+  return Object.entries(achs).map(function(e) {
+    var ach = ACHIEVEMENTS.find(function(a){ return a.id === e[0]; });
+    var date = e[1].unlockedAt ? new Date(e[1].unlockedAt).toLocaleDateString('tr-TR') : '';
+    return '<span class="dbg-ok">&#10003; ' + (ach ? ach.name : e[0]) + '</span> <span class="dbg-ts">' + date + '</span>';
+  }).join('<br>');
+}
+
+function refreshDebugPanel() {
+  var set = function(id, html) { var e = document.getElementById(id); if(e) e.innerHTML = html; };
+
+  // Kullanici
+  if (_currentUser) {
+    set('dbg-user', '<span class="dbg-ok">&#10003; Giris yapildi</span><br>'
+      + (_currentUser.displayName||'?') + '<br>' + (_currentUser.email||'')
+      + '<br><span class="dbg-ts">uid: ' + _currentUser.uid + '</span>');
+  } else {
+    set('dbg-user', '<span class="dbg-warn">Giris yapilmamis</span>');
+  }
+
+  // localStorage
+  set('dbg-local', _fmtStats(getDisciplineStats()));
+  set('dbg-ach-local', _fmtAch(getAchievements()));
+
+  // Dots
+  var dot = document.getElementById('sync-dot');
+  if (dot) dot.style.background = _currentUser ? '#50c878' : '#c8b840';
+  var dotTop = document.getElementById('sync-dot-top');
+  if (dotTop) dotTop.style.background = _currentUser ? '#50c878' : '#c8b840';
+
+  var status = document.getElementById('dbg-status');
+  if (status) {
+    status.textContent = _currentUser ? 'Bagli' : 'Giris yok';
+    status.className = _currentUser ? 'dbg-ok' : 'dbg-warn';
+  }
+}
+
+async function manualSync() {
+  dbgLog('Firestore dan cekiliyor...', 'warn');
+  if (!_currentUser) { dbgLog('Giris yapilmamis!', 'err'); return; }
+  if (!window._fbDoc || !window._fbGetDoc) { dbgLog('Firebase SDK yok', 'err'); return; }
+
+  try {
+    var ref = window._fbDoc(window._fbDb, 'users', _currentUser.uid);
+    dbgLog('users/' + _currentUser.uid + ' sorgulanıyor...', '');
+    var snap = await window._fbGetDoc(ref);
+
+    if (!snap.exists()) {
+      dbgLog('Firestore da kayit yok!', 'warn');
+      document.getElementById('dbg-firestore').innerHTML = '<span class="dbg-warn">Firestore da kayit bulunamadi</span>';
+      document.getElementById('dbg-ach-fs').innerHTML = '<span class="dbg-warn">Kayit yok</span>';
+      return;
+    }
+
+    var d = snap.data();
+    dbgLog('Veri alindi ✓', 'ok');
+
+    var fsStats = {
+      bestGate: d.bestGate, completedGates: d.completedGates,
+      totalSessions: d.totalSessions, totalCorrect: d.totalCorrect,
+      bestStreak: d.bestStreak, quizComplete: d.quizComplete,
+      lastPlayed: d.lastPlayed && d.lastPlayed.toDate ? d.lastPlayed.toDate().toISOString() : null,
+    };
+    document.getElementById('dbg-firestore').innerHTML = _fmtStats(fsStats);
+    document.getElementById('dbg-ach-fs').innerHTML = _fmtAch(d.achievements||{});
+
+    // Merge ve kaydet
+    var local = getDisciplineStats();
+    var merged = _mergeFirestoreLocal(d, local);
+    try { localStorage.setItem(_userKey('stats'), JSON.stringify(merged)); } catch(e2) {}
+    if (d.achievements) {
+      try { localStorage.setItem(_userKey('ach'), JSON.stringify(d.achievements)); } catch(e2) {}
+    }
+    _updateDropStats(merged);
+    if (typeof _refreshProfileScreen === 'function') _refreshProfileScreen(merged);
+    dbgLog('Merge + localStorage guncellendi ✓', 'ok');
+    setTimeout(checkAndUnlockAchievements, 300);
+    refreshDebugPanel();
+
+  } catch(e) {
+    dbgLog('HATA: ' + e.message, 'err');
+    document.getElementById('dbg-firestore').innerHTML = '<span class="dbg-err">Hata: ' + e.message + '</span>';
+  }
+}
+
+async function manualPush() {
+  if (!_currentUser) { dbgLog('Giris yapilmamis!', 'err'); return; }
+  dbgLog('Firestore a gonderiliyor...', 'warn');
+  try {
+    var stats = getDisciplineStats();
+    await saveStatsToFirestore(_currentUser.uid, stats);
+    dbgLog('Firestore a yazildi ✓', 'ok');
+    refreshDebugPanel();
+  } catch(e) {
+    dbgLog('HATA: ' + e.message, 'err');
+  }
+}
+
+// Auth degisince dot guncelle
+var _origOnAuthChangePre = window.onAuthChange;
+window.onAuthChange = function(user) {
+  if (typeof _origOnAuthChangePre === 'function') _origOnAuthChangePre(user);
+  dbgLog(user ? ('Giris: ' + (user.displayName||user.uid)) : 'Cikis yapildi', user ? 'ok' : 'warn');
+  var dot = document.getElementById('sync-dot-top');
+  if (dot) dot.style.background = user ? '#50c878' : '#c8b840';
+  if (_debugOpen) setTimeout(refreshDebugPanel, 500);
+};
+
+
 
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE AUTH & FIRESTORE
