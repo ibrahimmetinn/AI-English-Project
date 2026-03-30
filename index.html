@@ -897,10 +897,17 @@ async function loadUserStatsFromFirestore(uid) {
       merged = local;
       await saveStatsToFirestore(uid, merged);
     }
-    // localStorage güncelle ama Firestore'a tekrar yazma (döngü olmasın)
+    // localStorage güncelle
     try { localStorage.setItem(_userKey('stats'), JSON.stringify(merged)); } catch(e) {}
+    // Achievements de Firestore'dan yükle
+    var fsData = snap.exists() ? snap.data() : {};
+    if (fsData.achievements) {
+      try { localStorage.setItem(_userKey('ach'), JSON.stringify(fsData.achievements)); } catch(e) {}
+    }
     _updateDropStats(merged);
     setSyncBadge('ok');
+    // Profil açıksa güncelle
+    if (typeof _refreshProfileScreen === 'function') _refreshProfileScreen(merged);
   } catch(e) { console.error('Firestore initial load:', e); setSyncBadge('ok'); }
 
   // Gerçek zamanlı dinle — başka cihazda değişince otomatik güncellenir
@@ -933,6 +940,8 @@ async function loadUserStatsFromFirestore(uid) {
 }
 
 function _mergeFirestoreLocal(d, local) {
+  // quizComplete — ikisini de birleştir
+  var qc = Object.assign({}, local.quizComplete||{}, d.quizComplete||{});
   return {
     bestGate: Math.max(d.bestGate||0, local.bestGate||0),
     completedGates: Array.from(new Set([].concat(d.completedGates||[]).concat(local.completedGates||[]))),
@@ -941,6 +950,8 @@ function _mergeFirestoreLocal(d, local) {
     totalSessions: Math.max(d.totalSessions||0, local.totalSessions||0),
     totalCorrect: Math.max(d.totalCorrect||0, local.totalCorrect||0),
     lastPlayed: (d.lastPlayed && d.lastPlayed.toDate) ? d.lastPlayed.toDate().toISOString() : local.lastPlayed,
+    quizComplete: qc,
+    bestStreak: Math.max(d.bestStreak||0, local.bestStreak||0),
   };
 }
 
@@ -948,10 +959,15 @@ async function saveStatsToFirestore(uid, stats) {
   if (!window._fbDoc || !uid) return;
   try {
     const ref = window._fbDoc(window._fbDb, 'users', uid);
+    // Achievements'ı da ekle
+    var achs = getAchievements();
     await window._fbSetDoc(ref, Object.assign({}, stats, {
       lastPlayed: new Date(),
       displayName: _currentUser ? (_currentUser.displayName || '') : '',
       email: _currentUser ? (_currentUser.email || '') : '',
+      achievements: achs,
+      quizComplete: stats.quizComplete || {},
+      bestStreak: stats.bestStreak || 0,
     }), { merge: true });
   } catch(e) { console.error('Firestore write:', e); }
 }
