@@ -393,6 +393,25 @@ body.discipline-theme #results-screen {
 
 /* Achievement toast */
 #ach-toast { pointer-events: none; }
+
+/* ── Sync Debug Panel ── */
+#sync-panel{position:fixed;bottom:16px;right:16px;z-index:9000;font-family:'Roboto',monospace}
+#sync-toggle-btn{background:linear-gradient(145deg,#1a1228,#221830);border:1.5px solid rgba(200,130,220,0.35);border-radius:10px;color:#c878d8;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;padding:7px 14px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(0,0,0,0.4)}
+#sync-toggle-btn:hover{background:linear-gradient(145deg,#221530,#2a1e3c);border-color:rgba(200,130,220,0.6)}
+#sync-debug-box{display:none;margin-top:8px;background:#0d0a12;border:1.5px solid rgba(200,130,220,0.28);border-radius:12px;padding:14px;width:320px;max-height:420px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
+#sync-debug-box.open{display:block}
+#sync-debug-box .dbg-title{font-size:10px;font-weight:700;color:rgba(200,130,220,0.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+#sync-debug-box .dbg-section{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px;margin-bottom:8px}
+#sync-debug-box .dbg-key{font-size:9.5px;color:rgba(200,130,220,0.5);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+#sync-debug-box .dbg-val{font-size:11px;color:#c0d0c0;word-break:break-all;line-height:1.5}
+#sync-debug-box .dbg-ok{color:#50c878}
+#sync-debug-box .dbg-warn{color:#c8b840}
+#sync-debug-box .dbg-err{color:#c05050}
+#sync-debug-box .dbg-sync-btn{width:100%;background:rgba(200,130,220,0.1);border:1px solid rgba(200,130,220,0.25);color:#c878d8;border-radius:7px;padding:8px;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:.15s;margin-top:4px}
+#sync-debug-box .dbg-sync-btn:hover{background:rgba(200,130,220,0.2)}
+.dbg-log-line{font-size:10px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.5}
+.dbg-log-line:last-child{border-bottom:none}
+.dbg-ts{color:rgba(255,255,255,0.2);margin-right:6px}
 </style>
 
 <!-- Firebase SDK -->
@@ -3647,5 +3666,53 @@ function toggleHintTR(qi) {
 })();
 
 </script>
+
+<!-- Sync Debug Panel -->
+<div id="sync-panel">
+  <button id="sync-toggle-btn" onclick="toggleDebugPanel()">
+    <span id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:#806880;display:inline-block"></span>
+    Senkronize Et
+  </button>
+  <div id="sync-debug-box">
+    <div class="dbg-title">
+      <span>🔄 Firebase Debug</span>
+      <span id="dbg-status" style="font-size:9px">—</span>
+    </div>
+
+    <div class="dbg-section">
+      <div class="dbg-key">Oturum</div>
+      <div class="dbg-val" id="dbg-user">—</div>
+    </div>
+
+    <div class="dbg-section">
+      <div class="dbg-key">localStorage (bu cihaz)</div>
+      <div class="dbg-val" id="dbg-local">—</div>
+    </div>
+
+    <div class="dbg-section">
+      <div class="dbg-key">Firestore (bulut)</div>
+      <div class="dbg-val" id="dbg-firestore">Henüz çekilmedi</div>
+    </div>
+
+    <div class="dbg-section">
+      <div class="dbg-key">Achievements (localStorage)</div>
+      <div class="dbg-val" id="dbg-ach-local">—</div>
+    </div>
+
+    <div class="dbg-section">
+      <div class="dbg-key">Achievements (Firestore)</div>
+      <div class="dbg-val" id="dbg-ach-fs">Henüz çekilmedi</div>
+    </div>
+
+    <div class="dbg-section">
+      <div class="dbg-key">İşlem Logu</div>
+      <div id="dbg-log"></div>
+    </div>
+
+    <button class="dbg-sync-btn" onclick="manualSync()">⟳ Firestore'dan Senkronize Et</button>
+    <button class="dbg-sync-btn" onclick="manualPush()" style="margin-top:6px;border-color:rgba(80,200,120,0.25);color:#50c878">↑ Firestore'a Gönder</button>
+  </div>
+</div>
+
 </body>
 </html>
