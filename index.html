@@ -992,6 +992,8 @@ function toggleProfileDropdown() {
   if (!_currentUser) { showAuthOverlay(); return; }
   dd.classList.toggle('open');
   if (dd.classList.contains('open')) {
+    // Mevcut local istatistikleri hemen göster (Firestore bekleme)
+    try { _updateDropStats(getDisciplineStats()); } catch(e) {}
     setTimeout(function() { document.addEventListener('click', _closeDropOut); }, 10);
   }
 }
@@ -1069,6 +1071,10 @@ async function loadUserStatsFromFirestore(uid) {
   if (_firestoreUnsubscribe) { _firestoreUnsubscribe(); _firestoreUnsubscribe = null; }
 
   setSyncBadge('syncing');
+  if (!window._fbDoc || !window._fbGetDoc) {
+    setSyncBadge('ok');
+    return; // Firebase SDK henüz yüklenmedi
+  }
   const ref = window._fbDoc(window._fbDb, 'users', uid);
 
   // Önce bir kez getir
@@ -1141,10 +1147,9 @@ function _mergeFirestoreLocal(d, local) {
 }
 
 async function saveStatsToFirestore(uid, stats) {
-  if (!window._fbDoc || !uid) return;
+  if (!window._fbDoc || !window._fbSetDoc || !uid) return;
   try {
     const ref = window._fbDoc(window._fbDb, 'users', uid);
-    // Achievements'ı da ekle
     var achs = getAchievements();
     await window._fbSetDoc(ref, Object.assign({}, stats, {
       lastPlayed: new Date(),
@@ -1154,7 +1159,10 @@ async function saveStatsToFirestore(uid, stats) {
       quizComplete: stats.quizComplete || {},
       bestStreak: stats.bestStreak || 0,
     }), { merge: true });
-  } catch(e) { console.error('Firestore write:', e); }
+  } catch(e) {
+    // Firestore yoksa veya hata varsa sessizce geç — UI'ı bozma
+    console.warn('Firestore write failed (Firestore kurulu degil olabilir):', e.code, e.message);
+  }
 }
 
 function _mergeMax(a, b) {
