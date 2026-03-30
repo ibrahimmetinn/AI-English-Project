@@ -858,10 +858,19 @@ function fbSignOut() {
   if (!window._signOut) return;
   if (_firestoreUnsubscribe) { _firestoreUnsubscribe(); _firestoreUnsubscribe = null; }
   window._signOut(window._fbAuth).then(function() {
+    // Mevcut kullanıcının cache'ini temizle (key'ler uid içeriyor, güvenli)
+    // Ama silmiyoruz — sadece _currentUser'ı null yapıyoruz
+    // Bir sonraki giriş kendi key'ini okuyacak
     _currentUser = null;
     updateProfileUI(null);
-    const dd = document.getElementById('profile-dropdown');
+    // Dropdown istatistiklerini sıfırla
+    ['pd-best-gate','pd-cleared','pd-sessions','pd-correct'].forEach(function(id) {
+      var e = document.getElementById(id); if(e) e.textContent = '—';
+    });
+    var dd = document.getElementById('profile-dropdown');
     if (dd) dd.classList.remove('open');
+    var ps = document.getElementById('profile-screen');
+    if (ps) ps.classList.remove('open');
     showToast('Cikis yapildi.', '');
   });
 }
@@ -889,7 +898,7 @@ async function loadUserStatsFromFirestore(uid) {
       await saveStatsToFirestore(uid, merged);
     }
     // localStorage güncelle ama Firestore'a tekrar yazma (döngü olmasın)
-    try { localStorage.setItem(DISC_STATS_KEY, JSON.stringify(merged)); } catch(e) {}
+    try { localStorage.setItem(_userKey('stats'), JSON.stringify(merged)); } catch(e) {}
     _updateDropStats(merged);
     setSyncBadge('ok');
   } catch(e) { console.error('Firestore initial load:', e); setSyncBadge('ok'); }
@@ -910,10 +919,10 @@ async function loadUserStatsFromFirestore(uid) {
         quizComplete: d.quizComplete || {},
         bestStreak: d.bestStreak || 0,
       };
-      try { localStorage.setItem(DISC_STATS_KEY, JSON.stringify(stats)); } catch(e) {}
+      try { localStorage.setItem(_userKey('stats'), JSON.stringify(stats)); } catch(e) {}
       // Achievements de Firestore'dan yükle
       if (d.achievements) {
-        try { localStorage.setItem(ACH_KEY, JSON.stringify(d.achievements)); } catch(e) {}
+        try { localStorage.setItem(_userKey('ach'), JSON.stringify(d.achievements)); } catch(e) {}
       }
       _updateDropStats(stats);
       setSyncBadge('ok');
@@ -1213,16 +1222,20 @@ const ACHIEVEMENTS = [
 const ACH_KEY = 'gramlab_achievements';
 
 function getAchievements() {
-  try { return JSON.parse(localStorage.getItem(ACH_KEY) || '{}'); }
-  catch(e) { return {}; }
+  try {
+    const key = _userKey('ach');
+    return JSON.parse(localStorage.getItem(key) || '{}');
+  } catch(e) { return {}; }
 }
 
 function saveAchievements(achs) {
-  try { localStorage.setItem(ACH_KEY, JSON.stringify(achs)); } catch(e) {}
-  // Firestore'a da yaz
+  try {
+    const key = _userKey('ach');
+    localStorage.setItem(key, JSON.stringify(achs));
+  } catch(e) {}
   if (_currentUser && window._fbDoc) {
     const ref = window._fbDoc(window._fbDb, 'users', _currentUser.uid);
-    window._fbSetDoc(ref, { achievements: achs }, { merge: true }).catch(()=>{});
+    window._fbSetDoc(ref, { achievements: achs }, { merge: true }).catch(function(){});
   }
 }
 
@@ -2692,22 +2705,32 @@ function selectDisciplineType(t) { disciplineType = t; }
 // ═══════════════════════════════════════════════════════════════
 const DISC_STATS_KEY = 'gramlab_discipline_stats';
 
+function _userKey(suffix) {
+  var uid = window._currentUser ? window._currentUser.uid : 'anonymous';
+  return 'gramlab_' + suffix + '_' + uid;
+}
+
 function getDisciplineStats() {
   try {
-    return JSON.parse(localStorage.getItem(DISC_STATS_KEY) || 'null') || {
-      bestGate: 0,          // en yüksek ulaşılan kapı (1-4)
-      completedGates: [],   // tamamlanan kapılar
-      gateAttempts: {},     // kapı → deneme sayısı
-      gateScores: {},       // kapı → en iyi skor
-      totalSessions: 0,     // toplam oturum sayısı
-      totalCorrect: 0,      // toplam doğru
-      lastPlayed: null,     // son oynama tarihi
+    var key = _userKey('stats');
+    return JSON.parse(localStorage.getItem(key) || 'null') || {
+      bestGate: 0, completedGates: [], gateAttempts: {},
+      gateScores: {}, totalSessions: 0, totalCorrect: 0,
+      lastPlayed: null, quizComplete: {}, bestStreak: 0,
     };
-  } catch(e) { return { bestGate:0, completedGates:[], gateAttempts:{}, gateScores:{}, totalSessions:0, totalCorrect:0, lastPlayed:null }; }
+  } catch(e) {
+    return { bestGate:0, completedGates:[], gateAttempts:{}, gateScores:{},
+             totalSessions:0, totalCorrect:0, lastPlayed:null, quizComplete:{}, bestStreak:0 };
+  }
 }
 
 function saveDisciplineStats(stats) {
-  try { localStorage.setItem(DISC_STATS_KEY, JSON.stringify(stats)); } catch(e) {}
+  try { localStorage.setItem(_userKey('stats'), JSON.stringify(stats)); } catch(e) {}
+  // Giriş yapmışsa Firestore'a da yaz
+  if (window._currentUser && window._fbDoc) {
+    saveStatsToFirestore(window._currentUser.uid, stats)
+      .then(function() { _updateDropStats(stats); }).catch(function(){});
+  }
 }
 
 function recordGateAttempt(gateIdx) {
@@ -2738,7 +2761,8 @@ function recordNewSession() {
 }
 
 function resetDisciplineStats() {
-  try { localStorage.removeItem(DISC_STATS_KEY); } catch(e) {}
+  try { localStorage.removeItem(_userKey('stats')); } catch(e) {}
+  try { localStorage.removeItem(_userKey('ach')); } catch(e) {}
 }
 
 function startDiscipline() {
