@@ -396,6 +396,9 @@ body.discipline-theme #results-screen {
 
 /* ── Sync Debug Panel ── */
 #sync-panel{position:fixed;bottom:16px;right:16px;z-index:9000;font-family:'Roboto',monospace}
+@supports not (position:fixed) {
+  #sync-panel{position:sticky;bottom:16px;margin-left:auto;width:fit-content}
+}
 #sync-toggle-btn{background:linear-gradient(145deg,#1a1228,#221830);border:1.5px solid rgba(200,130,220,0.35);border-radius:10px;color:#c878d8;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;padding:7px 14px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(0,0,0,0.4)}
 #sync-toggle-btn:hover{background:linear-gradient(145deg,#221530,#2a1e3c);border-color:rgba(200,130,220,0.6)}
 #sync-debug-box{display:none;margin-top:8px;background:#0d0a12;border:1.5px solid rgba(200,130,220,0.28);border-radius:12px;padding:14px;width:320px;max-height:420px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
@@ -568,6 +571,11 @@ body.discipline-theme #results-screen {
       <button class="btn-back" id="btn-back" onclick="goHome()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
         Back
+      </button>
+      <!-- Sync Debug Butonu -->
+      <button onclick="toggleDebugPanel()" id="topbar-sync-btn" style="background:rgba(200,130,220,0.08);border:1px solid rgba(200,130,220,0.2);border-radius:8px;padding:5px 11px;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;color:#c878d8;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.15s">
+        <span id="sync-dot-top" style="width:6px;height:6px;border-radius:50%;background:#806880;display:inline-block;flex-shrink:0"></span>
+        Sync
       </button>
       <!-- Profil butonu -->
       <div style="position:relative">
@@ -3668,11 +3676,7 @@ function toggleHintTR(qi) {
 </script>
 
 <!-- Sync Debug Panel -->
-<div id="sync-panel">
-  <button id="sync-toggle-btn" onclick="toggleDebugPanel()">
-    <span id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:#806880;display:inline-block"></span>
-    Senkronize Et
-  </button>
+<div id="sync-panel" style="display:none">
   <div id="sync-debug-box">
     <div class="dbg-title">
       <span>🔄 Firebase Debug</span>
