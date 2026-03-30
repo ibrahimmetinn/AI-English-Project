@@ -361,6 +361,35 @@ body.discipline-theme #results-screen {
 /* Sync badge */
 #sync-badge{font-size:9.5px;color:#806880;display:flex;align-items:center;gap:4px}
 #sync-badge.syncing{color:#c878d8}
+
+/* ── Profil Sayfası ── */
+#profile-screen{position:fixed;inset:0;background:#0f0a12;z-index:500;display:none;overflow-y:auto}
+#profile-screen.open{display:block}
+.ps-header{background:linear-gradient(145deg,#1a0f1e,#140a18);border-bottom:1px solid rgba(200,130,220,0.18);padding:16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.ps-back{background:rgba(200,130,220,0.08);border:1px solid rgba(200,130,220,0.2);color:#c878d8;border-radius:8px;padding:7px 14px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.15s}
+.ps-back:hover{background:rgba(200,130,220,0.16)}
+.ps-body{max-width:520px;margin:0 auto;padding:20px 16px 40px}
+.ps-avatar-wrap{text-align:center;margin-bottom:20px}
+.ps-avatar-big{width:72px;height:72px;border-radius:50%;border:2px solid rgba(200,130,220,0.35);margin:0 auto 10px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#c878d8;background:rgba(200,130,220,0.1)}
+.ps-display-name{font-size:1.2rem;font-weight:800;color:#e0d0e8;margin-bottom:3px}
+.ps-email{font-size:12px;color:#806880}
+.ps-section{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;margin-bottom:14px}
+.ps-section-title{font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.ps-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ps-stat-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px;text-align:center}
+.ps-stat-val{font-size:1.6rem;font-weight:800;margin-bottom:3px}
+.ps-stat-lbl{font-size:9.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.05em}
+.ps-gate-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.ps-gate-row:last-child{border-bottom:none}
+.ps-gate-icon{font-size:1.2rem;flex-shrink:0}
+.ps-gate-info{flex:1}
+.ps-gate-name{font-size:12px;font-weight:700;margin-bottom:1px}
+.ps-gate-sub{font-size:10.5px;color:rgba(255,255,255,0.3)}
+.ps-gate-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:5px}
+.ps-gate-badge.done{background:rgba(80,200,120,0.12);color:#50c878;border:1px solid rgba(80,200,120,0.2)}
+.ps-gate-badge.locked{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.08)}
+.ps-reset-btn{width:100%;background:rgba(201,92,92,0.07);border:1px solid rgba(201,92,92,0.15);color:#a05050;border-radius:9px;padding:10px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:.15s;margin-top:4px}
+.ps-reset-btn:hover{background:rgba(201,92,92,0.14);color:#c06060}
 </style>
 
 <!-- Firebase SDK -->
@@ -398,6 +427,9 @@ body.discipline-theme #results-screen {
   window._signInWithRedirect = signInWithRedirect;
   window._signOut = signOut;
 
+  import { onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  window._fbOnSnapshot = onSnapshot;
+
   // Redirect sonucunu kontrol et (sayfa yenilendikten sonra)
   getRedirectResult(auth).then(result => {
     if (result && result.user) {
@@ -419,6 +451,71 @@ body.discipline-theme #results-screen {
 </head>
 <body>
 
+
+
+<!-- Profil Ekranı -->
+<div id="profile-screen">
+  <div class="ps-header">
+    <button class="ps-back" onclick="closeProfileScreen()">← Geri</button>
+    <div style="font-size:14px;font-weight:700;color:#c878d8">Profilim</div>
+  </div>
+  <div class="ps-body">
+    <!-- Avatar + İsim -->
+    <div class="ps-avatar-wrap">
+      <div class="ps-avatar-big" id="ps-avatar">?</div>
+      <div class="ps-display-name" id="ps-display-name">—</div>
+      <div class="ps-email" id="ps-email-big">—</div>
+    </div>
+
+    <!-- İstatistikler -->
+    <div class="ps-section">
+      <div class="ps-section-title">Genel İstatistikler</div>
+      <div class="ps-stat-grid">
+        <div class="ps-stat-card">
+          <div class="ps-stat-val" id="ps-best-gate" style="color:#c878d8">—</div>
+          <div class="ps-stat-lbl">En İyi Kapı</div>
+        </div>
+        <div class="ps-stat-card">
+          <div class="ps-stat-val" id="ps-cleared" style="color:#50c878">—</div>
+          <div class="ps-stat-lbl">Geçilen Kapı</div>
+        </div>
+        <div class="ps-stat-card">
+          <div class="ps-stat-val" id="ps-sessions" style="color:#c8b840">—</div>
+          <div class="ps-stat-lbl">Toplam Oturum</div>
+        </div>
+        <div class="ps-stat-card">
+          <div class="ps-stat-val" id="ps-correct" style="color:#50b4d8">—</div>
+          <div class="ps-stat-lbl">Toplam Doğru</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kapı İlerlemesi -->
+    <div class="ps-section">
+      <div class="ps-section-title">Kapı İlerlemesi</div>
+      <div id="ps-gate-list"></div>
+    </div>
+
+    <!-- Son oynama -->
+    <div class="ps-section" style="padding:12px 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;color:rgba(255,255,255,0.3)">Son oynama</div>
+        <div style="font-size:11px;color:#806880" id="ps-last-played">—</div>
+      </div>
+    </div>
+
+    <!-- Tehlikeli Alan -->
+    <div class="ps-section">
+      <div class="ps-section-title">Hesap</div>
+      <button class="ps-reset-btn" onclick="if(confirm('Tüm istatistikler sıfırlansın mı? Bu işlem geri alınamaz.')){resetDisciplineStats();if(_currentUser&&window._fbSetDoc){window._fbSetDoc(window._fbDoc(window._fbDb,'users',_currentUser.uid),{bestGate:0,completedGates:[],gateAttempts:{},gateScores:{},totalSessions:0,totalCorrect:0},{merge:false}).catch(()=>{});}closeProfileScreen();showToast('İstatistikler sıfırlandı.','');}">
+        🗑 İstatistikleri Sıfırla
+      </button>
+      <button class="ps-reset-btn" onclick="fbSignOut();closeProfileScreen();" style="margin-top:6px;color:#c05050;border-color:rgba(201,92,92,0.2)">
+        Çıkış Yap
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Auth Overlay -->
 <div id="auth-overlay" style="display:none">
@@ -459,6 +556,9 @@ body.discipline-theme #results-screen {
           <div class="pd-stat"><span>Toplam Oturum</span><span id="pd-sessions">—</span></div>
           <div class="pd-stat"><span>Toplam Doğru</span><span id="pd-correct">—</span></div>
           <div id="sync-badge">⟳ senkronize</div>
+          <button onclick="toggleProfileDropdown();openProfileScreen()" style="width:100%;background:rgba(200,130,220,0.08);border:1px solid rgba(200,130,220,0.2);color:#c878d8;border-radius:7px;padding:7px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-top:8px;transition:.15s">
+            ✦ Profilimi Gör
+          </button>
           <button class="pd-signout" onclick="fbSignOut()">Çıkış Yap</button>
         </div>
       </div>
@@ -747,6 +847,7 @@ function fbSkip() {
 
 function fbSignOut() {
   if (!window._signOut) return;
+  if (_firestoreUnsubscribe) { _firestoreUnsubscribe(); _firestoreUnsubscribe = null; }
   window._signOut(window._fbAuth).then(function() {
     _currentUser = null;
     updateProfileUI(null);
@@ -756,33 +857,67 @@ function fbSignOut() {
   });
 }
 
+let _firestoreUnsubscribe = null;
+
 async function loadUserStatsFromFirestore(uid) {
   if (!window._fbDoc) return;
+
+  // Önceki listener'ı temizle
+  if (_firestoreUnsubscribe) { _firestoreUnsubscribe(); _firestoreUnsubscribe = null; }
+
+  setSyncBadge('syncing');
+  const ref = window._fbDoc(window._fbDb, 'users', uid);
+
+  // Önce bir kez getir
   try {
-    setSyncBadge('syncing');
-    const ref = window._fbDoc(window._fbDb, 'users', uid);
     const snap = await window._fbGetDoc(ref);
     const local = getDisciplineStats();
     let merged;
     if (snap.exists()) {
-      const d = snap.data();
-      merged = {
-        bestGate: Math.max(d.bestGate||0, local.bestGate||0),
-        completedGates: Array.from(new Set([].concat(d.completedGates||[]).concat(local.completedGates||[]))),
-        gateAttempts: _mergeMax(d.gateAttempts||{}, local.gateAttempts||{}),
-        gateScores: _mergeMax(d.gateScores||{}, local.gateScores||{}),
-        totalSessions: Math.max(d.totalSessions||0, local.totalSessions||0),
-        totalCorrect: Math.max(d.totalCorrect||0, local.totalCorrect||0),
-        lastPlayed: (d.lastPlayed && d.lastPlayed.toDate) ? d.lastPlayed.toDate().toISOString() : local.lastPlayed,
-      };
+      merged = _mergeFirestoreLocal(snap.data(), local);
     } else {
       merged = local;
       await saveStatsToFirestore(uid, merged);
     }
-    saveDisciplineStats(merged);
+    // localStorage güncelle ama Firestore'a tekrar yazma (döngü olmasın)
+    try { localStorage.setItem(DISC_STATS_KEY, JSON.stringify(merged)); } catch(e) {}
     _updateDropStats(merged);
     setSyncBadge('ok');
-  } catch(e) { console.error(e); setSyncBadge('ok'); }
+  } catch(e) { console.error('Firestore initial load:', e); setSyncBadge('ok'); }
+
+  // Gerçek zamanlı dinle — başka cihazda değişince otomatik güncellenir
+  if (window._fbOnSnapshot) {
+    _firestoreUnsubscribe = window._fbOnSnapshot(ref, function(snap) {
+      if (!snap.exists()) return;
+      const d = snap.data();
+      const stats = {
+        bestGate: d.bestGate || 0,
+        completedGates: d.completedGates || [],
+        gateAttempts: d.gateAttempts || {},
+        gateScores: d.gateScores || {},
+        totalSessions: d.totalSessions || 0,
+        totalCorrect: d.totalCorrect || 0,
+        lastPlayed: (d.lastPlayed && d.lastPlayed.toDate) ? d.lastPlayed.toDate().toISOString() : null,
+      };
+      try { localStorage.setItem(DISC_STATS_KEY, JSON.stringify(stats)); } catch(e) {}
+      _updateDropStats(stats);
+      setSyncBadge('ok');
+      // Profil ekranı açıksa güncelle
+      if (typeof _refreshProfileScreen === 'function') _refreshProfileScreen(stats);
+    }, function(err) { console.error('Firestore listener:', err); });
+  }
+}
+
+function _mergeFirestoreLocal(d, local) {
+  return {
+    bestGate: Math.max(d.bestGate||0, local.bestGate||0),
+    completedGates: Array.from(new Set([].concat(d.completedGates||[]).concat(local.completedGates||[]))),
+    gateAttempts: _mergeMax(d.gateAttempts||{}, local.gateAttempts||{}),
+    gateScores: _mergeMax(d.gateScores||{}, local.gateScores||{}),
+    totalSessions: Math.max(d.totalSessions||0, local.totalSessions||0),
+    totalCorrect: Math.max(d.totalCorrect||0, local.totalCorrect||0),
+    lastPlayed: (d.lastPlayed && d.lastPlayed.toDate) ? d.lastPlayed.toDate().toISOString() : local.lastPlayed,
+  };
 }
 
 async function saveStatsToFirestore(uid, stats) {
