@@ -479,6 +479,30 @@ body.discipline-theme #results-screen {
 .ds-section-title{font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06)}
 .ds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:7px;margin-bottom:6px}
 .ds-unit-lbl{font-size:10px;font-weight:700;color:rgba(200,170,80,0.6);text-transform:uppercase;letter-spacing:.07em;margin:12px 0 4px}
+
+/* ── Konular Ekranı — MAVİ TEMA ── */
+#topics-screen{position:fixed;inset:0;background:#060c14;z-index:600;display:none;flex-direction:column}
+#topics-screen.open{display:flex}
+.ts-header{background:rgba(4,10,20,0.98);border-bottom:1px solid rgba(55,138,221,0.2);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ts-back{background:rgba(55,138,221,0.1);border:1px solid rgba(55,138,221,0.28);color:#5aafff;border-radius:8px;padding:6px 14px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s}
+.ts-back:hover{background:rgba(55,138,221,0.2)}
+.ts-body{flex:1;overflow-y:auto;padding:16px;background:linear-gradient(180deg,#060c14 0%,#04080f 100%)}
+.ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;max-width:760px;margin:0 auto}
+.ts-card{background:rgba(8,18,36,0.9);border:1px solid rgba(55,138,221,0.15);border-radius:12px;padding:14px 16px;transition:.2s;position:relative;overflow:hidden}
+.ts-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(55,138,221,0.04),transparent);pointer-events:none}
+.ts-card:hover{border-color:rgba(55,138,221,0.4);background:rgba(10,24,48,0.95);transform:translateY(-1px);box-shadow:0 4px 20px rgba(55,138,221,0.12)}
+.ts-card-name{font-size:12px;font-weight:800;color:#8ac4ff;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.ts-card-desc{font-size:11.5px;color:rgba(160,200,255,0.6);line-height:1.5}
+.ts-card-badge{position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.06em}
+.ts-card-badge.unlocked{background:rgba(80,200,120,0.12);color:#50c878;border:1px solid rgba(80,200,120,0.25)}
+.ts-card-badge.locked{background:rgba(55,138,221,0.06);color:rgba(90,175,255,0.3);border:1px solid rgba(55,138,221,0.12)}
+.ts-card-tr{margin-top:10px;padding-top:10px;border-top:1px solid rgba(55,138,221,0.1);display:none;font-size:11.5px;color:rgba(160,200,255,0.7);line-height:1.6}
+.ts-card-tr.open{display:block}
+.ts-tr-btn{background:rgba(55,138,221,0.1);border:1px solid rgba(55,138,221,0.22);color:#5aafff;border-radius:5px;padding:3px 9px;font-family:'Roboto',sans-serif;font-size:10px;font-weight:700;cursor:pointer;margin-top:6px;transition:.15s}
+.ts-tr-btn:hover{background:rgba(55,138,221,0.2)}
+.ts-quiz-btn{width:100%;background:rgba(55,138,221,0.1);border:1px solid rgba(55,138,221,0.25);border-radius:8px;padding:9px;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;color:#5aafff;cursor:pointer;margin-top:8px;transition:.2s}
+.ts-quiz-btn:hover{background:rgba(55,138,221,0.2);border-color:rgba(55,138,221,0.45)}
+.ts-quiz-btn.done{background:rgba(80,200,120,0.08);border-color:rgba(80,200,120,0.25);color:#50c878}
 </style>
 
 <!-- Firebase SDK -->
@@ -649,6 +673,199 @@ body.discipline-theme #results-screen {
     <div id="ds-100-container"></div>
   </div>
 </div>
+<!-- Konular Ekranı -->
+<div id="topics-screen">
+  <div class="ts-header">
+    <button class="ts-back" onclick="closeTopicsScreen()">&#8592; Geri</button>
+    <span style="font-size:13px;font-weight:700;color:#c878d8">📚 Konular</span>
+  </div>
+  <div class="ts-body">
+    <div class="ts-grid">
+    <div class="ts-card" id="ts-card-simple_past">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">⏳</span>Simple Past</div>
+        <div class="ts-card-badge locked" id="ts-badge-simple_past">🔒</div>
+      </div>
+      <div class="ts-card-desc">Completed actions in the past. Uses V2 form (went, played). Questions use "did".</div>
+      <div class="ts-card-tr" id="ts-tr-simple_past"><strong>Geçmiş Zaman (Simple Past)</strong><br>
+• Geçmişte tamamlanan eylemler için kullanılır<br>
+• Düzenli fiiller: <span style="color:#5aafff">played, walked, watched</span><br>
+• Düzensiz fiiller: <span style="color:#5aafff">went, saw, had, made</span><br>
+• Soru: <span style="color:#8ac4ff">Did + özne + V1?</span> → Did you see it?<br>
+• Olumsuz: <span style="color:#8ac4ff">didn't + V1</span> → I didn't go.</div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('simple_past')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-simple_past" onclick="startTopicQuiz('simple_past','Simple Past')">📝 Konuya Özel Sınav</button>
+      </div>
+    </div>
+    <div class="ts-card" id="ts-card-present_simple">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">🔄</span>Present Simple & Continuous</div>
+        <div class="ts-card-badge locked" id="ts-badge-present_simple">🔒</div>
+      </div>
+      <div class="ts-card-desc">Simple = habits & routines. Continuous = actions happening right now (is doing).</div>
+      <div class="ts-card-tr" id="ts-tr-present_simple"><strong>Geniş Zaman & Şimdiki Zaman</strong><br>
+• Simple: alışkanlık/rutin → <span style="color:#5aafff">I walk to school every day.</span><br>
+• He/she/it: <span style="color:#5aafff">walks, watches, does</span> (-s/-es)<br>
+• Continuous: şu an oluyor → <span style="color:#5aafff">I am walking now.</span><br>
+• Yapı: <span style="color:#8ac4ff">am/is/are + V-ing</span></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('present_simple')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-present_simple" onclick="startTopicQuiz('present_simple','Present Simple & Continuous')">📝 Konuya Özel Sınav</button>
+      </div>
+    </div>
+    <div class="ts-card" id="ts-card-future">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">🔮</span>Future: Will & Be Going To</div>
+        <div class="ts-card-badge locked" id="ts-badge-future">🔒</div>
+      </div>
+      <div class="ts-card-desc">Will = instant decisions & promises. Be going to = plans & predictions with evidence.</div>
+      <div class="ts-card-tr" id="ts-tr-future"><strong>Gelecek Zaman</strong><br>
+• Will: anlık karar/söz → <span style="color:#5aafff">I'll help you!</span><br>
+• Be going to: önceden planlanmış → <span style="color:#5aafff">I'm going to study tonight.</span><br>
+• Kanıta dayalı tahmin → <span style="color:#5aafff">Look at those clouds! It's going to rain.</span><br>
+• Yapı: <span style="color:#8ac4ff">will + V1</span> / <span style="color:#8ac4ff">am/is/are going to + V1</span></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('future')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-future" onclick="startTopicQuiz('future','Future: Will & Be Going To')">📝 Konuya Özel Sınav</button>
+      </div>
+    </div>
+    <div class="ts-card" id="ts-card-question_tags">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">❓</span>Question Tags</div>
+        <div class="ts-card-badge locked" id="ts-badge-question_tags">🔒</div>
+      </div>
+      <div class="ts-card-desc">Short questions at the end. Positive sentence → negative tag, and vice versa.</div>
+      <div class="ts-card-tr" id="ts-tr-question_tags"><strong>Ek Soru (Question Tags)</strong><br>
+• Olumlu cümle → olumsuz ek: <span style="color:#5aafff">You like tea, <strong>don't you?</strong></span><br>
+• Olumsuz cümle → olumlu ek: <span style="color:#5aafff">She isn't here, <strong>is she?</strong></span><br>
+• be fiili: <span style="color:#8ac4ff">isn't it / aren't they / wasn't he</span><br>
+• Yardımcı fiil: <span style="color:#8ac4ff">don't you / didn't she / won't they</span></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('question_tags')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-question_tags" onclick="startTopicQuiz('question_tags','Question Tags')">📝 Konuya Özel Sınav</button>
+      </div>
+    </div>
+    <div class="ts-card" id="ts-card-so_neither">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">🤝</span>So / Neither / Too / Either</div>
+        <div class="ts-card-badge locked" id="ts-badge-so_neither">🔒</div>
+      </div>
+      <div class="ts-card-desc">"Me too" in English. Positive: So do I / I do too. Negative: Neither do I / I don't either.</div>
+      <div class="ts-card-tr" id="ts-tr-so_neither"><strong>Katılma İfadeleri</strong><br>
+• Olumlu katılma: <span style="color:#5aafff">So do I</span> / <span style="color:#5aafff">I do too</span><br>
+• Olumsuz katılma: <span style="color:#5aafff">Neither do I</span> / <span style="color:#5aafff">I don't either</span><br>
+• Örnekler:<br>
+  "I love pizza." → <span style="color:#8ac4ff">So do I!</span><br>
+  "I can't swim." → <span style="color:#8ac4ff">Neither can I.</span></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('so_neither')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-so_neither" onclick="startTopicQuiz('so_neither','So / Neither / Too / Either')">📝 Konuya Özel Sınav</button>
+      </div>
+    </div>
+    <div class="ts-card" id="ts-card-comparatives">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">📊</span>Comparatives & Superlatives</div>
+        <div class="ts-card-badge locked" id="ts-badge-comparatives">🔒</div>
+      </div>
+      <div class="ts-card-desc">Two things: bigger than / more expensive than. Best of all: the biggest / the most.</div>
+      <div class="ts-card-tr" id="ts-tr-comparatives"><strong>Karşılaştırma & En Üstünlük</strong><br>
+• Kısa sıfat + er: <span style="color:#5aafff">bigger, taller, older</span><br>
+• Uzun sıfat: <span style="color:#5aafff">more expensive, more beautiful</span><br>
+• En üstünlük: <span style="color:#5aafff">the biggest / the most expensive</span><br>
+• Düzensiz: <span style="color:#8ac4ff">good → better → the best</span><br>
+  <span style="color:#8ac4ff">bad → worse → the worst</span></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('comparatives')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-comparatives" onclick="startTopicQuiz('comparatives','Comparatives & Superlatives')">📝 Konuya Özel Sınav</button>
+      </div>
+    </div>
+    <div class="ts-card" id="ts-card-pronouns">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">👤</span>Pronouns</div>
+        <div class="ts-card-badge locked" id="ts-badge-pronouns">🔒</div>
+      </div>
+      <div class="ts-card-desc">Possessive adjective: my car. Possessive pronoun: it's mine. Reflexive: himself.</div>
+      <div class="ts-card-tr" id="ts-tr-pronouns"><strong>Zamirler</strong><br>
+• Belirteç (adjective): <span style="color:#5aafff">my, your, his, her, our, their</span><br>
+• Zamir (pronoun): <span style="color:#5aafff">mine, yours, his, hers, ours, theirs</span><br>
+• Dönüşlü: <span style="color:#5aafff">myself, yourself, himself, herself, ourselves, themselves</span><br>
+• Fark: "That is <span style="color:#8ac4ff">my</span> book." vs "That book is <span style="color:#8ac4ff">mine</span>."</div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('pronouns')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-pronouns" onclick="startTopicQuiz('pronouns','Pronouns')">📝 Konuya Özel Sınav</button>
+      </div>
+    </div>
+    <div class="ts-card" id="ts-card-quantifiers">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">⚖️</span>Quantifiers</div>
+        <div class="ts-card-badge locked" id="ts-badge-quantifiers">🔒</div>
+      </div>
+      <div class="ts-card-desc">Much/a little = uncountable. Many/a few = countable. Few/little = not enough.</div>
+      <div class="ts-card-tr" id="ts-tr-quantifiers"><strong>Miktar Sıfatları</strong><br>
+• Sayılamaz: <span style="color:#5aafff">much water, a little milk, little time</span><br>
+• Sayılabilir: <span style="color:#5aafff">many books, a few friends, few people</span><br>
+• <span style="color:#8ac4ff">few/little</span> = yeterli değil (olumsuz anlam)<br>
+• <span style="color:#8ac4ff">a few/a little</span> = biraz var (olumlu anlam)<br>
+• Her ikisi: <span style="color:#5aafff">some, any, a lot of, lots of, enough</span></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('quantifiers')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-quantifiers" onclick="startTopicQuiz('quantifiers','Quantifiers')">📝 Konuya Özel Sınav</button>
+      </div>
+    </div>
+    <div class="ts-card" id="ts-card-vocabulary_u4">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">📖</span>Vocabulary — Unit 4</div>
+        <div class="ts-card-badge locked" id="ts-badge-vocabulary_u4">🔒</div>
+      </div>
+      <div class="ts-card-desc">Key words: evidence, cautious, sarcastic, appropriate, globalize. Used in context.</div>
+      <div class="ts-card-tr" id="ts-tr-vocabulary_u4"><strong>Kelime Bilgisi — Ünite 4</strong><br>
+• <span style="color:#5aafff">evidence</span> = kanıt, delil<br>
+• <span style="color:#5aafff">cautious</span> = dikkatli, ihtiyatlı<br>
+• <span style="color:#5aafff">sarcastic</span> = alaycı, iğneleyici<br>
+• <span style="color:#5aafff">appropriate</span> = uygun, yerinde<br>
+• <span style="color:#5aafff">globalize</span> = küreselleşmek<br>
+• <span style="color:#5aafff">reluctant</span> = isteksiz, gönülsüz</div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('vocabulary_u4')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-vocabulary_u4" onclick="startTopicQuiz('vocabulary_u4','Vocabulary — Unit 4')">📝 Konuya Özel Sınav</button>
+      </div>
+    </div>
+    </div>
+    <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📄 PDF Export</div>
+  
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(55,138,221,0.15)">
+      <div style="font-size:10px;font-weight:700;color:rgba(55,138,221,0.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">📄 PDF Export</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+
+        <div style="background:rgba(8,18,36,0.8);border:1px solid rgba(55,138,221,0.15);border-radius:12px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:#8ac4ff;margin-bottom:4px">📝 Grammar Worksheet</div>
+          <div style="font-size:11px;color:rgba(160,200,255,0.5);margin-bottom:12px;line-height:1.5">All grammar questions + answer key with explanations.</div>
+          <button onclick="exportGrammarPDF()" style="width:100%;background:rgba(55,138,221,0.2);border:1px solid rgba(55,138,221,0.35);color:#5aafff;border-radius:8px;padding:8px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">Download ↓</button>
+        </div>
+
+        <div style="background:rgba(8,18,36,0.8);border:1px solid rgba(55,138,221,0.15);border-radius:12px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:#8ac4ff;margin-bottom:4px">📚 Vocabulary Cards</div>
+          <div style="font-size:11px;color:rgba(160,200,255,0.5);margin-bottom:8px;line-height:1.5">Word list printout style.</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+            <label style="font-size:11px;color:rgba(160,200,255,0.5);display:flex;align-items:center;gap:4px;cursor:pointer">
+              <input type="radio" name="vocab-pdf-style" value="cards" checked style="accent-color:#378add"> Flash cards
+            </label>
+            <label style="font-size:11px;color:rgba(160,200,255,0.5);display:flex;align-items:center;gap:4px;cursor:pointer">
+              <input type="radio" name="vocab-pdf-style" value="list" style="accent-color:#378add"> Word list
+            </label>
+            <label style="font-size:11px;color:rgba(160,200,255,0.5);display:flex;align-items:center;gap:4px;cursor:pointer">
+              <input type="radio" name="vocab-pdf-style" value="test" style="accent-color:#378add"> Fill gaps
+            </label>
+          </div>
+          <button onclick="exportVocabPDF()" style="width:100%;background:rgba(45,122,79,0.25);border:1px solid rgba(45,180,100,0.3);color:#50c878;border-radius:8px;padding:8px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">Download ↓</button>
+        </div>
+
+      </div>
+    </div>
+
+</div>
+</div>
 <!-- Auth Overlay -->
 <div id="auth-overlay" style="display:none">
   <div id="auth-card">
@@ -673,6 +890,7 @@ body.discipline-theme #results-screen {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
         Back
       </button>
+      <button onclick="openTopicsScreen()" style="background:rgba(200,130,220,0.08);border:1px solid rgba(200,130,220,0.2);border-radius:8px;padding:5px 11px;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;color:#c878d8;cursor:pointer;transition:.15s">📚 Konular</button>
       <button onclick="openDictScreen()" style="background:rgba(55,138,221,0.08);border:1px solid rgba(55,138,221,0.2);border-radius:8px;padding:5px 11px;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;color:#378add;cursor:pointer">&#128218; Sozluk</button>
       <!-- Sync Debug Butonu -->
       <button onclick="toggleDebugPanel()" id="topbar-sync-btn" style="background:rgba(200,130,220,0.08);border:1px solid rgba(200,130,220,0.2);border-radius:8px;padding:5px 11px;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;color:#c878d8;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.15s">
@@ -708,116 +926,12 @@ body.discipline-theme #results-screen {
   <div id="onboard">
     <div class="onboard-card">
       <div class="onboard-title">English Grammar & Vocabulary Test</div>
-      <div class="onboard-sub">A2-level test. Review the topics below before you start. Click <strong style="color:var(--accent2)">TR</strong> on any topic to read the Turkish explanation with highlights.</div>
+      <div class="onboard-sub">A2 seviyesi İngilizce gramer ve kelime testi. Konuları incelemek için <strong style="color:#378add">📚 Konular</strong> butonuna tıkla.</div>
 
-      <div class="topics-grid">
-
-        <div class="topic-info-card">
-          <div class="topic-info-header"><div class="t-name">Simple Past</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
-          <div class="t-desc">Completed actions in the past. Uses V2 form (went, played). Questions use "did".</div>
-          <div class="t-tr"><strong>Geçmiş Zaman (Simple Past)</strong><br>Bitmiş geçmiş eylemler için kullanılır. Olumlu cümlede fiil <mark>2. haline (V2)</mark> gelir: go→<mark>went</mark>, play→<mark>played</mark>. Olumsuz ve sorularda <mark>did/didn't</mark> gelir ve fiil <mark>yalın hale</mark> döner.<br><br>✦ <strong>She <mark>went</mark> to school.</strong><br>✦ <strong>Did she <mark>go</mark>?</strong></div>
-        </div>
-
-        <div class="topic-info-card">
-          <div class="topic-info-header"><div class="t-name">Present Simple & Continuous</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
-          <div class="t-desc">Simple = habits & routines. Continuous = actions happening right now (is doing).</div>
-          <div class="t-tr"><strong>Şimdiki Zamanlar</strong><br><mark>Present Simple</mark>: Alışkanlıklar ve genel gerçekler için. Anahtar kelimeler: <mark>always, usually, every day</mark>.<br><mark>Present Continuous</mark>: Şu an devam eden eylemler. Anahtar kelimeler: <mark>now, at the moment, right now</mark> + <mark>is/are + V-ing</mark>.<br><br>✦ She <mark>drinks</mark> coffee every morning. (alışkanlık)<br>✦ She <mark>is drinking</mark> coffee now. (şu an)</div>
-        </div>
-
-        <div class="topic-info-card">
-          <div class="topic-info-header"><div class="t-name">Future: Will & Be going to</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
-          <div class="t-desc">Will = instant decisions & promises. Be going to = plans & predictions with evidence.</div>
-          <div class="t-tr"><strong>Gelecek Zaman</strong><br><mark>Will</mark>: Konuşma anında verilen <mark>ani kararlar</mark>, söz vermek, tahmin. "Şimdi karar verdim!"<br><mark>Be going to</mark>: <mark>Önceden planlanmış</mark> eylemler veya <mark>görsel kanıta dayalı</mark> tahminler. "Bakıyorum ve görüyorum ki..."<br><br>✦ I'll help you! (ani karar → <mark>will</mark>)<br>✦ I'm going to visit Paris. (bilet aldı → <mark>be going to</mark>)</div>
-        </div>
-
-        <div class="topic-info-card">
-          <div class="topic-info-header"><div class="t-name">Question Tags</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
-          <div class="t-desc">Short questions at the end. Positive sentence → negative tag, and vice versa.</div>
-          <div class="t-tr"><strong>Eklenti Soruları</strong><br>Cümle <mark>olumlu (+)</mark> ise tag <mark>olumsuz (-)</mark>, cümle <mark>olumsuz (-)</mark> ise tag <mark>olumlu (+)</mark> olur.<br>İstisna: <mark>"I am..."</mark> cümlelerinin tag'i <mark>"aren't I?"</mark> olur.<br>Emir cümlesinin tag'i: <mark>"will you?"</mark><br><br>✦ She is late, <mark>isn't she?</mark><br>✦ You don't know, <mark>do you?</mark><br>✦ I am right, <mark>aren't I?</mark></div>
-        </div>
-
-        <div class="topic-info-card">
-          <div class="topic-info-header"><div class="t-name">So / Neither / Too / Either</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
-          <div class="t-desc">"Me too" in English. Positive: So do I / I do too. Negative: Neither do I / I don't either.</div>
-          <div class="t-tr"><strong>"Ben de" Yapısı</strong><br>Olumlu "Ben de": <mark>So + yardımcı + özne</mark> (So do I) veya özne + yardımcı + <mark>too</mark> (I do, too).<br>Olumsuz "Ben de": <mark>Neither + yardımcı + özne</mark> (Neither do I) veya özne + yardımcı(olumsuz) + <mark>either</mark> (I don't, either).<br><br>✦ A: I love this. B: <mark>So do I.</mark> / I do, <mark>too.</mark><br>✦ A: I can't swim. B: <mark>Neither can I.</mark></div>
-        </div>
-
-        <div class="topic-info-card">
-          <div class="topic-info-header"><div class="t-name">Comparatives & Superlatives</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
-          <div class="t-desc">Two things: bigger than / more expensive than. Best of all: the biggest / the most.</div>
-          <div class="t-tr"><strong>Karşılaştırmalar</strong><br><mark>Comparative</mark> (iki şey): Kısa sıfat → <mark>-er than</mark> (bigger than). Uzun sıfat → <mark>more ... than</mark> (more expensive than).<br><mark>Superlative</mark> (en üstün): Kısa sıfat → <mark>the ...-est</mark> (the fastest). Uzun sıfat → <mark>the most ...</mark> (the most beautiful).<br><br>✦ My bag is <mark>heavier than</mark> yours.<br>✦ This is <mark>the most difficult</mark> test.</div>
-        </div>
-
-        <div class="topic-info-card">
-          <div class="topic-info-header"><div class="t-name">Pronouns</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
-          <div class="t-desc">Possessive adjective: my car. Possessive pronoun: it's mine. Reflexive: himself.</div>
-          <div class="t-tr"><strong>Zamirler</strong><br><mark>Possessive Adjective</mark> (my, your, his...): Yanına mutlaka isim ister → <mark>my car</mark>, <mark>her bag</mark>.<br><mark>Possessive Pronoun</mark> (mine, yours, hers...): İsim istemez, ismin yerini tutar → It's <mark>mine</mark>.<br><mark>Reflexive</mark> (myself, himself...): Özne ve nesne aynı kişi → She hurt <mark>herself</mark>.<br><br>✦ This is <mark>my</mark> book. / This book is <mark>mine</mark>.</div>
-        </div>
-
-        <div class="topic-info-card">
-          <div class="topic-info-header"><div class="t-name">Quantifiers</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
-          <div class="t-desc">Much/a little = uncountable. Many/a few = countable. Few/little = not enough.</div>
-          <div class="t-tr"><strong>Miktar Belirleyiciler</strong><br><mark>Many</mark> / <mark>a few</mark>: Sayılabilir çoğullar (books, eggs).<br><mark>Much</mark> / <mark>a little</mark>: Sayılamayanlar (water, money, time).<br><mark>A few / A little</mark>: Az ama <mark>yeterli</mark> (olumlu anlam).<br><mark>Few / Little</mark>: Az ve <mark>yetersiz</mark> (olumsuz anlam).<br><br><strong>Either / Neither (İki Seçenek)</strong><br><mark>Either</mark>: İkisinden <mark>herhangi biri</mark> olur → olumlu/kabul. <em>Take either one.</em><br><mark>Neither</mark>: <mark>İkisi de değil</mark> → olumsuz/ret. <em>Neither option worked.</em><br><mark>Both</mark>: <mark>İkisi birden</mark> → olumlu/toplam. <em>Both books were great.</em><br><br>✦ A: Tea or coffee? B: <mark>Either</mark> — I don't mind.<br>✦ <mark>Neither</mark> restaurant was open — both were closed.<br>✦ I read <mark>both</mark> books and loved them.</div>
-        </div>
-
-        <div class="topic-info-card">
-          <div class="topic-info-header"><div class="t-name">Vocabulary — Unit 4</div><button class="btn-tr" onclick="toggleTR(this)">TR</button></div>
-          <div class="t-desc">Key words: evidence, cautious, sarcastic, appropriate, globalize. Used in context.</div>
-          <div class="t-tr"><strong>Kelimeler</strong><br><mark>Evidence</mark> (isim): kanıt, delil → strong <mark>evidence</mark><br><mark>Cautious</mark> (sıfat): dikkatli, ihtiyatlı → be <mark>cautious</mark><br><mark>Sarcastic</mark> (sıfat): alaycı → a <mark>sarcastic</mark> tone<br><mark>Appropriate</mark> (sıfat): uygun → <mark>appropriate</mark> behaviour<br><mark>Globalize</mark> (fiil): küreselleştirmek → to <mark>globalize</mark> culture</div>
-        </div>
-
-      </div>
+      
 
 
-      <div id="dict-section" style="margin-bottom:22px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em">
-          📖 Vocabulary Dictionary
-          <span id="unit-progress-badge" style="font-size:9.5px;font-weight:600;background:rgba(180,130,30,0.10);border:1px solid rgba(180,130,30,0.22);border-radius:5px;padding:1px 8px;margin-left:7px;color:#a07828;text-transform:none;letter-spacing:.02em;vertical-align:middle"></span>
-        </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <input id="dict-search" type="text" placeholder="Search word..." oninput="filterDict(this.value)"
-              style="background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:5px 11px;font-size:12px;color:var(--text);font-family:'Roboto',sans-serif;outline:none;width:160px"/>
-            <button onclick="toggleDict()" id="dict-toggle-btn"
-              style="background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Roboto',sans-serif;transition:.15s">
-              Show ▾
-            </button>
-          </div>
-        </div>
-        <div id="dict-body" style="display:none">
-          <div id="dict-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:7px;max-height:420px;overflow-y:auto;padding-right:4px"></div>
-        </div>
-      </div>
-
-      <div style="margin-bottom:22px">
-        <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📄 Quick PDF Export</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
-            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">📝 Grammar Worksheet</div>
-            <div style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.5">All grammar questions + answer key with explanations.</div>
-            <button onclick="exportGrammarPDF()" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">Download ↓</button>
-          </div>
-
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
-            <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px">📚 Vocabulary Cards</div>
-            <div style="font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.5">Word list printout style.</div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
-              <label style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer">
-                <input type="radio" name="vocab-pdf-style" value="cards" checked style="accent-color:var(--accent)"> Flash cards
-              </label>
-              <label style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer">
-                <input type="radio" name="vocab-pdf-style" value="list" style="accent-color:var(--accent)"> Word list
-              </label>
-              <label style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer">
-                <input type="radio" name="vocab-pdf-style" value="test" style="accent-color:var(--accent)"> Fill gaps
-              </label>
-            </div>
-            <button onclick="exportVocabPDF()" style="width:100%;background:#2d7a4f;color:#fff;border:none;border-radius:8px;padding:8px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">Download ↓</button>
-          </div>
-
-        </div>
-      </div>
+    
 
       <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">Select Test Type</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px" id="test-tabs">
@@ -899,6 +1013,50 @@ body.discipline-theme #results-screen {
 <div class="toast" id="toast"></div>
 
 <script>
+
+// ── KONULAR EKRANI ──
+var TOPIC_IDS = ['simple_past', 'present_simple', 'future', 'question_tags', 'so_neither', 'comparatives', 'pronouns', 'quantifiers', 'vocabulary_u4'];
+var TOPIC_QUIZ_KEY = 'gramlab_topic_quiz_';
+
+function openTopicsScreen() {
+  var el = document.getElementById('topics-screen');
+  if (el) el.classList.add('open');
+  refreshTopicBadges();
+}
+function closeTopicsScreen() {
+  var el = document.getElementById('topics-screen');
+  if (el) el.classList.remove('open');
+}
+function toggleTsTR(tid) {
+  var el = document.getElementById('ts-tr-' + tid);
+  if (el) el.classList.toggle('open');
+}
+function refreshTopicBadges() {
+  var achs = getAchievements();
+  TOPIC_IDS.forEach(function(tid) {
+    var badge = document.getElementById('ts-badge-' + tid);
+    var btn   = document.getElementById('ts-quiz-btn-' + tid);
+    var achId = 'topic_' + tid;
+    var done  = !!achs[achId];
+    if (badge) {
+      badge.textContent = done ? '✓' : '🔒';
+      badge.className   = 'ts-card-badge ' + (done ? 'unlocked' : 'locked');
+    }
+    if (btn) {
+      btn.className = 'ts-quiz-btn' + (done ? ' done' : '');
+      btn.textContent = done ? '✓ Tamamlandı' : '📝 Konuya Özel Sınav';
+    }
+  });
+}
+
+function startTopicQuiz(tid, topicName) {
+  // Konuya özel sınav — basit 10 soruluk quiz (grammar/vocab sorularını filtrele)
+  // Şimdilik mevcut mixed test'i aç, rozet sistemi bir sonraki adımda eklenecek
+  closeTopicsScreen();
+  showToast('Sınav başlıyor: ' + topicName, 'correct-t');
+  // Normal testi başlat — konuya göre filtreleme bir sonraki güncellemede
+  if (typeof startTest === 'function') startTest('grammar');
+}
 
 // ── SÖZLÜK EKRANI ──
 function openDictScreen() {
@@ -3014,7 +3172,7 @@ const FILL_BLANK_QUESTIONS = [
 
 function buildGatePool(gateIdx) {
   const gate = DISCIPLINE_GATES[gateIdx];
-  if (gate.type === 'fillblank') return FILL_BLANK_QUESTIONS.slice(0,10);
+  if (gate.type === 'fillblank') return [...FILL_BLANK_QUESTIONS].sort(()=>Math.random()-0.5).slice(0,10);
   if (gate.type === 'translate') {
     const all = [...translateQuestions, ...EXTRA_TRANSLATE];
     return all.sort(()=>Math.random()-0.5).slice(0,20);
@@ -3386,9 +3544,10 @@ function loadGate(gateIdx) {
 }
 
 function retryGate(gateIdx) {
-  // Tekrar dene — soruları DEĞİŞTİRME, sadece cevapları sıfırla
+  // Tekrar dene — sorular YENİDEN karıştırılır
   disciplineGate = gateIdx;
-  activeQuestions = disciplineQuestions; // aynı sorular
+  disciplineQuestions = buildGatePool(gateIdx); // yeni sıralama
+  activeQuestions = disciplineQuestions;
   resetGateAnswers();
   renderGate();
 }
