@@ -503,6 +503,88 @@ body.discipline-theme #results-screen {
 .ts-quiz-btn{width:100%;background:rgba(55,138,221,0.1);border:1px solid rgba(55,138,221,0.25);border-radius:8px;padding:9px;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;color:#5aafff;cursor:pointer;margin-top:8px;transition:.2s}
 .ts-quiz-btn:hover{background:rgba(55,138,221,0.2);border-color:rgba(55,138,221,0.45)}
 .ts-quiz-btn.done{background:rgba(80,200,120,0.08);border-color:rgba(80,200,120,0.25);color:#50c878}
+
+/* ── Konu Quiz Overlay ── */
+#topic-quiz-overlay{position:fixed;inset:0;background:#060c14;z-index:700;display:none;flex-direction:column}
+#topic-quiz-overlay.open{display:flex}
+.tq-header{background:rgba(4,10,20,0.98);border-bottom:1px solid rgba(55,138,221,0.2);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.tq-back{background:rgba(55,138,221,0.1);border:1px solid rgba(55,138,221,0.28);color:#5aafff;border-radius:8px;padding:6px 14px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.tq-body{flex:1;overflow-y:auto;padding:16px;max-width:600px;margin:0 auto;width:100%}
+.tq-card{background:rgba(8,18,36,0.9);border:1px solid rgba(55,138,221,0.15);border-radius:12px;padding:16px;margin-bottom:12px}
+.tq-q{font-size:14px;font-weight:600;color:#c8e0ff;margin-bottom:12px;line-height:1.5}
+.tq-blank{display:inline-block;min-width:60px;border-bottom:2px solid #378add;color:#5aafff;font-weight:700;text-align:center;padding:0 4px}
+.tq-opts{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.tq-opt{background:rgba(55,138,221,0.07);border:1px solid rgba(55,138,221,0.18);border-radius:8px;padding:9px 12px;font-family:'Roboto',sans-serif;font-size:12px;font-weight:600;color:#8ac4ff;cursor:pointer;text-align:left;transition:.15s}
+.tq-opt:hover:not([disabled]){background:rgba(55,138,221,0.18);border-color:rgba(55,138,221,0.4)}
+.tq-opt.correct{background:rgba(80,200,120,0.12);border-color:rgba(80,200,120,0.35);color:#50c878}
+.tq-opt.wrong{background:rgba(200,80,80,0.1);border-color:rgba(200,80,80,0.3);color:#c05050}
+.tq-exp{margin-top:10px;font-size:11px;color:rgba(160,200,255,0.6);line-height:1.5;padding:8px 10px;background:rgba(55,138,221,0.06);border-radius:6px;display:none}
+.tq-exp.show{display:block}
+.tq-result{text-align:center;padding:24px 16px}
+.tq-score-big{font-size:3rem;font-weight:800;margin-bottom:8px}
+.tq-result-msg{font-size:14px;color:rgba(160,200,255,0.7);margin-bottom:20px}
+
+.tq-arrange-zone{min-height:32px;background:rgba(55,138,221,0.06);border:1px dashed rgba(55,138,221,0.2);border-radius:8px;padding:8px 10px;margin:8px 0;color:#8ac4ff;font-size:13px;font-weight:600;line-height:1.6}
+.tq-word{margin:3px !important}
+
+/* ── Mafia Story Mode ── */
+#mafia-screen{position:fixed;inset:0;background:#050202;z-index:700;display:none;flex-direction:column;font-family:'Roboto',sans-serif}
+#mafia-screen.open{display:flex}
+.ms-header{background:rgba(8,2,2,0.98);border-bottom:1px solid rgba(180,30,20,0.25);padding:11px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ms-back{background:rgba(180,30,20,0.1);border:1px solid rgba(180,30,20,0.3);color:#e05040;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Roboto',sans-serif}
+.ms-rank{font-size:10px;font-weight:700;color:rgba(200,150,80,0.7);text-transform:uppercase;letter-spacing:.1em;margin-left:auto}
+.ms-body{flex:1;overflow-y:auto;padding:0;background:linear-gradient(180deg,#070202 0%,#050101 100%)}
+.ms-scene{max-width:600px;margin:0 auto;padding:20px 16px}
+/* Sahne */
+.ms-location{font-size:10px;font-weight:700;color:rgba(180,30,20,0.6);text-transform:uppercase;letter-spacing:.15em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ms-location::before{content:'';display:inline-block;width:20px;height:1px;background:rgba(180,30,20,0.4)}
+.ms-location::after{content:'';display:inline-block;width:20px;height:1px;background:rgba(180,30,20,0.4)}
+/* Diyalog kutuları */
+.ms-dialog{margin-bottom:12px;animation:msFadeIn .3s ease}
+@keyframes msFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ms-npc{display:flex;gap:10px;align-items:flex-start}
+.ms-npc-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;border:1px solid rgba(180,30,20,0.3)}
+.ms-npc-bubble{background:rgba(30,10,8,0.9);border:1px solid rgba(180,30,20,0.2);border-radius:0 10px 10px 10px;padding:10px 14px;max-width:85%}
+.ms-npc-name{font-size:9.5px;font-weight:700;color:rgba(200,100,60,0.8);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.ms-npc-text{font-size:13px;color:rgba(220,200,190,0.9);line-height:1.6}
+.ms-npc-text em{color:#c8a060;font-style:normal;font-weight:600}
+/* Oyuncu seçenekleri */
+.ms-choices{margin-top:16px}
+.ms-choice-label{font-size:9.5px;font-weight:700;color:rgba(180,30,20,0.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.ms-choice{width:100%;background:rgba(20,8,6,0.8);border:1px solid rgba(180,30,20,0.2);border-radius:10px;padding:12px 14px;margin-bottom:8px;text-align:left;cursor:pointer;transition:.2s;color:rgba(210,190,180,0.8);font-size:12px;font-family:'Roboto',sans-serif;line-height:1.5}
+.ms-choice:hover:not([disabled]){border-color:rgba(180,30,20,0.5);background:rgba(30,8,6,0.9);color:#e0d0c8}
+.ms-choice.correct{border-color:rgba(80,180,100,0.5);background:rgba(20,50,20,0.8);color:#70d080}
+.ms-choice.wrong{border-color:rgba(180,60,50,0.5);background:rgba(40,10,8,0.8);color:#c05040}
+.ms-choice-hint{font-size:10px;color:rgba(180,140,80,0.6);margin-top:4px;display:none}
+.ms-choice.wrong .ms-choice-hint{display:block}
+.ms-choice.correct .ms-choice-hint{display:block;color:rgba(80,180,100,0.7)}
+/* Devam butonu */
+.ms-next-btn{width:100%;background:linear-gradient(145deg,#1a0604,#250806);border:1px solid rgba(180,30,20,0.4);border-radius:10px;padding:13px;font-family:'Roboto',sans-serif;font-size:13px;font-weight:700;color:#e05040;cursor:pointer;margin-top:12px;transition:.2s;display:none}
+.ms-next-btn.show{display:block}
+.ms-next-btn:hover{background:rgba(180,30,20,0.15);border-color:rgba(180,30,20,0.6)}
+/* Sonuç */
+.ms-result{text-align:center;padding:32px 16px}
+.ms-rank-reveal{font-size:4rem;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(224,64,32,0.8))}
+.ms-rank-name{font-size:1.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.ms-rank-subtitle{font-size:12px;color:rgba(200,150,100,0.6);margin-bottom:24px;letter-spacing:.05em}
+
+.ms-mission-card{background:rgba(15,5,4,0.9);border:1px solid rgba(180,30,20,0.1);border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:default;display:flex;align-items:center;gap:12px;transition:.2s}
+.ms-mission-unlocked{background:rgba(30,8,6,0.9);border-color:rgba(180,30,20,0.3);cursor:pointer}
+.ms-mission-unlocked:hover{border-color:rgba(180,30,20,0.55)}
+
+/* ── Mafia Button Pulse ── */
+@keyframes mafiaPulse {
+  0%,100%{box-shadow:0 0 18px rgba(180,20,10,0.2),inset 0 0 12px rgba(150,10,0,0.07)}
+  50%{box-shadow:0 0 28px rgba(200,30,10,0.4),inset 0 0 18px rgba(180,15,0,0.15)}
+}
+#mafia-btn-wrap:hover #mafia-glow{
+  animation:none;
+  box-shadow:0 0 32px rgba(200,30,10,0.5),inset 0 0 20px rgba(180,15,0,0.18);
+  border-color:rgba(200,50,30,0.7);
+}
+#mafia-glow{animation:mafiaPulse 2.5s ease-in-out infinite}
+#mafia-btn-wrap:hover{transform:translateY(-1px)}
+#mafia-btn-wrap{transition:transform .15s}
 </style>
 
 <!-- Firebase SDK -->
@@ -646,6 +728,12 @@ body.discipline-theme #results-screen {
       <div id="ps-achievements-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:4px 0"></div>
     </div>
 
+    <!-- Mafia Rozetleri -->
+    <div class="ps-section" style="background:rgba(20,4,2,0.6);border-color:rgba(180,30,20,0.2)">
+      <div class="ps-section-title" style="color:rgba(200,80,40,0.6)">🌹 The Family — Rütbeler</div>
+      <div id="ps-mafia-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:4px 0"></div>
+    </div>
+
     <!-- Tehlikeli Alan -->
     <div class="ps-section">
       <div class="ps-section-title">Hesap</div>
@@ -673,7 +761,28 @@ body.discipline-theme #results-screen {
     <div id="ds-100-container"></div>
   </div>
 </div>
+<!-- Mafia Story Screen -->
+<div id="mafia-screen">
+  <div class="ms-header">
+    <button class="ms-back" onclick="closeMafiaScreen()">&#8592; Geri</button>
+    <span style="font-size:12px;font-weight:700;color:rgba(200,100,60,0.8)">&#127932; The Family</span>
+    <span class="ms-rank" id="ms-rank-display">Associate</span>
+  </div>
+  <div class="ms-body">
+    <div class="ms-scene" id="ms-scene"></div>
+  </div>
+</div>
 <!-- Konular Ekranı -->
+<!-- Konu Quiz Overlay -->
+<div id="topic-quiz-overlay">
+  <div class="tq-header">
+    <button class="tq-back" onclick="closeTopicQuiz()">&#8592; Geri</button>
+    <span id="tq-title" style="font-size:13px;font-weight:700;color:#5aafff"></span>
+    <span id="tq-progress" style="margin-left:auto;font-size:11px;color:rgba(90,175,255,0.5)"></span>
+  </div>
+  <div class="tq-body" id="tq-body"></div>
+</div>
+
 <div id="topics-screen">
   <div class="ts-header">
     <button class="ts-back" onclick="closeTopicsScreen()">&#8592; Geri</button>
@@ -992,7 +1101,40 @@ body.discipline-theme #results-screen {
           </div>
           <div style="font-size:20px;color:rgba(255,150,50,0.9);flex-shrink:0">›</div>
         </button>
+      
+
+</div>
+      <!-- The Family -->
+      <div id="mafia-btn-wrap" onclick="openMafiaScreen()" style="margin-top:8px;position:relative;cursor:pointer;border-radius:13px;overflow:hidden;border:1px solid rgba(180,30,20,0.4);background:linear-gradient(145deg,#0a0202,#160404);transition:.2s" onmouseover="this.style.borderColor='rgba(220,60,30,0.7)';this.style.background='linear-gradient(145deg,#120303,#1e0606)'" onmouseout="this.style.borderColor='rgba(180,30,20,0.4)';this.style.background='linear-gradient(145deg,#0a0202,#160404)'">
+        <div style="padding:12px 16px;display:flex;align-items:center;gap:14px">
+          <div style="font-size:1.6rem;filter:drop-shadow(0 0 8px rgba(220,50,20,0.9));flex-shrink:0">🌹</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:800;letter-spacing:.07em;background:linear-gradient(135deg,#c8a060,#e05030,#c83020);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">THE FAMILY</div>
+            <div style="font-size:10px;color:rgba(200,130,80,0.6);margin-top:2px;letter-spacing:.05em">Reading &amp; Dialogue Mode · 7 Rütbe</div>
+          </div>
+          <div style="font-size:18px;color:rgba(200,80,40,0.7);flex-shrink:0">›</div>
+        </div>
+        <div style="display:flex;justify-content:center;gap:5px;padding:0 16px 10px">
+          <span id="mafia-rank-label" style="font-size:8.5px;color:rgba(200,130,60,0.7);letter-spacing:.08em;font-weight:700">ASSOCIATE</span>
+        </div>
+        <!-- 7 Rütbe Progress -->
+        <div style="padding:0 14px 10px">
+          <div style="display:flex;gap:3px;margin-bottom:4px" id="mafia-rank-bars">
+            <div class="mrb" data-r="0" title="Associate" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
+            <div class="mrb" data-r="1" title="Soldier" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
+            <div class="mrb" data-r="2" title="Capo" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
+            <div class="mrb" data-r="3" title="Consigliere" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
+            <div class="mrb" data-r="4" title="Don" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
+            <div class="mrb" data-r="5" title="Underboss" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
+            <div class="mrb" data-r="6" title="Godfather" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:7.5px;color:rgba(180,100,60,0.35)">
+            <span>Associate</span><span>Godfather</span>
+          </div>
+        </div>
       </div>
+
+
     </div>
   </div>
 
@@ -1013,6 +1155,713 @@ body.discipline-theme #results-screen {
 <div class="toast" id="toast"></div>
 
 <script>
+
+// ── Mafia Buton UI ──
+var MAFIA_RANKS = ['Associate','Soldier','Capo','Consigliere','Don','Underboss','Godfather'];
+var MAFIA_RANK_COLORS = ['#8a8060','#c89040','#d4a030','#9060d0','#d060a0','#c04040','#e04020'];
+
+function updateMafiaBtn() {
+  var stats = getDisciplineStats();
+  var prog = stats.mafiaProgress || 0;
+  // Rütke indeksi (0-6)
+  var rankIdx = prog >= 6 ? 6 : prog >= 5 ? 5 : prog >= 4 ? 4 : prog >= 3 ? 3 : prog >= 2 ? 2 : prog >= 1 ? 1 : 0;
+  var rankName = MAFIA_RANKS[rankIdx];
+  var rankColor = MAFIA_RANK_COLORS[rankIdx];
+  
+  // Rank label
+  var lbl = document.getElementById('mafia-rank-label');
+  if (lbl) { lbl.textContent = rankName; lbl.style.color = rankColor; }
+  
+  // Rank bars
+  var bars = document.querySelectorAll('.mrb');
+  bars.forEach(function(bar, i) {
+    if (i <= rankIdx) {
+      bar.style.background = MAFIA_RANK_COLORS[i];
+      bar.style.boxShadow = '0 0 4px ' + MAFIA_RANK_COLORS[i];
+    } else {
+      bar.style.background = 'rgba(255,255,255,0.06)';
+      bar.style.boxShadow = 'none';
+    }
+  });
+  
+  // Godfather özel efekti
+  var wrap = document.getElementById('mafia-btn-wrap');
+  if (wrap && rankIdx >= 6) {
+    wrap.style.borderColor = 'rgba(224,64,32,0.8)';
+    wrap.style.boxShadow = '0 0 24px rgba(224,64,32,0.35)';
+  }
+}
+
+// Auth değişince güncelle
+var _prevOnAuthChangeMafia = window.onAuthChange;
+window.onAuthChange = function(user) {
+  if (typeof _prevOnAuthChangeMafia === 'function') _prevOnAuthChangeMafia(user);
+  setTimeout(updateMafiaBtn, 600);
+};
+
+// Sayfa yüklenince
+window.addEventListener('load', function() {
+  setTimeout(updateMafiaBtn, 800);
+});
+// ═══════════════════════════════════════════════════════════════
+// THE FAMILY — MAFIA STORY MODE
+// ═══════════════════════════════════════════════════════════════
+var MAFIA_MISSIONS = [
+  {
+    id:1, title:"Mission 1: The First Meeting",
+    location:"THE DON'S OFFICE — MIDNIGHT", rank_unlock:'mafia_associate',
+    scenes:[
+      {
+        npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"So... you want to be part of <em>this family</em>. They say you are clever. But clever men die young in this business. Tell me — why should I trust you?",
+        choices:[
+          {text:"I have always been loyal, Don. I would never betray the family.",hint:"✓ Present Perfect shows a lifelong truth",correct:true},
+          {text:"I am loyal, Don. I never betrayed nobody.",hint:"✗ Double negative — 'never betrayed anybody' is correct",correct:false},
+          {text:"Don, I'm being loyal since always.",hint:"✗ Wrong tense — use Present Perfect for ongoing states",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"My consigliere tells me you <em>handled a problem</em> last week — quietly, without drawing attention. Is that true?",
+        choices:[
+          {text:"Yes, Don. I took care of it. Nobody saw anything.",hint:"✓ Simple Past for completed actions",correct:true},
+          {text:"Yes, Don. I have took care about it yesterday.",hint:"✗ 'Have took' is wrong — Simple Past: 'took care of it'",correct:false},
+          {text:"Yes, Don. I was taking care of it last week.",hint:"✗ Past Continuous suggests ongoing — it was completed",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"Good. I need someone to deliver a message to the Barzini family. It must be done with <em>respect and authority</em>. Can you do this?",
+        choices:[
+          {text:"I can handle it, Don. I will make sure the message is delivered with respect.",hint:"✓ 'will' for commitment, modal verb used properly",correct:true},
+          {text:"I am able to do it, Don. I am going to be respectful, maybe.",hint:"✗ 'Maybe' shows uncertainty — show confidence to the Don",correct:false},
+          {text:"I can to do it, Don. I will delivering the message.",hint:"✗ 'Can to do' is wrong. 'Will delivering' → 'will deliver'",correct:false}
+        ]
+      }
+    ],
+    result:{icon:"🤝",rank:"ASSOCIATE",color:"#8a8060",
+      message:"The Don nods slowly. You have spoken with the right words — careful, loyal, strong. You are now part of the family. Welcome, Associate.",
+      italian:'"L\'uomo d\'onore."'}
+  },
+  {
+    id:2, title:"Mission 2: The Barzini Meeting",
+    location:"BARZINI WAREHOUSE — BROOKLYN", rank_unlock:'mafia_soldier',
+    scenes:[
+      {
+        npc:{name:"Barzini Capo",avatar:"🕴️",color:"#8090b0"},
+        text:"You come alone? That is either very brave or very stupid. Give me the message from Corleone. Choose your words carefully — my men are <em>watching</em>.",
+        choices:[
+          {text:"Don Corleone sends his respects. He wishes to discuss a matter of mutual benefit.",hint:"✓ Formal third person — correct diplomatic register",correct:true},
+          {text:"The Don wants you to listen to what he says to you.",hint:"✗ Too direct and commanding — wrong tone for negotiation",correct:false},
+          {text:"Corleone is sending me because he is wanting to talk business.",hint:"✗ 'Is wanting' is wrong — stative verbs don't use continuous",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Barzini Capo",avatar:"🕴️",color:"#8090b0"},
+        text:"Mutual benefit. Last time we <em>trusted</em> the Corleone family, we lost territory. Why should this time be different?",
+        choices:[
+          {text:"Because both families have suffered enough. A war helps nobody — it destroys everything we built.",hint:"✓ Present Perfect for shared experience, logical argument",correct:true},
+          {text:"Because if you don't agree, there will be consequences for you.",hint:"✗ Threatening language — not diplomatic in a negotiation",correct:false},
+          {text:"Because the two families have been suffering since a long time.",hint:"✗ 'Since a long time' is wrong — use 'for a long time'",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Barzini Capo",avatar:"🕴️",color:"#8090b0"},
+        text:"You speak well for a young man. What does Corleone offer in return for <em>our cooperation</em>?",
+        choices:[
+          {text:"Don Corleone is prepared to offer safe passage through his territory and a fair share of the northern docks.",hint:"✓ 'Is prepared to' — formal offer structure",correct:true},
+          {text:"He will give you some stuff from the north docks if you cooperate.",hint:"✗ Too casual — 'some stuff' is vague and disrespectful",correct:false},
+          {text:"Corleone he offers you the docks and maybe other things too.",hint:"✗ Double subject ('Corleone he') and 'maybe' shows weakness",correct:false}
+        ]
+      }
+    ],
+    result:{icon:"🔫",rank:"SOLDIER",color:"#c89040",
+      message:"The Barzini Capo stares at you, then extends his hand. You delivered the message with skill. Back at the Don's house, you are welcomed as a Soldier of the family.",
+      italian:'"Un vero soldato."'}
+  },
+  {
+    id:3, title:"Mission 3: The Council",
+    location:"THE FAMILY COUNCIL — LITTLE ITALY", rank_unlock:'mafia_capo',
+    scenes:[
+      {
+        npc:{name:"Consigliere Tom",avatar:"👔",color:"#90a0c0"},
+        text:"Three families want to expand into our territory. The Don has asked for your advice. Speak clearly and show you understand the <em>consequences</em>.",
+        choices:[
+          {text:"If we allow all three families in, we will lose control of the streets within six months.",hint:"✓ First conditional — real future consequence",correct:true},
+          {text:"If we would allow them, we were losing control of streets.",hint:"✗ Wrong verb forms for first conditional",correct:false},
+          {text:"We should allowing them because it is better for everyone maybe.",hint:"✗ 'Should allowing' is wrong — 'should allow'",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"And if we refuse all three — we make three enemies at once. There must be a <em>smarter way</em>.",
+        choices:[
+          {text:"We could negotiate with one family privately, offer limited rights, and use that to divide the other two.",hint:"✓ 'Could' for suggestion, clear strategic thinking",correct:true},
+          {text:"We must to refuse all of them because they will take advantage of us.",hint:"✗ 'Must to refuse' is wrong — 'must refuse' (no 'to' after must)",correct:false},
+          {text:"I think maybe we can try to talk with one of them and see what happens.",hint:"✗ Too vague — 'I think maybe' shows no authority",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"I like this plan. But if the chosen family <em>breaks the agreement</em>, what is our response?",
+        choices:[
+          {text:"Should they betray us, we withdraw all cooperation immediately and make an example of their leadership.",hint:"✓ Inverted conditional — advanced formal English",correct:true},
+          {text:"If they will break it, we are going to punish them very badly.",hint:"✗ Don't use 'will' in the if-clause of a conditional",correct:false},
+          {text:"When they betray us we punish them and everyone will see it.",hint:"✗ 'When' assumes betrayal as certain — 'If' is more appropriate",correct:false}
+        ]
+      }
+    ],
+    result:{icon:"💼",rank:"CAPO",color:"#d4a030",
+      message:"The Don is impressed. Your thinking is sharp, your English precise. He announces: you are now a Capo. The room respects you differently.",
+      italian:'"Il Capo ha parlato."'}
+  },
+  // ─── GÖREV 4: Underboss ──────────────────────────────────────
+  {
+    id:4, title:"Mission 4: The Negotiation",
+    location:"PRIVATE DINING ROOM — MANHATTAN", rank_unlock:'mafia_consigliere',
+    scenes:[
+      {
+        npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"Three men have come to me asking for the same territory. I need you to mediate. Use your words to find a solution that <em>keeps the peace</em>.",
+        choices:[
+          {text:"If each family takes a different district, we avoid conflict and all three benefit.",hint:"✓ First conditional — practical solution, clear logic",correct:true},
+          {text:"We should giving each family something so they will be happy.",hint:"✗ 'Should giving' is wrong — 'should give'. Too vague.",correct:false},
+          {text:"Maybe if we would split it, everyone is satisfied probably.",hint:"✗ Wrong conditional form. 'Maybe' and 'probably' show weakness.",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Rival Capo",avatar:"🕴️",color:"#9090b0"},
+        text:"Why should we trust your arrangement? The last deal your family made — it <em>wasn't honored</em>.",
+        choices:[
+          {text:"That was then. This arrangement is backed by the Don's word — and his word has never been broken.",hint:"✓ Past vs present contrast, confident authoritative tone",correct:true},
+          {text:"Those things happened but it is not relevant now for this situation.",hint:"✗ Passive dismissal — doesn't address the concern directly",correct:false},
+          {text:"You should not bring up old things. We are talking about today.",hint:"✗ Defensive tone — shows weakness in negotiation",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"Well done. Now write the terms. Be precise — <em>a contract must be clear</em>.",
+        choices:[
+          {text:"Each family will operate exclusively within their assigned territory. Any violation will be treated as a declaration of war.",hint:"✓ Future will for terms, formal language, clear consequence",correct:true},
+          {text:"The families are going to stay in their areas and if they don't there are problems.",hint:"✗ Too informal — 'there are problems' lacks authority",correct:false},
+          {text:"Everyone must to stay in their own place or the Don gets angry.",hint:"✗ 'Must to stay' is wrong — 'must stay'. Informal ending.",correct:false}
+        ]
+      }
+    ],
+    result:{icon:"🕵️",rank:"CONSIGLIERE",color:"#9060d0",
+      message:"The Don places his hand on your shoulder. 'You have the mind of a consigliere,' he says. The three families sign. You have earned the title.",
+      italian:'"Il consigliere del Don."'}
+  },
+  {
+    id:5, title:"Mission 5: The Betrayal",
+    location:"ABANDONED WAREHOUSE — NEW JERSEY", rank_unlock:'mafia_don',
+    scenes:[
+      {
+        npc:{name:"Traitor",avatar:"😤",color:"#c04040"},
+        text:"I know what you did for the Don. And I know something the Don doesn't. <em>Help me</em> — or I'll make sure everyone hears it.",
+        choices:[
+          {text:"You've made a serious mistake coming to me with this. I suggest you reconsider — quickly.",hint:"✓ Present Perfect for immediate relevance, calm threat",correct:true},
+          {text:"I will not help you and you should be scared of what happens next.",hint:"✗ Too direct — reveals emotion, loses composure",correct:false},
+          {text:"You are making a big error right now and I'm not happy about this.",hint:"✗ 'I'm not happy' is too personal — lacks authority",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Consigliere Tom",avatar:"👔",color:"#90a0c0"},
+        text:"The Don heard about this man. He wants to know — how did you <em>handle it</em>?",
+        choices:[
+          {text:"He was offered a choice. He made the wrong one. It won't be a problem anymore.",hint:"✓ Passive voice for discretion — professional restraint",correct:true},
+          {text:"I talked to him and I think he understood what I was saying to him.",hint:"✗ Too vague — 'I think' shows uncertainty about outcome",correct:false},
+          {text:"I did what was necessary. He is gone now.",hint:"Acceptable but 'handled discreetly' is more professional",correct:false}
+        ]
+      },
+      {
+        npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"Good. You have learned the most important lesson. In this business, <em>silence is power</em>. Do you understand?",
+        choices:[
+          {text:"I understand, Don. A man who speaks too much reveals too much. I have nothing more to say.",hint:"✓ Perfect response — mirrors the Don's wisdom, then stays silent",correct:true},
+          {text:"Yes Don, I understand about silence and I will always remember this lesson.",hint:"✗ Over-explaining — proves you don't understand silence",correct:false},
+          {text:"Of course. I am always silent when it is the best option for everyone.",hint:"✗ 'When it is the best option' — conditional clause shows doubt",correct:false}
+        ]
+      }
+    ],
+    result:{icon:"👑",rank:"DON",color:"#d060a0",
+      message:"The Don looks at you with something close to pride. 'You are ready,' he says. The men around the table rise. You have become a Don.",
+      italian:'"Il Don ha parlato."'}
+  }
+,
+  {id:4,title:"Mission 4: The Betrayal",location:"ABANDONED DOCKS — EAST RIVER",rank_unlock:"mafia_consigliere",
+    scenes:[
+      {npc:{name:"Santino",avatar:"😤",color:"#c06050"},
+        text:"I heard you spoke with the Barzinis without telling me. <em>Secrets are dangerous</em> in this family. Give me one reason I should trust you still.",
+        choices:[
+          {text:"Everything I did was for the family. I reported everything to the Don — ask him yourself.",hint:"✓ Direct, confident, refers to authority",correct:true},
+          {text:"I didn't do nothing wrong. You always suspect people for no reason.",hint:"✗ Double negative: 'didn't do nothing'",correct:false},
+          {text:"Why you are always accusing me? I have did nothing wrong.",hint:"✗ 'Why you are' — missing auxiliary. 'Have did' → 'have done'",correct:false}
+        ]
+      },
+      {npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"Enough. <em>Loyalty is not spoken</em> — it is shown. From today, you answer to no one but me. Understood?",
+        choices:[
+          {text:"Understood, Don. I am honoured by your trust and I will not disappoint you.",hint:"✓ Formal acknowledgment — correct verb forms",correct:true},
+          {text:"Yes Don, I will not to disappoint you.",hint:"✗ 'Will not to disappoint' → 'will not disappoint'",correct:false},
+          {text:"I am understanding and I won't disappoint you never.",hint:"✗ Stative verb + double negative",correct:false}
+        ]
+      },
+      {npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"Now — <em>tell me what you observed</em> during your time with the Barzinis. Every detail matters.",
+        choices:[
+          {text:"Their operation is smaller than it appears. They rely heavily on two men — remove them, and the structure collapses.",hint:"✓ Present Simple for observations + strategic analysis",correct:true},
+          {text:"I have seen that they was not so strong as people think.",hint:"✗ 'They was' → 'they were'. 'Not so strong as' → 'not as strong as'",correct:false},
+          {text:"The Barzinis, they are having many problems and their boss is not respected much.",hint:"✗ 'Are having' — stative. Double subject 'The Barzinis, they'",correct:false}
+        ]
+      }
+    ],
+    result:{icon:"🕵️",rank:"CONSIGLIERE",color:"#9060d0",
+      message:"The Don listens carefully, then nods. You have earned the title of Consigliere — the one who sees clearly and speaks truthfully. The family trusts your counsel.",
+      italian:'"Il consigliere del Don."'}
+  },
+  {id:5,title:"Mission 5: The War Council",location:"CORLEONE COMPOUND — LONG ISLAND",rank_unlock:"mafia_don",
+    scenes:[
+      {npc:{name:"Consigliere Tom",avatar:"👔",color:"#90a0c0"},
+        text:"The Tattaglia family has broken the peace. Three of our men were <em>ambushed last night</em>. The caporegimes want blood. How do we respond?",
+        choices:[
+          {text:"We must not act in anger. If we retaliate without a plan, we risk a full war that destroys everything we built.",hint:"✓ 'Must not' + first conditional — measured and strategic",correct:true},
+          {text:"We should to attack them immediately before they attack us again.",hint:"✗ 'Should to attack' — no 'to' after modal verbs",correct:false},
+          {text:"We are needing a plan because if we will attack, it is dangerous.",hint:"✗ Stative 'are needing'. 'If we will attack' — no 'will' in if-clause",correct:false}
+        ]
+      },
+      {npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"Good counsel. But the caporegimes want action. <em>How do you propose</em> we satisfy their demand for justice while keeping the peace?",
+        choices:[
+          {text:"We identify the men who gave the order and act against them specifically — not the whole family.",hint:"✓ Targeted proposal, clear distinction — precise language",correct:true},
+          {text:"Let's killing the Tattaglia boss. After that all problems will finish.",hint:"✗ 'Let's killing' → 'let's kill'",correct:false},
+          {text:"Maybe we could try to talk first and if they don't listen then we see.",hint:"✗ 'Then we see' — vague. A Don needs a concrete plan",correct:false}
+        ]
+      },
+      {npc:{name:"Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"You think like a Don. Are you prepared to carry the weight of every decision, <em>every consequence</em>?",
+        choices:[
+          {text:"I have always understood that power comes with responsibility. I am prepared, Don.",hint:"✓ Present Perfect for understanding + formal commitment",correct:true},
+          {text:"Yes Don, I am prepared since many years to be a leader.",hint:"✗ 'Since many years' → 'for many years'",correct:false},
+          {text:"I will be ready. I am going to learn everything what I need.",hint:"✗ 'Everything what' → 'everything that'",correct:false}
+        ]
+      }
+    ],
+    result:{icon:"👑",rank:"DON",color:"#d060a0",
+      message:"The room falls silent. The Don rises and nods. You are now a Don — one step from the highest seat in the family. The men around the table rise.",
+      italian:'"Il Don ha scelto."'}
+  },
+  {id:6,title:"Mission 6: The Oath",location:"ST. PATRICK'S CATHEDRAL — NEW YORK",rank_unlock:"mafia_godfather",
+    scenes:[
+      {npc:{name:"Old Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"I am old. <em>My time is ending.</em> Before I go, I need to hear you say it — do you swear to protect this family above all else?",
+        choices:[
+          {text:"I swear on my life, Don. Everything I have, everything I am — belongs to this family.",hint:"✓ Solemn oath — simple present, powerful and direct",correct:true},
+          {text:"I am swearing Don, I will always to protect the family.",hint:"✗ 'Am swearing' — not progressive here. 'Will always to protect' → 'will always protect'",correct:false},
+          {text:"Yes Don I have sweared and I promise that I protect them.",hint:"✗ 'Sweared' → 'sworn'. 'I protect them' → 'I will protect them'",correct:false}
+        ]
+      },
+      {npc:{name:"Old Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"When enemies come — and they always come — <em>what is your first move</em>?",
+        choices:[
+          {text:"Gather information first. A man who acts without knowing makes enemies of his own allies.",hint:"✓ Imperative for action + relative clause — shows wisdom",correct:true},
+          {text:"We should attack first so that they cannot attack us before we attack.",hint:"✗ Repetitive and shows no strategic restraint",correct:false},
+          {text:"I will to ask my soldiers what they think and then I decide later.",hint:"✗ 'Will to ask' → 'will ask'. 'I decide later' → 'I will decide'",correct:false}
+        ]
+      },
+      {npc:{name:"Old Don Corleone",avatar:"👴",color:"#c8a060"},
+        text:"<em>You were ready</em> before you were called. That is the mark of a true Don.",
+        choices:[
+          {text:"I will make sure your legacy is honoured in everything we do, Don.",hint:"✓ Future 'will' + passive 'is honoured' — respectful and precise",correct:true},
+          {text:"Thank you Don. I am remembering this always and your legacy it will be good.",hint:"✗ Stative 'am remembering'. Double subject 'your legacy it'",correct:false},
+          {text:"Yes Don. I will remembered this and do everything what you want.",hint:"✗ 'Will remembered' → 'will remember'. 'What you want' → 'that you wanted'",correct:false}
+        ]
+      }
+    ],
+    result:{icon:"🌹",rank:"UNDERBOSS",color:"#c04040",
+      message:"The old Don smiles and closes his eyes. When he opens them again, he looks at you as an equal for the first time. You are now Underboss — one step remains.",
+      italian:'"Il sottoboss della famiglia."'}
+  },
+  {id:7,title:"Mission 7: The Godfather",location:"THE FAMILY VAULT — UNDISCLOSED LOCATION",rank_unlock:"mafia_godfather",
+    scenes:[
+      {npc:{name:"The Council",avatar:"🕴️",color:"#a08060"},
+        text:"All five families are watching. The chair is empty. <em>You have been proposed.</em> Do you accept?",
+        choices:[
+          {text:"I accept — not as a conqueror, but as a servant of this family's future. My word is my bond.",hint:"✓ Contrast structure + oath — elevated register",correct:true},
+          {text:"Yes I accept. I will be the best leader that there ever was.",hint:"✗ Arrogant. A Godfather does not boast.",correct:false},
+          {text:"I am accepting. I will do the job good and everyone can trust me.",hint:"✗ Stative verb. 'Do the job good' → 'do the job well'",correct:false}
+        ]
+      },
+      {npc:{name:"The Council",avatar:"🕴️",color:"#a08060"},
+        text:"One last question. <em>What is the law</em> of this family above all others?",
+        choices:[
+          {text:"Loyalty — to the family, to the code, and to those who cannot protect themselves.",hint:"✓ Parallel structure — the rhetoric of a true leader",correct:true},
+          {text:"The law is that nobody must talk about what we do and we protect each other.",hint:"✗ Vague and informal for a Godfather's declaration",correct:false},
+          {text:"Our law is that we don't betray and we are always loyal to ourself.",hint:"✗ 'Loyal to ourself' → 'loyal to ourselves'",correct:false}
+        ]
+      },
+      {npc:{name:"The Council",avatar:"🕴️",color:"#a08060"},
+        text:"Then it is decided. From this moment — <em>you are the Godfather.</em> The family is yours.",
+        choices:[
+          {text:"I am grateful for your trust. This family will endure — not through fear, but through honour.",hint:"✓ Perfect acceptance: 'will endure', contrast structure — Godfather register",correct:true},
+          {text:"Thank you. I will make sure everything goes good and the family is safe.",hint:"✗ 'Goes good' → 'goes well'. Too casual for these words",correct:false},
+          {text:"I am thanking all of you. We will to continue the work of the old Don.",hint:"✗ Stative. 'Will to continue' → 'will continue'",correct:false}
+        ]
+      }
+    ],
+    result:{icon:"🌹",rank:"GODFATHER",color:"#e04020",
+      message:"Silence. Then, one by one, every man bows his head. You are the Godfather. The most feared, the most respected. Protect this family with your life.",
+      italian:'"Benvenuto, Padrino."'}
+  }];
+
+var _mafiaScene=0, _mafiaScore=0, _mafiaMission=null, _mafiaDialogLog=[];
+
+function openMafiaScreen() {
+  var el = document.getElementById('mafia-screen');
+  if (!el) return;
+  el.classList.add('open');
+  var stats = getDisciplineStats();
+  var prog = stats.mafiaProgress||0;
+  _mafiaUpdateRank(prog);
+  // Ana sayfadaki barları da güncelle
+  var bars = document.querySelectorAll('.mrb');
+  if (bars.length) _mafiaUpdateRank(prog);
+  _mafiaRenderMissionSelect();
+}
+function closeMafiaScreen() {
+  var el = document.getElementById('mafia-screen');
+  if (el) el.classList.remove('open');
+}
+function _mafiaUpdateRank(prog) {
+  var RANKS = [
+    {name:'Associate',   min:0, color:'#8a8060'},
+    {name:'Soldier',     min:1, color:'#c89040'},
+    {name:'Capo',        min:2, color:'#d4a030'},
+    {name:'Consigliere', min:3, color:'#9060d0'},
+    {name:'Underboss',   min:4, color:'#d060a0'},
+    {name:'Don',         min:5, color:'#e04020'},
+    {name:'Godfather',   min:6, color:'#ff2000'},
+  ];
+  var rankIdx = 0;
+  for (var i = RANKS.length-1; i >= 0; i--) {
+    if (prog >= RANKS[i].min) { rankIdx = i; break; }
+  }
+  var rank = RANKS[rankIdx];
+  var el = document.getElementById('ms-rank-display');
+  if (el) { el.textContent = rank.name; el.style.color = rank.color; }
+  // Progress bars güncelle
+  var bars = document.querySelectorAll('.mrb');
+  bars.forEach(function(bar, i) {
+    var r = RANKS[i];
+    var filled = prog >= r.min;
+    var current = i === rankIdx;
+    bar.style.background = filled
+      ? (current ? rank.color : 'rgba(200,130,60,0.4)')
+      : 'rgba(255,255,255,0.06)';
+    if (current) bar.style.boxShadow = '0 0 6px ' + rank.color;
+    else bar.style.boxShadow = 'none';
+  });
+  // Ana ekrandaki label
+  var lbl = document.getElementById('mafia-rank-label');
+  if (lbl) { lbl.textContent = rank.name.toUpperCase(); lbl.style.color = rank.color; }
+}
+function _mafiaRenderMissionSelect() {
+  var stats = getDisciplineStats();
+  var prog = stats.mafiaProgress||0;
+  var scene = document.getElementById('ms-scene');
+  if (!scene) return;
+  var html = '<div style="text-align:center;padding:24px 0 16px">'
+    +'<div style="font-size:2rem;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(180,30,20,0.8))">🌹</div>'
+    +'<div style="font-size:1.3rem;font-weight:800;color:#c8a060;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">The Family</div>'
+    +'<div style="font-size:11px;color:rgba(180,140,100,0.5);letter-spacing:.08em;margin-bottom:24px">READING &amp; DIALOGUE MODE</div>'
+    +'</div>';
+  MAFIA_MISSIONS.forEach(function(m,i) {
+    var unlocked = prog >= i;
+    var done = prog > i;
+    var bc = unlocked ? 'rgba(180,30,20,0.3)' : 'rgba(180,30,20,0.1)';
+    var bg = unlocked ? 'rgba(30,8,6,0.9)' : 'rgba(15,5,4,0.9)';
+    html += '<div style="background:'+bg+';border:1px solid '+bc+';border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:'+(unlocked?'pointer':'default')+';display:flex;align-items:center;gap:12px" '
+      +(unlocked?'onclick="_mafiaStartMission('+i+')"':'')+' >'
+      +'<div style="font-size:1.4rem;opacity:'+(unlocked?1:0.25)+'">'+( done?'✅':unlocked?'🎯':'🔒')+'</div>'
+      +'<div><div style="font-size:12px;font-weight:700;color:'+(unlocked?'#c8a060':'rgba(180,140,100,0.3)')+';margin-bottom:2px">'+m.title+'</div>'
+      +'<div style="font-size:10.5px;color:rgba(180,140,100,'+(unlocked?0.5:0.2)+')">'+m.location+'</div></div>'
+      +'</div>';
+  });
+  scene.innerHTML = html;
+}
+function _mafiaStartMission(idx) {
+  _mafiaMission = MAFIA_MISSIONS[idx];
+  _mafiaScene = 0; _mafiaScore = 0; _mafiaDialogLog = [];
+  _mafiaRenderScene();
+}
+function _mafiaRenderScene() {
+  var m = _mafiaMission;
+  var s = m.scenes[_mafiaScene];
+  var scene = document.getElementById('ms-scene');
+  if (!scene) return;
+  var html = '<div class="ms-location">'+m.location+'</div>';
+  _mafiaDialogLog.forEach(function(e) {
+    html += '<div class="ms-dialog"><div class="ms-npc">'
+      +'<div class="ms-npc-avatar">'+e.npc.avatar+'</div>'
+      +'<div class="ms-npc-bubble"><div class="ms-npc-name" style="color:'+e.npc.color+'">'+e.npc.name+'</div>'
+      +'<div class="ms-npc-text">'+e.npcText+'</div></div></div></div>';
+    if (e.playerChoice) {
+      html += '<div class="ms-dialog" style="display:flex;justify-content:flex-end">'
+        +'<div style="background:rgba(20,30,10,0.8);border:1px solid rgba(80,120,50,0.3);border-radius:10px 0 10px 10px;padding:10px 14px;max-width:80%;font-size:12px;color:rgba(180,220,160,0.9)">'+e.playerChoice+'</div></div>';
+    }
+  });
+  html += '<div class="ms-dialog"><div class="ms-npc">'
+    +'<div class="ms-npc-avatar">'+s.npc.avatar+'</div>'
+    +'<div class="ms-npc-bubble"><div class="ms-npc-name" style="color:'+s.npc.color+'">'+s.npc.name+'</div>'
+    +'<div class="ms-npc-text">'+s.text+'</div></div></div></div>';
+    // Şıkları karıştır — doğru cevap sabit index'te kalmasın
+  var _shuffled = s.choices.map(function(ch,i){return {ch:ch};}).sort(function(){return Math.random()-0.5;});
+  var sceneEl = document.getElementById('ms-scene');
+  if (sceneEl) sceneEl._shuffled = _shuffled;
+  html += '<div class="ms-choices"><div class="ms-choice-label">Choose your response:</div>';
+  _shuffled.forEach(function(item,ci) {
+    html += '<button class="ms-choice" id="ms-ch-'+ci+'" onclick="_mafiaChoose('+ci+')">'
+      +item.ch.text+'<div class="ms-choice-hint">'+item.ch.hint+'</div></button>';
+  });
+  html += '</div>';
+  var isLast = _mafiaScene >= m.scenes.length-1;
+  html += '<button class="ms-next-btn" id="ms-next-btn" onclick="'+(isLast?'_mafiaFinish()':'_mafiaNextScene()')+'">'+( isLast?'🌹 Complete Mission':'Continue →')+'</button>';
+  scene.innerHTML = html;
+}
+function _mafiaChoose(ci) {
+  var s = _mafiaMission.scenes[_mafiaScene];
+  var scene = document.getElementById('ms-scene');
+  var shuffled = scene && scene._shuffled ? scene._shuffled : s.choices.map(function(ch,i){return {ch:ch,orig:i};});
+  var item = shuffled[ci];
+  var choice = item.ch;
+  shuffled.forEach(function(it,i) {
+    var btn = document.getElementById('ms-ch-'+i);
+    if (!btn) return;
+    btn.disabled = true;
+    if (i===ci) btn.classList.add(choice.correct?'correct':'wrong');
+    else if (it.ch.correct && !choice.correct) btn.classList.add('correct');
+  });
+  if (choice.correct) _mafiaScore++;
+  var nb = document.getElementById('ms-next-btn');
+  if (nb) nb.classList.add('show');
+  _mafiaDialogLog.push({npc:s.npc, npcText:s.text, playerChoice:choice.text});
+}
+function _mafiaNextScene() {
+  _mafiaScene++;
+  _mafiaRenderScene();
+  var el = document.getElementById('ms-scene');
+  if (el) setTimeout(function(){el.scrollTop=el.scrollHeight;},100);
+}
+function _mafiaFinish() {
+  var m = _mafiaMission;
+  var pct = Math.round(_mafiaScore/m.scenes.length*100);
+  var pass = pct >= 67;
+  var scene = document.getElementById('ms-scene');
+  if (!scene) return;
+  if (pass) {
+    var stats = getDisciplineStats();
+    if (!stats.mafiaProgress) stats.mafiaProgress = 0;
+    if (stats.mafiaProgress < m.id) { stats.mafiaProgress = m.id; saveDisciplineStats(stats); }
+    setTimeout(checkAndUnlockAchievements, 400);
+    _mafiaUpdateRank(m.id);
+    scene.innerHTML = '<div class="ms-result">'
+      +'<div class="ms-rank-reveal">'+m.result.icon+'</div>'
+      +'<div class="ms-rank-name" style="color:'+m.result.color+'">'+m.result.rank+'</div>'
+      +'<div class="ms-rank-subtitle">'+m.result.italian+'</div>'
+      +'<div style="font-size:13px;color:rgba(200,170,140,0.75);line-height:1.7;margin-bottom:20px;max-width:380px;margin:0 auto 20px">'+m.result.message+'</div>'
+      +'<div style="font-size:12px;color:rgba(180,140,80,0.6);margin-bottom:20px">'+_mafiaScore+'/'+m.scenes.length+' correct</div>'
+      +'<button onclick="_mafiaRenderMissionSelect()" style="background:rgba(180,30,20,0.15);border:1px solid rgba(180,30,20,0.4);color:#e05040;border-radius:10px;padding:11px 28px;font-family:\'Roboto\',sans-serif;font-size:13px;font-weight:700;cursor:pointer">← Missions</button>'
+      +'</div>';
+  } else {
+    scene.innerHTML = '<div class="ms-result">'
+      +'<div style="font-size:3rem;margin-bottom:12px;opacity:0.5">💀</div>'
+      +'<div style="font-size:1.1rem;font-weight:800;color:#c05040;margin-bottom:8px">MISSION FAILED</div>'
+      +'<div style="font-size:13px;color:rgba(180,130,100,0.6);margin-bottom:20px;line-height:1.6">The Don is displeased. Your words lacked authority.<br>Study your English and try again.</div>'
+      +'<div style="font-size:12px;color:rgba(180,140,80,0.5);margin-bottom:20px">'+_mafiaScore+'/'+m.scenes.length+' correct</div>'
+      +'<button onclick="_mafiaStartMission('+(m.id-1)+')" style="background:rgba(180,30,20,0.12);border:1px solid rgba(180,30,20,0.35);color:#e05040;border-radius:10px;padding:11px 28px;font-family:\'Roboto\',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-right:8px">Try Again</button>'
+      +'<button onclick="_mafiaRenderMissionSelect()" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.35);border-radius:10px;padding:11px 28px;font-family:\'Roboto\',sans-serif;font-size:13px;font-weight:700;cursor:pointer">← Back</button>'
+      +'</div>';
+  }
+}
+
+
+// ── KONU SORULARI (5'er soru × 9 konu) ──
+const TOPIC_QUESTIONS = {
+  simple_past: [
+    {type:'fillblank',sentence:'She ___ her keys yesterday.',opts:['lose','lost','losted','losing'],ans:1,explanation:'lose → lost (düzensiz V2)'},
+    {type:'fillblank',sentence:'___ you see the film last night?',opts:['Do','Did','Does','Were'],ans:1,explanation:'Simple Past soru: Did + V1'},
+    {type:'fillblank',sentence:'They ___ very tired after the trip.',opts:['are','were','was','be'],ans:1,explanation:'Çoğul özne + geçmiş = were'},
+    {type:'fillblank',sentence:'He ___ his homework before dinner.',opts:['finish','finishes','finished','finishing'],ans:2,explanation:'Düzenli fiil + -ed → finished'},
+    {type:'fillblank',sentence:'I ___ go to the party yesterday.',opts:["didn't","doesn't","wasn't","don't"],ans:0,explanation:"Olumsuz Simple Past: didn't + V1"}
+  ],
+  present_simple: [
+    {type:'fillblank',sentence:'She ___ to school every day.',opts:['walk','walks','walking','walked'],ans:1,explanation:'3. tekil şahıs (she) + geniş zaman = walks'},
+    {type:'fillblank',sentence:'They ___ football right now.',opts:['play','plays','are playing','played'],ans:2,explanation:'Şu an devam ediyor = Present Continuous (are playing)'},
+    {type:'fillblank',sentence:'Water ___ at 100 degrees.',opts:['boil','boils','is boiling','boiled'],ans:1,explanation:'Genel gerçek = Present Simple (boils)'},
+    {type:'fillblank',sentence:'Listen! Someone ___ the door.',opts:['knock','knocks','is knocking','knocked'],ans:2,explanation:'Listen = şu an oluyor → is knocking'},
+    {type:'fillblank',sentence:'He ___ coffee every morning.',opts:["don't drink","doesn't drink","isn't drinking","not drink"],ans:1,explanation:"3. tekil olumsuz = doesn't + V1"}
+  ],
+  future: [
+    {type:'fillblank',sentence:'Look at those clouds! It ___ rain.',opts:["will","is going to","would","shall"],ans:1,explanation:'Kanıta dayalı tahmin = be going to'},
+    {type:'fillblank',sentence:'I promise I ___ call you tomorrow.',opts:["am going to","will","would","shall"],ans:1,explanation:'Söz/vaat = will'},
+    {type:'fillblank',sentence:'We ___ visit Paris next summer. (plan)',opts:["will","are going to","would","shall"],ans:1,explanation:'Önceden planlanmış = be going to'},
+    {type:'fillblank',sentence:'A: I need help. B: I ___ help you!',opts:["am going to","will","would","shall"],ans:1,explanation:'Anlık karar = will'},
+    {type:'fillblank',sentence:'She ___ be 30 next year.',opts:["is going to","will","would","shall"],ans:1,explanation:'Basit gelecek tahmini = will'}
+  ],
+  question_tags: [
+    {type:'fillblank',sentence:"You like tea, ___ you?",opts:["don't","do","isn't","are"],ans:0,explanation:"Olumlu cümle → olumsuz ek: don't you"},
+    {type:'fillblank',sentence:"She isn't here, ___ she?",opts:["isn't","is","doesn't","does"],ans:1,explanation:"Olumsuz cümle → olumlu ek: is she"},
+    {type:'fillblank',sentence:"They went home, ___ they?",opts:["did","didn't","do","don't"],ans:1,explanation:"Positive Simple Past → negative tag: didn't they"},
+    {type:'fillblank',sentence:"It was cold yesterday, ___ it?",opts:["was","wasn't","is","isn't"],ans:1,explanation:"Positive was → negative tag: wasn't it"},
+    {type:'fillblank',sentence:"He can swim, ___ he?",opts:["can","can't","does","doesn't"],ans:1,explanation:"Positive can → negative tag: can't he"}
+  ],
+  so_neither: [
+    {type:'fillblank',sentence:'"I love pizza." "___ do I."',opts:["So","Neither","Too","Either"],ans:0,explanation:'Olumlu katılma: So do I'},
+    {type:'fillblank',sentence:'"I can\'t swim." "___ can I."',opts:["So","Neither","Too","Either"],ans:1,explanation:"Olumsuz katılma: Neither can I"},
+    {type:'fillblank',sentence:'"She works hard." "I do, ___."',opts:["so","neither","too","either"],ans:2,explanation:'Cümle sonunda olumlu katılma: too'},
+    {type:'fillblank',sentence:'"He doesn\'t like coffee." "I don\'t, ___."',opts:["so","neither","too","either"],ans:3,explanation:"Cümle sonunda olumsuz katılma: either"},
+    {type:'fillblank',sentence:'"We went to Paris." "___ did they."',opts:["So","Neither","Too","Either"],ans:0,explanation:'Simple Past olumlu katılma: So did they'}
+  ],
+  comparatives: [
+    {type:'fillblank',sentence:'This book is ___ than that one.',opts:["more interesting","interestinger","most interesting","the most interesting"],ans:0,explanation:'Uzun sıfat karşılaştırma: more + adjective'},
+    {type:'fillblank',sentence:'She is ___ student in the class.',opts:["the most good","the best","the better","most best"],ans:1,explanation:'good → better → the best (düzensiz)'},
+    {type:'fillblank',sentence:'Today is ___ than yesterday.',opts:["more hot","hotter","hottest","the hottest"],ans:1,explanation:'Kısa sıfat + -er: hotter'},
+    {type:'fillblank',sentence:'This is ___ film I have ever seen.',opts:["the most boring","more boring","boringer","most boring"],ans:0,explanation:'En üstünlük: the most + uzun sıfat'},
+    {type:'fillblank',sentence:'He runs ___ than his brother.',opts:["more fast","faster","fastest","the fastest"],ans:1,explanation:'Kısa sıfat + -er: faster'}
+  ],
+  pronouns: [
+    {type:'fillblank',sentence:'That bag is ___. (Ben)',opts:["my","mine","me","I"],ans:1,explanation:"İyelik zamiri (pronoun): mine"},
+    {type:'fillblank',sentence:'She hurt ___ while cooking.',opts:["her","hers","herself","she"],ans:2,explanation:'Dönüşlü zamir: herself'},
+    {type:'fillblank',sentence:'This is ___ car. (Onların)',opts:["their","theirs","them","they"],ans:0,explanation:"İyelik belirteci (adjective): their + isim"},
+    {type:'fillblank',sentence:'"Is this your pen?" "No, it\'s ___." (Onun - erkek)',opts:["his","him","he","himself"],ans:0,explanation:"İyelik zamiri: his (isim olmadan kullanılır)"},
+    {type:'fillblank',sentence:'The children made the cake ___.',opts:["them","their","themselves","they"],ans:2,explanation:'Dönüşlü zamir (çoğul): themselves'}
+  ],
+  quantifiers: [
+    {type:'fillblank',sentence:'There isn\'t ___ milk in the fridge.',opts:["many","much","few","a few"],ans:1,explanation:'Sayılamaz isim (milk) + olumsuz: much'},
+    {type:'fillblank',sentence:'I have ___ friends in this city.',opts:["much","a little","a few","little"],ans:2,explanation:'Sayılabilir isim (friends) + az ama var: a few'},
+    {type:'fillblank',sentence:'She has ___ time to finish. (Yeterli değil)',opts:["a little","little","few","a few"],ans:1,explanation:'Sayılamaz + olumsuz anlam = little (yeterli değil)'},
+    {type:'fillblank',sentence:'Do you have ___ questions?',opts:["some","any","much","little"],ans:1,explanation:'Soru cümlesi → any'},
+    {type:'fillblank',sentence:'There are ___ students in the class. (Çok)',opts:["much","many","a little","little"],ans:1,explanation:'Sayılabilir isim (students) + çok: many'}
+  ],
+  vocabulary_u4: [
+    {type:'fillblank',sentence:'The police found ___ that proved his innocence.',opts:["evidence","sarcasm","caution","globalization"],ans:0,explanation:'evidence = kanıt, delil'},
+    {type:'fillblank',sentence:'Be ___ when driving in icy conditions.',opts:["sarcastic","cautious","reluctant","appropriate"],ans:1,explanation:'cautious = dikkatli, ihtiyatlı'},
+    {type:'fillblank',sentence:'His ___ comment made everyone laugh nervously.',opts:["cautious","appropriate","sarcastic","reluctant"],ans:2,explanation:'sarcastic = alaycı, iğneleyici'},
+    {type:'fillblank',sentence:'Please wear ___ clothing to the interview.',opts:["sarcastic","reluctant","cautious","appropriate"],ans:3,explanation:'appropriate = uygun, yerinde'},
+    {type:'fillblank',sentence:'She was ___ to accept the new job offer.',opts:["cautious","sarcastic","reluctant","appropriate"],ans:2,explanation:'reluctant = isteksiz, gönülsüz'}
+  ]
+};
+
+
+// ── KONU SINAVI ──
+var _tqTid = null;
+var _tqAnswered = {};
+
+function startTopicQuiz(tid, topicName) {
+  _tqTid = tid;
+  _tqAnswered = {};
+  var qs = TOPIC_QUESTIONS[tid];
+  if (!qs) { showToast('Bu konu için soru bulunamadı', ''); return; }
+  // Karıştır
+  qs = qs.slice().sort(function(){ return Math.random()-0.5; });
+  closeTopicsScreen();
+  document.getElementById('tq-title').textContent = topicName;
+  renderTopicQuiz(qs, tid);
+  document.getElementById('topic-quiz-overlay').classList.add('open');
+}
+
+function renderTopicQuiz(qs, tid) {
+  var body = document.getElementById('tq-body');
+  var html = '';
+  qs.forEach(function(q, qi) {
+    var sent = q.sentence.replace('___', '<span class="tq-blank">___</span>');
+    html += '<div class="tq-card" id="tq-card-'+qi+'">';
+    html += '<div class="tq-q">'+(qi+1)+'. '+sent+'</div>';
+    html += '<div class="tq-opts">';
+    q.opts.forEach(function(opt, oi) {
+      html += '<button class="tq-opt" id="tq-opt-'+qi+'-'+oi+'" onclick="_tqAnswer('+qi+','+oi+')">'+opt+'</button>';
+    });
+    html += '</div>';
+    html += '<div class="tq-exp" id="tq-exp-'+qi+'">💡 '+q.explanation+'</div>';
+    html += '</div>';
+  });
+  // Sonuç butonu
+  html += '<div style="text-align:center;padding:16px 0">'
+    + '<button onclick="_tqShowResult(\''+tid+'\')" id="tq-submit-btn" style="background:rgba(55,138,221,0.15);border:1px solid rgba(55,138,221,0.35);color:#5aafff;border-radius:10px;padding:12px 32px;font-family:\'Roboto\',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Sonuçları Gör</button>'
+    + '</div>';
+  body.innerHTML = html;
+  body.scrollTop = 0;
+  // Soruları sakla
+  body._qs = qs;
+  document.getElementById('tq-progress').textContent = '0 / '+qs.length;
+}
+
+function _tqAnswer(qi, oi) {
+  if (_tqAnswered[qi] !== undefined) return;
+  var body = document.getElementById('tq-body');
+  var q = body._qs[qi];
+  _tqAnswered[qi] = oi;
+  // Renk
+  for (var i = 0; i < q.opts.length; i++) {
+    var btn = document.getElementById('tq-opt-'+qi+'-'+i);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === oi) btn.classList.add('wrong');
+  }
+  // Açıklama
+  var exp = document.getElementById('tq-exp-'+qi);
+  if (exp) exp.classList.add('show');
+  // Progress
+  var count = Object.keys(_tqAnswered).length;
+  document.getElementById('tq-progress').textContent = count+' / '+body._qs.length;
+}
+
+function _tqShowResult(tid) {
+  var body = document.getElementById('tq-body');
+  var qs = body._qs;
+  var correct = 0;
+  qs.forEach(function(q, qi) {
+    if (q.type === 'arrange') {
+      // Arrange: kullanıcının oluşturduğu cümleyi kontrol et
+      var built = (_tqArrangeBuilt[qi] || []).join(' ').trim().toLowerCase().replace(/\s*,\s*/g,',');
+      var expected = (q.answer || '').toLowerCase().replace(/\s*,\s*/g,',');
+      var isCorrect = built === expected;
+      if (isCorrect) correct++;
+      // Kartı renklendir
+      var card = document.getElementById('tq-card-'+qi);
+      if (card) card.style.borderColor = isCorrect ? '#50c878' : '#c05050';
+      var exp = document.getElementById('tq-exp-'+qi);
+      if (exp) { exp.style.display='block'; exp.textContent = (isCorrect ? '✓ ' : '✗ Doğrusu: ') + q.answer; }
+    } else {
+      if (_tqAnswered[qi] === q.ans) correct++;
+    }
+  });
+  var pct = Math.round(correct/qs.length*100);
+  var color = pct >= 80 ? '#50c878' : pct >= 60 ? '#c8b840' : '#c05050';
+  var msg = pct >= 80 ? 'Mükemmel! Bu konuya hakimsin. 🏆' : pct >= 60 ? 'İyi gidiyor! Biraz daha pratik yap. 👍' : 'Daha fazla çalışman gerekiyor. 💪';
+
+  body.innerHTML = '<div class="tq-result">'
+    + '<div class="tq-score-big" style="color:'+color+'">'+correct+'/'+qs.length+'</div>'
+    + '<div class="tq-result-msg">'+msg+'</div>'
+    + '<button onclick="startTopicQuiz(_tqTid, document.getElementById(\'tq-title\').textContent)" style="background:rgba(55,138,221,0.12);border:1px solid rgba(55,138,221,0.3);color:#5aafff;border-radius:10px;padding:10px 28px;font-family:\'Roboto\',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-right:8px">🔄 Tekrar</button>'
+    + '<button onclick="closeTopicQuiz();openTopicsScreen()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);border-radius:10px;padding:10px 28px;font-family:\'Roboto\',sans-serif;font-size:13px;font-weight:700;cursor:pointer">← Konular</button>'
+    + '</div>';
+
+  // Başarıyı kaydet — rozet sistemi için
+  if (pct >= 60) {
+    var stats = getDisciplineStats();
+    if (!stats.topicScores) stats.topicScores = {};
+    stats.topicScores[tid] = Math.max(stats.topicScores[tid]||0, pct);
+    saveDisciplineStats(stats);
+    // Rozet unlock
+    if (typeof checkAndUnlockAchievements === 'function') checkAndUnlockAchievements();
+  }
+}
+
+function closeTopicQuiz() {
+  document.getElementById('topic-quiz-overlay').classList.remove('open');
+}
 
 // ── KONULAR EKRANI ──
 var TOPIC_IDS = ['simple_past', 'present_simple', 'future', 'question_tags', 'so_neither', 'comparatives', 'pronouns', 'quantifiers', 'vocabulary_u4'];
@@ -1049,14 +1898,7 @@ function refreshTopicBadges() {
   });
 }
 
-function startTopicQuiz(tid, topicName) {
-  // Konuya özel sınav — basit 10 soruluk quiz (grammar/vocab sorularını filtrele)
-  // Şimdilik mevcut mixed test'i aç, rozet sistemi bir sonraki adımda eklenecek
-  closeTopicsScreen();
-  showToast('Sınav başlıyor: ' + topicName, 'correct-t');
-  // Normal testi başlat — konuya göre filtreleme bir sonraki güncellemede
-  if (typeof startTest === 'function') startTest('grammar');
-}
+// startTopicQuiz → TOPIC_QUESTIONS ile yeniden yazıldı
 
 // ── SÖZLÜK EKRANI ──
 function openDictScreen() {
@@ -1615,6 +2457,26 @@ function _refreshProfileScreen(stats) {
     }).join('');
   }
 
+  // Mafia rozetleri grid
+  var mafiaGrid = document.getElementById('ps-mafia-grid');
+  if (mafiaGrid && typeof ACHIEVEMENTS !== 'undefined') {
+    var achs2 = getAchievements();
+    var mafiaAchs = ACHIEVEMENTS.filter(function(a){ return a.id.indexOf('mafia_') === 0; });
+    mafiaGrid.innerHTML = mafiaAchs.map(function(ach) {
+      var unlocked = !!achs2[ach.id];
+      var dt = unlocked && achs2[ach.id].unlockedAt
+        ? new Date(achs2[ach.id].unlockedAt).toLocaleDateString('tr-TR') : null;
+      return '<div style="text-align:center">'
+        + '<div style="width:52px;height:52px;margin:0 auto 5px;border-radius:50%;border:1.5px solid '
+        + (unlocked ? ach.color : 'rgba(180,30,20,0.12)') + ';overflow:hidden;'
+        + (unlocked ? 'box-shadow:0 0 14px '+ach.glow+';' : 'filter:grayscale(1) brightness(0.2);')
+        + '">' + ach.icon + '</div>'
+        + '<div style="font-size:8px;color:' + (unlocked ? ach.color : 'rgba(200,80,40,0.25)') + ';font-weight:' + (unlocked ? 700 : 400) + ';line-height:1.2">' + ach.name + '</div>'
+        + (dt ? '<div style="font-size:7px;color:rgba(180,80,40,0.3)">' + dt + '</div>' : '')
+        + '</div>';
+    }).join('');
+  }
+
   _updateDropStats(stats);
 
   // Arkadaş kodu göster
@@ -1645,6 +2507,11 @@ function _updateDropStats(s) {
 }
 
 window.addEventListener('load', function() {
+  // Mafia rank barlarını güncelle
+  setTimeout(function() {
+    var stats = getDisciplineStats();
+    _mafiaUpdateRank(stats.mafiaProgress||0);
+  }, 800);
   setTimeout(function() { if (!window._currentUser) showAuthOverlay(); }, 1800);
 });
 
@@ -1799,6 +2666,82 @@ const ACHIEVEMENTS = [
     color: '#c8b840',
     glow: 'rgba(200,184,60,0.5)',
     check: function(stats) { return (stats.quizComplete||{}).vocab100 === true; }
+  },
+
+  // ── MAFİA RÜTBE ROZETLERİ ──
+  {
+    id: 'mafia_associate',
+    name: 'Associate',
+    desc: 'Mafia dünyasına ilk adımını at',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#0a0a08" stroke="#8a8060" stroke-width="1.5"/>
+      <path d="M24 14 L26 20 L32 20 L27 24 L29 30 L24 26 L19 30 L21 24 L16 20 L22 20 Z" fill="#8a8060" opacity="0.7"/>
+      <circle cx="24" cy="24" r="3" fill="#c8b870" opacity="0.5"/>
+    </svg>`,
+    color: '#8a8060', glow: 'rgba(138,128,96,0.4)',
+    check: function(stats) { return (stats.mafiaProgress||0) >= 1; }
+  },
+  {
+    id: 'mafia_soldier',
+    name: 'Soldier',
+    desc: 'İlk görevi başarıyla tamamla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#0a0806" stroke="#c89040" stroke-width="1.5"/>
+      <rect x="14" y="20" width="20" height="3" rx="1.5" fill="#c89040"/>
+      <rect x="17" y="16" width="3" height="10" rx="1.5" fill="#c89040"/>
+      <rect x="28" y="16" width="3" height="10" rx="1.5" fill="#c89040"/>
+      <circle cx="24" cy="33" r="3" fill="#c89040" opacity="0.8"/>
+    </svg>`,
+    color: '#c89040', glow: 'rgba(200,144,64,0.45)',
+    check: function(stats) { return (stats.mafiaProgress||0) >= 1; }
+  },
+  {
+    id: 'mafia_capo',
+    name: 'Capo',
+    desc: '3 mafia görevi tamamla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#0a0806" stroke="#d4a030" stroke-width="1.5"/>
+      <path d="M16 30 L24 12 L32 30 Z" fill="none" stroke="#d4a030" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M14 34 L34 34" stroke="#d4a030" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="24" cy="22" r="3" fill="#d4a030"/>
+    </svg>`,
+    color: '#d4a030', glow: 'rgba(212,160,48,0.5)',
+    check: function(stats) { return (stats.mafiaProgress||0) >= 2; }
+  },
+  {
+    id: 'mafia_consigliere',
+    name: 'Consigliere',
+    desc: '5 mafia görevi tamamla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#080610" stroke="#9060d0" stroke-width="1.5"/>
+      <path d="M24 10 L28 20 L40 20 L30 27 L34 38 L24 31 L14 38 L18 27 L8 20 L20 20 Z" fill="#9060d0" stroke="#b080f0" stroke-width="0.5" stroke-linejoin="round"/>
+    </svg>`,
+    color: '#9060d0', glow: 'rgba(144,96,208,0.55)',
+    check: function(stats) { return (stats.mafiaProgress||0) >= 3; }
+  },
+  {
+    id: 'mafia_don',
+    name: 'Don',
+    desc: '7 mafia görevi tamamla',
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#080608" stroke="#d060a0" stroke-width="1.5"/>
+      <path d="M12 28 L24 10 L36 28 L30 24 L24 34 L18 24 Z" fill="#d060a0" stroke="#f080c0" stroke-width="0.5" stroke-linejoin="round"/>
+      <circle cx="24" cy="20" r="3" fill="#f080c0" opacity="0.9"/>
+    </svg>`,
+    color: '#d060a0', glow: 'rgba(208,96,160,0.55)',
+    check: function(stats) { return (stats.mafiaProgress||0) >= 4; }
+  },
+  {
+    id: 'mafia_godfather',
+    name: 'Godfather',
+    desc: "Tüm mafia görevlerini tamamla — Sen artık Don'sun",
+    icon: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#080404" stroke="#e04020" stroke-width="1.5"/>
+      <path d="M24 8 L27 18 L38 18 L29 24 L32 35 L24 29 L16 35 L19 24 L10 18 L21 18 Z" fill="#e04020" stroke="#ff6040" stroke-width="0.5"/>
+      <path d="M18 34 Q24 40 30 34" fill="none" stroke="#ff6040" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`,
+    color: '#e04020', glow: 'rgba(224,64,32,0.65)',
+    check: function(stats) { return (stats.mafiaProgress||0) >= 5; }
   },
 ];
 
@@ -4369,10 +5312,50 @@ function toggleHintTR(qi) {
   }
 
   // DOM hazır olduğunda başlat
+
+// ── Rose Canvas — The Family butonu efekti ──
+function initRoseCanvas() {
+  var canvas = document.getElementById('rose-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth || 320;
+  canvas.height = canvas.offsetHeight || 60;
+  var particles = [];
+  for (var i = 0; i < 18; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.5,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: -(Math.random() * 0.6 + 0.2),
+      alpha: Math.random() * 0.5 + 0.2,
+      color: Math.random() > 0.5 ? '180,20,10' : '220,60,30'
+    });
+  }
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(function(p) {
+      p.x += p.vx; p.y += p.vy; p.alpha -= 0.004;
+      if (p.alpha <= 0 || p.y < 0) {
+        p.x = Math.random() * canvas.width;
+        p.y = canvas.height;
+        p.alpha = Math.random() * 0.5 + 0.2;
+        p.vy = -(Math.random() * 0.6 + 0.2);
+      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + p.color + ',' + p.alpha + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { initFireCanvas(); updateUnitBadge(); });
+    document.addEventListener('DOMContentLoaded', () => { initFireCanvas(); initRoseCanvas(); updateUnitBadge(); });
   } else {
-    setTimeout(() => { initFireCanvas(); updateUnitBadge(); }, 100);
+    setTimeout(() => { initFireCanvas(); initRoseCanvas(); updateUnitBadge(); }, 100);
   }
 })();
 
