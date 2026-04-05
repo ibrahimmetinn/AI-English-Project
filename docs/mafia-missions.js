@@ -11,6 +11,25 @@ var MAFIA_MISSIONS = [
     title: "Mission 1: The Don's Invitation",
     location: "THE DON'S OFFICE — SUNDAY EVENING",
     rank_unlock: 'mafia_associate',
+    vocab: {
+      words: [
+        { en: "reliable",          tr: "güvenilir" },
+        { en: "invitation",        tr: "davet" },
+        { en: "on behalf of",      tr: "adına / yerine" },
+        { en: "cordially",         tr: "nazikçe / içtenlikle" },
+        { en: "mutual benefit",    tr: "karşılıklı çıkar" },
+        { en: "residence",         tr: "konut / ev" },
+        { en: "accept",            tr: "kabul etmek" },
+        { en: "personally",        tr: "bizzat / şahsen" }
+      ],
+      phrases: [
+        { en: "Would you like to join us for dinner?",         tr: "Bizimle yemeğe gelmek ister misiniz?" },
+        { en: "I am here on behalf of Don Corleone.",          tr: "Don Corleone adına buradayım." },
+        { en: "It would be a great honour to have you.",       tr: "Sizi aramızda görmek büyük onur olur." },
+        { en: "He said that he would come.",                   tr: "Geleceğini söyledi. (Reported Speech)" },
+        { en: "The dinner is at eight o'clock in the evening.",tr: "Yemek akşam sekizde." }
+      ]
+    },
     scenes: [
 
       // SAHNE 1 — Tanışma
