@@ -1464,7 +1464,7 @@ function _mafiaRenderScene() {
   var html = '<div class="ms-location">'+m.location+'</div>';
   _mafiaDialogLog.forEach(function(e) {
     html += '<div class="ms-dialog"><div class="ms-npc">'
-      +'<div class="ms-npc-avatar">'+e._mafiaAvatarHtml(e.npc)+'</div>'
+      +'<div class="ms-npc-avatar">'+_mafiaAvatarHtml(e.npc)+'</div>'
       +'<div class="ms-npc-bubble"><div class="ms-npc-name" style="color:'+e.npc.color+'">'+e.npc.name+'</div>'
       +'<div class="ms-npc-text">'+e.npcText+'</div></div></div></div>';
     if (e.playerChoice) {
@@ -1473,7 +1473,7 @@ function _mafiaRenderScene() {
     }
   });
   html += '<div class="ms-dialog"><div class="ms-npc">'
-    +'<div class="ms-npc-avatar">'+s._mafiaAvatarHtml(s.npc)+'</div>'
+    +'<div class="ms-npc-avatar">'+_mafiaAvatarHtml(s.npc)+'</div>'
     +'<div class="ms-npc-bubble"><div class="ms-npc-name" style="color:'+s.npc.color+'">'+s.npc.name+'</div>'
     +'<div class="ms-npc-text">'+s.text+'</div></div></div></div>';
     // Şıkları karıştır — doğru cevap sabit index'te kalmasın
