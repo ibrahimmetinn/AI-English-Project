@@ -1171,6 +1171,18 @@ body.discipline-theme #results-screen {
 
 <script>
 
+function _mafiaAvatarHtml(npc) {
+  var imgMap = {'Don Corleone': 'assets/Don_Face.png'};
+  var src = imgMap[npc.name];
+  if (!src) return npc.avatar;
+  var img = document.createElement('img');
+  img.src = src;
+  img.alt = npc.name;
+  img.style.cssText = 'width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid rgba(200,130,60,0.4)';
+  img.onerror = function() { this.outerHTML = npc.avatar; };
+  return img.outerHTML;
+}
+
 function _renderDiscGateDots() {
   var el = document.getElementById('disc-gate-dots');
   if (!el) return;

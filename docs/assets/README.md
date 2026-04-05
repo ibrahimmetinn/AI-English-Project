@@ -1,22 +1,31 @@
 # GramLab — Assets Klasörü
 
-Bu klasöre tüm görsel ve ses dosyalarını ekle.
-index.html otomatik olarak buradan yükler.
+Tüm görsel ve ses dosyaları buraya gelir.
+index.html otomatik olarak assets/ klasöründen yükler.
 
 ═══════════════════════════════════════════
 ## 🖼️ GÖRSELLER
 ═══════════════════════════════════════════
 
-### Buton PNG'leri
-| Dosya adı          | Kullanıldığı yer            | Boyut  |
-|--------------------|-----------------------------|--------|
-| might-guy.png      | Disiplin Modu butonu (sağ)  | kare   |
-| (gelecekte ekle)   |                             |        |
+| Dosya adı          | Kullanıldığı yer                    | Format |
+|--------------------|-------------------------------------|--------|
+| might-guy.png      | Disiplin Modu butonu (sağ köşe)     | Kare   |
+| Don_Corleone.png   | The Family butonu (sağ köşe)        | Kare   |
+| Don_Face.png       | The Family diyalogda Don avatar     | Kare   |
 
-### PNG ekleme kuralları
-- Kare format (örn: 200×200px veya 400×400px)
-- Arka plan şeffaf (PNG) olursa daha iyi görünür
-- Dosya adını değiştirirsen index.html'de src'yi de güncelle
+### PNG kuralları
+- Kare format (örn: 200×200 veya 400×400px)
+- Şeffaf arka plan (PNG) tercih edilir
+- Dosya yoksa otomatik emoji fallback gösterilir
+
+### Yeni NPC görseli eklemek için
+index.html içinde _mafiaAvatarHtml fonksiyonunu bul:
+  var imgMap = {'Don Corleone': 'assets/Don_Face.png'};
+Yeni satır ekle:
+  var imgMap = {
+    'Don Corleone': 'assets/Don_Face.png',
+    'Barzini Capo': 'assets/Barzini_Face.png',
+  };
 
 ═══════════════════════════════════════════
 ## 🎵 MÜZİK & SES
@@ -25,20 +34,21 @@ index.html otomatik olarak buradan yükler.
 | Dosya adı          | Kullanıldığı yer            |
 |--------------------|-----------------------------|
 | mafia-music.mp3    | The Family arka plan müziği |
-| (gelecekte)        |                             |
-| achievement.mp3    | Rozet kazanma sesi          |
-| correct.mp3        | Doğru cevap sesi            |
-| wrong.mp3          | Yanlış cevap sesi           |
-| gate-pass.mp3      | Kapı geçişi sesi            |
+| achievement.mp3    | Rozet kazanma (gelecekte)   |
+| correct.mp3        | Doğru cevap (gelecekte)     |
+| wrong.mp3          | Yanlış cevap (gelecekte)    |
+| gate-pass.mp3      | Kapı geçişi (gelecekte)     |
 
 ═══════════════════════════════════════════
 ## 📁 KLASÖR YAPISI
 ═══════════════════════════════════════════
 
-Gramlab/
+docs/
 ├── index.html
-├── mafia-missions.js     ← The Family görevleri
+├── mafia-missions.js
 └── assets/
-    ├── README.md         ← Bu dosya
-    ├── might-guy.png     ← Ekle
-    └── mafia-music.mp3   ← Ekle
+    ├── README.md          ← Bu dosya
+    ├── might-guy.png      ← Ekle (kare PNG)
+    ├── Don_Corleone.png   ← Ekle (kare PNG)
+    ├── Don_Face.png       ← Ekle (kare PNG)
+    └── mafia-music.mp3    ← Ekle
