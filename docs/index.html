@@ -585,6 +585,34 @@ body.discipline-theme #results-screen {
 #mafia-glow{animation:mafiaPulse 2.5s ease-in-out infinite}
 #mafia-btn-wrap:hover{transform:translateY(-1px)}
 #mafia-btn-wrap{transition:transform .15s}
+
+/* Mafia giriş animasyonu */
+@keyframes mafiaSceneIn {
+  from { opacity:0; transform:translateY(30px) scale(0.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+@keyframes mafiaHeaderIn {
+  from { opacity:0; transform:translateY(-20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes mafiaOverlayIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+#mafia-screen.open {
+  animation: mafiaOverlayIn 0.4s ease forwards;
+}
+#mafia-screen.open .ms-header {
+  animation: mafiaHeaderIn 0.4s ease 0.1s both;
+}
+#mafia-screen.open .ms-body {
+  animation: mafiaSceneIn 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both;
+}
+/* Dialog animasyonu zaten var (msFadeIn) — güçlendir */
+@keyframes msFadeIn {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
 </style>
 
 <!-- Firebase SDK -->
@@ -1095,31 +1123,43 @@ body.discipline-theme #results-screen {
 
       <button class="btn-start" onclick="startQuiz()">Start Test →</button>
 
-      <!-- DİSİPLİN MODU — ayrı alan -->
-      <div id="discipline-btn-wrap" style="margin-top:16px;position:relative">
-        <canvas id="fire-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:13px;pointer-events:none;z-index:0"></canvas>
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,4,2,0.72),rgba(20,8,2,0.6));border-radius:13px;pointer-events:none;z-index:1"></div>
-        <div style="position:absolute;inset:0;border-radius:13px;border:1.5px solid rgba(255,120,20,0.6);pointer-events:none;z-index:1;box-shadow:0 0 20px rgba(255,70,0,0.22),inset 0 0 14px rgba(255,50,0,0.08)"></div>
-        <button id="discipline-battle-btn" onclick="showDisciplineLobby()" style="position:relative;z-index:2;width:100%;background:transparent;border:none;border-radius:13px;padding:14px 20px;cursor:pointer;font-family:'Roboto',sans-serif;display:flex;align-items:center;gap:14px;text-align:left">
-          <div style="font-size:2rem;filter:drop-shadow(0 0 12px rgba(255,140,0,0.95)) drop-shadow(0 0 5px rgba(255,60,0,0.8));line-height:1;flex-shrink:0">⚔️</div>
-          <div style="flex:1">
-            <div style="font-size:14px;font-weight:800;letter-spacing:.08em;background:linear-gradient(135deg,#ffcc60,#ff8820,#ff4400);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">DİSİPLİN MODU</div>
-            <div style="font-size:10.5px;color:rgba(255,180,80,0.8);margin-top:2px;letter-spacing:.03em">100 soru · 5 bölüm · Checkpoint sistemi</div>
-          </div>
-          <div style="font-size:20px;color:rgba(255,150,50,0.9);flex-shrink:0">›</div>
-        </button>
-      
+      <!-- DİSİPLİN MODU — Might Guy Antrenmanı -->
+      <div id="discipline-btn-wrap" style="margin-top:16px;position:relative;border-radius:13px;overflow:hidden;cursor:pointer;background:linear-gradient(135deg,#0a1f0a,#0d2b0d,#091808);border:1.5px solid rgba(50,200,80,0.5);box-shadow:0 0 24px rgba(30,180,60,0.15);transition:.2s" onclick="showDisciplineLobby()" onmouseover="this.style.borderColor='rgba(80,230,100,0.8)';this.style.boxShadow='0 0 32px rgba(50,200,80,0.3)'" onmouseout="this.style.borderColor='rgba(50,200,80,0.5)';this.style.boxShadow='0 0 24px rgba(30,180,60,0.15)'">
+        <!-- Yeşil parıltı efekti -->
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(50,200,80,0.08),transparent 70%);pointer-events:none"></div>
+        <div style="position:absolute;inset:0;border-radius:13px;background:linear-gradient(90deg,rgba(50,200,80,0.06),transparent);pointer-events:none"></div>
 
-</div>
+        <div style="display:flex;align-items:center;padding:0;position:relative;z-index:2">
+          <!-- Sol: Metin -->
+          <div style="flex:1;padding:14px 16px">
+            <div style="font-size:14px;font-weight:800;letter-spacing:.08em;background:linear-gradient(135deg,#80ff90,#40e060,#20c040);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:3px">MIGHT GUY TRAINING</div>
+            <div style="font-size:10.5px;color:rgba(80,220,100,0.7);letter-spacing:.03em;margin-bottom:6px">Open all 8 gates · Master English</div>
+            <!-- 8 kapı nokta göstergesi -->
+            <div style="display:flex;gap:4px;align-items:center" id="disc-gate-dots"></div>
+          </div>
+          <!-- Sağ: PNG görseli -->
+          <div style="width:80px;height:80px;flex-shrink:0;position:relative;overflow:hidden">
+            <img src="assets/might-guy.png" alt="Might Guy"
+              style="width:100%;height:100%;object-fit:cover;object-position:center top"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <!-- PNG yoksa emoji fallback -->
+            <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:2.8rem;filter:drop-shadow(0 0 8px rgba(50,200,80,0.8))">🥋</div>
+          </div>
+        </div>
+      </div>
       <!-- The Family -->
       <div id="mafia-btn-wrap" onclick="openMafiaScreen()" style="margin-top:8px;position:relative;cursor:pointer;border-radius:13px;overflow:hidden;border:1px solid rgba(180,30,20,0.4);background:linear-gradient(145deg,#0a0202,#160404);transition:.2s" onmouseover="this.style.borderColor='rgba(220,60,30,0.7)';this.style.background='linear-gradient(145deg,#120303,#1e0606)'" onmouseout="this.style.borderColor='rgba(180,30,20,0.4)';this.style.background='linear-gradient(145deg,#0a0202,#160404)'">
-        <div style="padding:12px 16px;display:flex;align-items:center;gap:14px">
-          <div style="font-size:1.6rem;filter:drop-shadow(0 0 8px rgba(220,50,20,0.9));flex-shrink:0">🌹</div>
-          <div style="flex:1">
-            <div style="font-size:13px;font-weight:800;letter-spacing:.07em;background:linear-gradient(135deg,#c8a060,#e05030,#c83020);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">THE FAMILY</div>
-            <div style="font-size:10px;color:rgba(200,130,80,0.6);margin-top:2px;letter-spacing:.05em">Reading &amp; Dialogue Mode · 7 Rütbe</div>
+        <div style="display:flex;align-items:stretch">
+          <div style="flex:1;padding:12px 16px;display:flex;align-items:center;gap:12px">
+            <div style="font-size:1.4rem;filter:drop-shadow(0 0 8px rgba(220,50,20,0.9));flex-shrink:0">&#127801;</div>
+            <div>
+              <div style="font-size:13px;font-weight:800;letter-spacing:.07em;background:linear-gradient(135deg,#c8a060,#e05030,#c83020);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">THE FAMILY</div>
+              <div style="font-size:10px;color:rgba(200,130,80,0.6);margin-top:2px;letter-spacing:.05em">Reading &amp; Dialogue Mode &middot; 7 R&uuml;tbe</div>
+            </div>
           </div>
-          <div style="font-size:18px;color:rgba(200,80,40,0.7);flex-shrink:0">›</div>
+          <div style="width:72px;flex-shrink:0;overflow:hidden;background:rgba(20,4,2,0.5)">
+            <img src="assets/Don_Corleone.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block" onerror="this.parentNode.innerHTML='<div style=&quot;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.2rem&quot;>&#128116;</div>'">
+          </div>
         </div>
         <div style="display:flex;justify-content:center;gap:5px;padding:0 16px 10px">
           <span id="mafia-rank-label" style="font-size:8.5px;color:rgba(200,130,60,0.7);letter-spacing:.08em;font-weight:700">ASSOCIATE</span>
@@ -1132,8 +1172,7 @@ body.discipline-theme #results-screen {
             <div class="mrb" data-r="2" title="Capo" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
             <div class="mrb" data-r="3" title="Consigliere" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
             <div class="mrb" data-r="4" title="Don" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
-            <div class="mrb" data-r="5" title="Underboss" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
-            <div class="mrb" data-r="6" title="Godfather" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
+            <div class="mrb" data-r="5" title="Godfather" style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06)"></div>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:7.5px;color:rgba(180,100,60,0.35)">
             <span>Associate</span><span>Godfather</span>
@@ -1163,6 +1202,60 @@ body.discipline-theme #results-screen {
 
 <script>
 
+function _mafiaAvatarHtml(npc) {
+  // İsim otomatik olarak dosya adına çevrilir:
+  // "Don Corleone" → "assets/Don_Corleone_Face.png"
+  // Dosya yoksa emoji fallback gösterilir — hata vermez
+  var src = 'assets/' + npc.name.replace(/ /g, '_') + '_Face.png';
+  return '<img src="' + src + '" data-fb="' + npc.avatar + '" '
+    + 'style="width:36px;height:36px;border-radius:50%;object-fit:cover;'
+    + 'border:1px solid rgba(200,130,60,0.4)" '
+    + 'onerror="this.outerHTML=this.dataset.fb">';
+}
+
+function _renderDiscGateDots() {
+  var el = document.getElementById('disc-gate-dots');
+  if (!el) return;
+  var stats = getDisciplineStats();
+  var completed = stats.completedGates || [];
+  var html = '';
+  for (var i = 1; i <= 4; i++) {
+    var done = completed.indexOf(i) !== -1;
+    html += '<div style="width:8px;height:8px;border-radius:50%;background:'
+      + (done ? '#40e060' : 'rgba(50,200,80,0.2)')
+      + ';border:1px solid '
+      + (done ? 'rgba(50,200,80,0.8)' : 'rgba(50,200,80,0.3)')
+      + ';'
+      + (done ? 'box-shadow:0 0 6px rgba(50,200,80,0.6)' : '')
+      + '"></div>';
+  }
+  el.innerHTML = html + '<span style="font-size:9px;color:rgba(80,220,100,0.5);margin-left:4px">' + completed.length + '/4 gate</span>';
+}
+
+// Sayfa arka plana geçince (tab değiştirme, home tuşu) müziği durdur
+document.addEventListener('visibilitychange', function() {
+  var audio = document.getElementById('mafia-audio');
+  if (!audio) return;
+  var mafiaOpen = document.getElementById('mafia-screen') &&
+    document.getElementById('mafia-screen').classList.contains('open');
+  if (document.hidden) {
+    // Arka plana geçti — müziği durdur
+    if (!audio.paused) {
+      audio._wasPlaying = true;
+      audio.pause();
+    }
+  } else {
+    // Ön plana döndü — sadece mafia açıksa devam et
+    if (audio._wasPlaying && mafiaOpen && _mafiaMusicEnabled) {
+      audio.play().catch(function(){});
+      audio._wasPlaying = false;
+    }
+  }
+});
+
+// goHome veya başka navigasyonlarda da durdur
+var _origGoHome = typeof goHome === 'function' ? goHome : null;
+
 // ── MAFİA MÜZİK SİSTEMİ ──
 // GitHub'a Gramlab/assets/mafia-music.mp3 olarak ekle — otomatik çalar.
 // Farklı efekt dosyaları için assets/ klasörünü kullan.
@@ -1189,17 +1282,11 @@ function _mafiaPlayMusic() {
 function _mafiaStopMusic() {
   var audio = document.getElementById('mafia-audio');
   if (!audio) return;
-  // Fade out
-  var fadeOut = setInterval(function() {
-    if (audio.volume > 0.03) {
-      audio.volume = Math.max(0, audio.volume - 0.05);
-    } else {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = 0.35;
-      clearInterval(fadeOut);
-    }
-  }, 60);
+  try {
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = 0.35;
+  } catch(e) {}
 }
 
 
@@ -1290,7 +1377,7 @@ function openMafiaScreen() {
   var el = document.getElementById('mafia-screen');
   if (!el) return;
   el.classList.add('open');
-  _mafiaPlayMusic();
+  _mafiaPlayMusic(); // Lobi açılınca müzik başlar
   var stats = getDisciplineStats();
   var prog = stats.mafiaProgress||0;
   _mafiaUpdateRank(prog);
@@ -1310,9 +1397,8 @@ function _mafiaUpdateRank(prog) {
     {name:'Soldier',     min:1, color:'#c89040'},
     {name:'Capo',        min:2, color:'#d4a030'},
     {name:'Consigliere', min:3, color:'#9060d0'},
-    {name:'Underboss',   min:4, color:'#d060a0'},
-    {name:'Don',         min:5, color:'#e04020'},
-    {name:'Godfather',   min:6, color:'#ff2000'},
+    {name:'Don',         min:4, color:'#e04020'},
+    {name:'Godfather',   min:5, color:'#ff2000'},
   ];
   var rankIdx = 0;
   for (var i = RANKS.length-1; i >= 0; i--) {
@@ -1324,20 +1410,23 @@ function _mafiaUpdateRank(prog) {
   // Progress bars güncelle
   var bars = document.querySelectorAll('.mrb');
   bars.forEach(function(bar, i) {
+    if (i >= RANKS.length) return;
     var r = RANKS[i];
-    var filled = prog >= r.min;
+    var filled = prog >= r.min && prog > 0 || i === 0;
     var current = i === rankIdx;
-    bar.style.background = filled
-      ? (current ? rank.color : 'rgba(200,130,60,0.4)')
+    // Her tamamlanan görev bir segmenti doldurur
+    var segFilled = i <= rankIdx;
+    bar.style.background = segFilled
+      ? (current ? rank.color : 'rgba(200,130,60,0.35)')
       : 'rgba(255,255,255,0.06)';
-    if (current) bar.style.boxShadow = '0 0 6px ' + rank.color;
-    else bar.style.boxShadow = 'none';
+    bar.style.boxShadow = current ? '0 0 6px ' + rank.color : 'none';
   });
   // Ana ekrandaki label
   var lbl = document.getElementById('mafia-rank-label');
   if (lbl) { lbl.textContent = rank.name.toUpperCase(); lbl.style.color = rank.color; }
 }
 function _mafiaRenderMissionSelect() {
+  _mafiaPlayMusic(); // Lobi açılınca müzik çal
   var stats = getDisciplineStats();
   var prog = stats.mafiaProgress||0;
   var scene = document.getElementById('ms-scene');
@@ -1364,6 +1453,7 @@ function _mafiaRenderMissionSelect() {
 function _mafiaStartMission(idx) {
   _mafiaMission = MAFIA_MISSIONS[idx];
   _mafiaScene = 0; _mafiaScore = 0; _mafiaDialogLog = [];
+  _mafiaStopMusic(); // Diyalog başlayınca müzik kapat — odaklanmak için
   _mafiaRenderScene();
 }
 function _mafiaRenderScene() {
@@ -1374,7 +1464,7 @@ function _mafiaRenderScene() {
   var html = '<div class="ms-location">'+m.location+'</div>';
   _mafiaDialogLog.forEach(function(e) {
     html += '<div class="ms-dialog"><div class="ms-npc">'
-      +'<div class="ms-npc-avatar">'+e.npc.avatar+'</div>'
+      +'<div class="ms-npc-avatar">'+e._mafiaAvatarHtml(e.npc)+'</div>'
       +'<div class="ms-npc-bubble"><div class="ms-npc-name" style="color:'+e.npc.color+'">'+e.npc.name+'</div>'
       +'<div class="ms-npc-text">'+e.npcText+'</div></div></div></div>';
     if (e.playerChoice) {
@@ -1383,7 +1473,7 @@ function _mafiaRenderScene() {
     }
   });
   html += '<div class="ms-dialog"><div class="ms-npc">'
-    +'<div class="ms-npc-avatar">'+s.npc.avatar+'</div>'
+    +'<div class="ms-npc-avatar">'+s._mafiaAvatarHtml(s.npc)+'</div>'
     +'<div class="ms-npc-bubble"><div class="ms-npc-name" style="color:'+s.npc.color+'">'+s.npc.name+'</div>'
     +'<div class="ms-npc-text">'+s.text+'</div></div></div></div>';
     // Şıkları karıştır — doğru cevap sabit index'te kalmasın
@@ -1447,6 +1537,7 @@ function _mafiaFinish() {
     }
     setTimeout(checkAndUnlockAchievements, 400);
     _mafiaUpdateRank(m.id);
+    _mafiaPlayMusic(); // Görev bitti, sonuç ekranında müzik tekrar
     scene.innerHTML = '<div class="ms-result">'
       +'<div class="ms-rank-reveal">'+m.result.icon+'</div>'
       +'<div class="ms-rank-name" style="color:'+m.result.color+'">'+m.result.rank+'</div>'
@@ -2290,10 +2381,10 @@ function _updateDropStats(s) {
 }
 
 window.addEventListener('load', function() {
-  // Mafia rank barlarını güncelle
   setTimeout(function() {
     var stats = getDisciplineStats();
     _mafiaUpdateRank(stats.mafiaProgress||0);
+    _renderDiscGateDots();
   }, 800);
   setTimeout(function() { if (!window._currentUser) showAuthOverlay(); }, 1800);
 });
@@ -4677,6 +4768,7 @@ function checkDisciplineFinished() { checkGateFinished(); }
 
 
 function goHome() {
+  _mafiaStopMusic(); // Müziği durdur
   document.getElementById('results-screen').style.display = 'none';
   document.getElementById('quiz-screen').style.display = 'none';
   document.getElementById('onboard').style.display = 'block';
