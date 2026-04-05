@@ -767,6 +767,7 @@ body.discipline-theme #results-screen {
   <div class="ms-header">
     <button class="ms-back" onclick="closeMafiaScreen()">&#8592; Geri</button>
     <span style="font-size:12px;font-weight:700;color:rgba(200,100,60,0.8)">&#127932; The Family</span>
+    <button id="mafia-music-btn" onclick="_mafiaToggleMusicBtn()" style="margin-left:auto;background:rgba(180,30,20,0.1);border:1px solid rgba(180,30,20,0.25);border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;color:rgba(200,100,60,0.7);cursor:pointer;font-family:'Roboto',sans-serif">🎵 Müzik</button>
     <span class="ms-rank" id="ms-rank-display">Associate</span>
   </div>
   <div class="ms-body">
@@ -976,6 +977,11 @@ body.discipline-theme #results-screen {
 
 </div>
 </div>
+
+<!-- Mafia Background Music -->
+<audio id="mafia-audio" loop preload="none">
+  <source src="assets/mafia-music.mp3" type="audio/mpeg">
+</audio>
 <!-- Auth Overlay -->
 <div id="auth-overlay" style="display:none">
   <div id="auth-card">
@@ -1157,6 +1163,72 @@ body.discipline-theme #results-screen {
 
 <script>
 
+// ── MAFİA MÜZİK SİSTEMİ ──
+// GitHub'a Gramlab/assets/mafia-music.mp3 olarak ekle — otomatik çalar.
+// Farklı efekt dosyaları için assets/ klasörünü kullan.
+// Farklı dosya adı kullanmak istersen: _mafiaSetMusicSrc('dosya.mp3')
+var _mafiaMusicEnabled = true;
+
+function _mafiaPlayMusic() {
+  var audio = document.getElementById('mafia-audio');
+  if (!audio || !_mafiaMusicEnabled) return;
+  audio.volume = 0.35;
+  var playPromise = audio.play();
+  if (playPromise) {
+    playPromise.catch(function() {
+      // Tarayıcı autoplay'i engelledi — kullanıcı etkileşimi bekleniyor
+      // İlk tıklamada çalmaya başlar
+      document.addEventListener('click', function _autoplayRetry() {
+        audio.play().catch(function(){});
+        document.removeEventListener('click', _autoplayRetry);
+      }, { once: true });
+    });
+  }
+}
+
+function _mafiaStopMusic() {
+  var audio = document.getElementById('mafia-audio');
+  if (!audio) return;
+  // Fade out
+  var fadeOut = setInterval(function() {
+    if (audio.volume > 0.03) {
+      audio.volume = Math.max(0, audio.volume - 0.05);
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 0.35;
+      clearInterval(fadeOut);
+    }
+  }, 60);
+}
+
+
+function _mafiaToggleMusicBtn() {
+  var on = _mafiaToggleMusic();
+  var btn = document.getElementById('mafia-music-btn');
+  if (btn) btn.textContent = on ? '🎵 Müzik' : '🔇 Sessiz';
+}
+
+function _mafiaSetMusicSrc(src) {
+  // src: dosya adı veya tam yol
+  // Örnek: _mafiaSetMusicSrc('baska-muzik.mp3') → assets/baska-muzik.mp3
+  var audio = document.getElementById('mafia-audio');
+  if (!audio) return;
+  var path = src.indexOf('/') === -1 ? 'assets/' + src : src;
+  audio.src = path;
+  audio.load();
+}
+
+function _mafiaToggleMusic() {
+  var audio = document.getElementById('mafia-audio');
+  if (!audio) return;
+  _mafiaMusicEnabled = !_mafiaMusicEnabled;
+  if (_mafiaMusicEnabled) { _mafiaPlayMusic(); }
+  else { _mafiaStopMusic(); }
+  return _mafiaMusicEnabled;
+}
+
+
 // ── Mafia Buton UI ──
 var MAFIA_RANKS = ['Associate','Soldier','Capo','Consigliere','Don','Underboss','Godfather'];
 var MAFIA_RANK_COLORS = ['#8a8060','#c89040','#d4a030','#9060d0','#d060a0','#c04040','#e04020'];
@@ -1218,6 +1290,7 @@ function openMafiaScreen() {
   var el = document.getElementById('mafia-screen');
   if (!el) return;
   el.classList.add('open');
+  _mafiaPlayMusic();
   var stats = getDisciplineStats();
   var prog = stats.mafiaProgress||0;
   _mafiaUpdateRank(prog);
@@ -1229,6 +1302,7 @@ function openMafiaScreen() {
 function closeMafiaScreen() {
   var el = document.getElementById('mafia-screen');
   if (el) el.classList.remove('open');
+  _mafiaStopMusic();
 }
 function _mafiaUpdateRank(prog) {
   var RANKS = [
