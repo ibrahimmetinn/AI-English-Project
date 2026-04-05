@@ -1371,7 +1371,7 @@ window.addEventListener('load', function() {
 // index.html ile aynı klasörde olmalı.
 
 
-var _mafiaScene=0, _mafiaScore=0, _mafiaMission=null, _mafiaDialogLog=[];
+var _mafiaScene=0, _mafiaScore=0, _mafiaMission=null, _mafiaDialogLog=[], _currentShuffled=[];
 
 function openMafiaScreen() {
   var el = document.getElementById('mafia-screen');
@@ -1478,8 +1478,7 @@ function _mafiaRenderScene() {
     +'<div class="ms-npc-text">'+s.text+'</div></div></div></div>';
     // Şıkları karıştır — doğru cevap sabit index'te kalmasın
   var _shuffled = s.choices.map(function(ch,i){return {ch:ch};}).sort(function(){return Math.random()-0.5;});
-  var sceneEl = document.getElementById('ms-scene');
-  if (sceneEl) sceneEl._shuffled = _shuffled;
+  _currentShuffled = _shuffled; // Global'de sakla — innerHTML sonrası kaybolmasın
   html += '<div class="ms-choices"><div class="ms-choice-label">Choose your response:</div>';
   _shuffled.forEach(function(item,ci) {
     html += '<button class="ms-choice" id="ms-ch-'+ci+'" onclick="_mafiaChoose('+ci+')">'
@@ -1493,7 +1492,7 @@ function _mafiaRenderScene() {
 function _mafiaChoose(ci) {
   var s = _mafiaMission.scenes[_mafiaScene];
   var scene = document.getElementById('ms-scene');
-  var shuffled = scene && scene._shuffled ? scene._shuffled : s.choices.map(function(ch){return {ch:ch};});
+  var shuffled = (_currentShuffled && _currentShuffled.length) ? _currentShuffled : s.choices.map(function(ch){return {ch:ch};});
   var item = shuffled[ci];
   var choice = item.ch;
   shuffled.forEach(function(it,i) {
