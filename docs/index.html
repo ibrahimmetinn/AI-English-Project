@@ -1361,10 +1361,9 @@ function updateMafiaBtn() {
 
 // Auth değişince güncelle
 var _prevOnAuthChangeMafia = window.onAuthChange;
-window.onAuthChange = function(user) {
-  if (typeof _prevOnAuthChangeMafia === 'function') _prevOnAuthChangeMafia(user);
+function _onAuthMafia(user) {
   setTimeout(updateMafiaBtn, 600);
-};
+}
 
 // Sayfa yüklenince
 window.addEventListener('load', function() {
@@ -2088,13 +2087,12 @@ async function manualPush() {
 
 // Auth degisince dot guncelle
 var _origOnAuthChangePre = window.onAuthChange;
-window.onAuthChange = function(user) {
-  if (typeof _origOnAuthChangePre === 'function') _origOnAuthChangePre(user);
+function _onAuthDebug(user) {
   dbgLog(user ? ('Giris: ' + (user.displayName||user.uid)) : 'Cikis yapildi', user ? 'ok' : 'warn');
   var dot = document.getElementById('sync-dot-top');
   if (dot) dot.style.background = user ? '#50c878' : '#c8b840';
   if (_debugOpen) setTimeout(refreshDebugPanel, 500);
-};
+}
 
 
 
@@ -2107,6 +2105,9 @@ window.onAuthChange = function(user) {
   _currentUser = user;
   updateProfileUI(user);
   if (user) loadUserStatsFromFirestore(user.uid);
+  // Yardımcı callback'leri çağır
+  if (typeof _onAuthMafia === 'function') _onAuthMafia(user);
+  if (typeof _onAuthDebug === 'function') _onAuthDebug(user);
 };
 
 function updateProfileUI(user) {
@@ -2252,7 +2253,11 @@ async function loadUserStatsFromFirestore(uid) {
     setSyncBadge('ok');
     // Profil açıksa güncelle
     if (typeof _refreshProfileScreen === 'function') _refreshProfileScreen(merged);
-  } catch(e) { console.error('Firestore initial load:', e); setSyncBadge('ok'); }
+  } catch(e) {
+    console.error('Firestore initial load:', e);
+    if (typeof dbgLog === 'function') dbgLog('Load HATA: ' + e.message, 'err');
+    setSyncBadge('ok');
+  }
 
   // Gerçek zamanlı dinle — başka cihazda değişince otomatik güncellenir
   if (window._fbOnSnapshot) {
@@ -2269,6 +2274,7 @@ async function loadUserStatsFromFirestore(uid) {
         lastPlayed: (d.lastPlayed && d.lastPlayed.toDate) ? d.lastPlayed.toDate().toISOString() : null,
         quizComplete: d.quizComplete || {},
         bestStreak: d.bestStreak || 0,
+        mafiaProgress: d.mafiaProgress || 0,
       };
       try { localStorage.setItem(_userKey('stats'), JSON.stringify(stats)); } catch(e) {}
       // Achievements de Firestore'dan yükle
@@ -2284,7 +2290,6 @@ async function loadUserStatsFromFirestore(uid) {
 }
 
 function _mergeFirestoreLocal(d, local) {
-  // quizComplete — ikisini de birleştir
   var qc = Object.assign({}, local.quizComplete||{}, d.quizComplete||{});
   return {
     bestGate: Math.max(d.bestGate||0, local.bestGate||0),
@@ -2296,6 +2301,7 @@ function _mergeFirestoreLocal(d, local) {
     lastPlayed: (d.lastPlayed && d.lastPlayed.toDate) ? d.lastPlayed.toDate().toISOString() : local.lastPlayed,
     quizComplete: qc,
     bestStreak: Math.max(d.bestStreak||0, local.bestStreak||0),
+    mafiaProgress: Math.max(d.mafiaProgress||0, local.mafiaProgress||0),
   };
 }
 
@@ -2312,11 +2318,13 @@ async function saveStatsToFirestore(uid, stats) {
       achievements: achs,
       quizComplete: stats.quizComplete || {},
       bestStreak: stats.bestStreak || 0,
+      mafiaProgress: stats.mafiaProgress || 0,
     }), { merge: true });
     // Leaderboard'u da guncelle
     await _updateLeaderboard(uid, stats, achs);
   } catch(e) {
-    console.warn('Firestore write failed:', e.code, e.message);
+    console.error('Firestore write failed:', e.code, e.message, e);
+    if (typeof dbgLog === 'function') dbgLog('Firestore HATA: ' + e.message, 'err');
   }
 }
 
@@ -2746,6 +2754,7 @@ function saveAchievements(achs) {
 function checkAndUnlockAchievements() {
   // Misafir girişinde rozet sistemi devre dışı
   if (_currentUser && _currentUser.isGuest) return {};
+  // _currentUser null ama giriş yapılmış (Firebase henüz callback vermedi) → devam et
   const stats = getDisciplineStats();
   const achs = getAchievements();
   const newlyUnlocked = [];
@@ -4385,6 +4394,7 @@ function getDisciplineStats() {
       bestGate: 0, completedGates: [], gateAttempts: {},
       gateScores: {}, totalSessions: 0, totalCorrect: 0,
       lastPlayed: null, quizComplete: {}, bestStreak: 0,
+      mafiaProgress: 0,
     };
   } catch(e) {
     return { bestGate:0, completedGates:[], gateAttempts:{}, gateScores:{},
