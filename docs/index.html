@@ -976,6 +976,29 @@ body.discipline-theme #results-screen {
         <button class="ts-tr-btn" onclick="toggleTsTR('vocabulary_u4')">TR</button>
         <button class="ts-quiz-btn" id="ts-quiz-btn-vocabulary_u4" onclick="startTopicQuiz('vocabulary_u4','Vocabulary — Unit 4')">📝 Konuya Özel Sınav</button>
       </div>
+        <div class="ts-card" id="ts-card-present_perfect">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div class="ts-card-name"><span style="margin-right:5px">⏰</span>Present Perfect</div>
+        <div class="ts-card-badge locked" id="ts-badge-present_perfect">🔒</div>
+      </div>
+      <div class="ts-card-desc">Have/has + V3. Geçmişte olan ama şu anla bağlantılı eylemler. Simple Past ile karıştırılır!</div>
+      <div class="ts-card-tr" id="ts-tr-present_perfect">
+        <strong>Present Perfect — Geçmişin İzleri</strong><br>
+        • Yapı: <span style="color:#5aafff">have/has + V3 (gone, eaten, seen)</span><br>
+        • Deneyim: <span style="color:#5aafff">I have been to Paris.</span> — Paris'e gittim (hayatımda)<br>
+        • Sonuç: <span style="color:#5aafff">She has lost her keys.</span> — Anahtarlarını kaybetti (hâlâ kayıp)<br>
+        • Süre: <span style="color:#5aafff">I have lived here for 3 years.</span><br>
+        <br>
+        ⚠️ <strong style="color:#ff8060">Sık karıştırılan!</strong><br>
+        • <span style="color:#ff8060">Simple Past</span>: <em>zaman belirteci</em> varsa → <span style="color:#ff8060">I went yesterday.</span><br>
+        • <span style="color:#5aafff">Present Perfect</span>: <em>zaman belirsiz</em> → <span style="color:#5aafff">I have been there.</span><br>
+        <br>
+        Sinyal kelimeler: <span style="color:#8ac4ff">ever, never, already, yet, just, since, for, recently, so far</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="ts-tr-btn" onclick="toggleTsTR('present_perfect')">TR</button>
+        <button class="ts-quiz-btn" id="ts-quiz-btn-present_perfect" onclick="startTopicQuiz('present_perfect','Present Perfect')">📝 Konuya Özel Sınav</button>
+      </div>
     </div>
     </div>
     <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📄 PDF Export</div>
@@ -1720,6 +1743,28 @@ const TOPIC_QUESTIONS = {
     {type:'fillblank',sentence:'Do you have ___ questions?',opts:["some","any","much","little"],ans:1,explanation:'Soru cümlesi → any'},
     {type:'fillblank',sentence:'There are ___ students in the class. (Çok)',opts:["much","many","a little","little"],ans:1,explanation:'Sayılabilir isim (students) + çok: many'}
   ],
+  present_perfect: [
+    {type:'fillblank',sentence:'I ___ never been to Japan before.',opts:['have','has','had','am'],ans:0,
+     explanation:"'have never + V3' = Present Perfect olumsuz deneyim. 'I' ile 'have' kullanılır."},
+    {type:'fillblank',sentence:'She ___ already finished her homework.',opts:['have','has','had','was'],ans:1,
+     explanation:"'already' = Present Perfect sinyal kelimesi. 'She' (3. tekil) → 'has'."},
+    {type:'fillblank',sentence:'___ you ever tried sushi?',opts:['Have','Has','Did','Do'],ans:0,
+     explanation:"'ever' ile soru = Present Perfect. 'you' → 'Have you ever + V3?'"},
+    {type:'fillblank',sentence:'I lived in London ___ 2019.',opts:['for','since','ago','before'],ans:1,
+     explanation:"'since' = belirli bir andan beri (2019'dan beri). 'for' = süre (for 3 years)."},
+    {type:'fillblank',sentence:'They have lived here ___ ten years.',opts:['since','for','ago','during'],ans:1,
+     explanation:"'for' = bir süre boyunca (ten years = süre). 'since' ise başlangıç noktası verir."},
+    {type:'fillblank',sentence:'He has ___ left. You just missed him.',opts:['already','yet','never','ever'],ans:0,
+     explanation:"'just' veya 'already' = az önce tamamlanan eylem. 'He has already left' = az önce gitti."},
+    {type:'fillblank',sentence:'Have you done your homework ___?',opts:['already','yet','since','just'],ans:1,
+     explanation:"Soru ve olumsuzda 'yet' = henüz. 'Have you done it yet?' — Henüz yaptın mı?"},
+    {type:'fillblank',sentence:'This is the best film I ___ ever seen.',opts:['have','has','had','am'],ans:0,
+     explanation:"'ever' ile superlative = Present Perfect. 'the best I have ever seen' kalıbını ezberle."},
+    {type:'fillblank',sentence:'I ___ my keys. I cannot find them anywhere.',opts:['lose','lost','have lost','had lost'],ans:2,
+     explanation:"'have lost' = şu an hâlâ kayıp (sonuç devam ediyor). Simple Past 'lost' geçmişi anlatır ama şimdiki durumu belirtmez."},
+    {type:'fillblank',sentence:'We ___ each other since we were children.',opts:['know','knew','have known','had known'],ans:2,
+     explanation:"'since' + Present Perfect = o zamandan beri hâlâ devam eden durum. 'have known' = çocukluğumuzdan beri tanıyoruz (hâlâ)."}
+  ],
   vocabulary_u4: [
     {type:'fillblank',sentence:'The police found ___ that proved his innocence.',opts:["evidence","sarcasm","caution","globalization"],ans:0,explanation:'evidence = kanıt, delil'},
     {type:'fillblank',sentence:'Be ___ when driving in icy conditions.',opts:["sarcastic","cautious","reluctant","appropriate"],ans:1,explanation:'cautious = dikkatli, ihtiyatlı'},
@@ -1841,7 +1886,7 @@ function closeTopicQuiz() {
 }
 
 // ── KONULAR EKRANI ──
-var TOPIC_IDS = ['simple_past', 'present_simple', 'future', 'question_tags', 'so_neither', 'comparatives', 'pronouns', 'quantifiers', 'vocabulary_u4'];
+var TOPIC_IDS = ['simple_past', 'present_simple', 'future', 'question_tags', 'so_neither', 'comparatives', 'pronouns', 'quantifiers', 'vocabulary_u4', 'present_perfect'];
 var TOPIC_QUIZ_KEY = 'gramlab_topic_quiz_';
 
 function openTopicsScreen() {
@@ -2862,6 +2907,7 @@ const TOPIC_DEFS = {
   'Superlatives': {tr:'En Üstünlük', def:'En iyi/kötüyü anlatır. Kısa: the -est. Uzun: the most.'},
   'Pronouns': {tr:'Zamirler', def:'my=sıfat, mine=zamir, myself=dönüşlü zamir.'},
   'Quantifiers': {tr:'Miktar Belirleyiciler', def:'many/a few=sayılabilir. much/a little=sayılamayan. either=ikisinden biri (olumlu). neither=ikisi de değil (olumsuz).'},
+  'Present Perfect': {tr:'Gecmisin Simdiki Baglantisi', def:'have/has + V3. Deneyim, sonuc veya devam eden durum. ever/never/already/yet/since/for ile kullanilir.'},
 };
 
 const grammarQuestions = [
@@ -3223,8 +3269,23 @@ const translateQuestions = [
   {type:'translate',tr:'Onun söylediklerini anlayamadım.',
    opts:['I couldn\'t understand what he said.','I couldn\'t understand what did he say.','I couldn\'t understand what he says.','I can\'t understand what he said.'],ans:0,
    explanation:"İndirect soru: what + normal cümle sırası (no inversion). 'What he said' — 'what did he say' indirect soruda yanlış."},
+,
+  {type:'translate',tr:"Hic Italya'ya gittin mi?",
+   opts:["Did you ever go to Italy?","Have you ever been to Italy?","Were you ever in Italy?","Do you ever go to Italy?"],ans:1,
+   explanation:"Hic deneyim sorusu = Have you ever + V3? been to = gitme deneyimi. Did you go = belirli bir zamanda gittinmi sorar."},
+  {type:'translate',tr:"Ders kitabimi zaten bitirdim.",
+   opts:["I already finished my textbook.","I have already finished my textbook.","I finish my textbook already.","I had already finished my textbook."],ans:1,
+   explanation:"Zaten bitirdim + simdiki etkisi var = Present Perfect + already. I have already finished."},
+  {type:'translate',tr:"O filmi henuz izlemedim.",
+   opts:["I didn't watch that film yet.","I haven't watched that film yet.","I don't watch that film yet.","I haven't yet watched that film."],ans:1,
+   explanation:"Henuz -medi = Present Perfect olumsuz + yet cumle sonunda. I haven't watched that film yet."},
+  {type:'translate',tr:"2020'den beri burada yasiyorum.",
+   opts:["I live here since 2020.","I lived here since 2020.","I have lived here since 2020.","I am living here since 2020."],ans:2,
+   explanation:"...den beri devam eden durum = Present Perfect + since. I have lived here since 2020."},
+  {type:'translate',tr:"Bu sabah kahvalti yapmadim, hala acim.",
+   opts:["I didn't eat breakfast this morning.","I haven't eaten breakfast this morning.","I don't eat breakfast this morning.","I haven't eaten breakfast yet."],ans:1,
+   explanation:"Simdiki sonuc var (hala ac) = Present Perfect. This morning hala devam ediyorsa PP kullanilir."}
 ];
-
 
 // ════════════════════════════════════════════════════
 // GENİŞLETİLMİŞ GRAMER SORU HAVUZU  (4x çeşitlilik)
@@ -3253,6 +3314,107 @@ const EXTRA_GRAMMAR = [
   {type:'grammar',tag:'Future: Will',q:"I'm sure everything ___ fine. Don't worry.",opts:['is going to be','will be','is being','was'],ans:1,topicHint:"Expressing certainty/reassurance about the future.",topicHintTR:"Gelecek hakkında kesinlik/güvence ifadesi.",explanations:["'Is going to be' — possible but 'will' is more natural for reassurance.","✓ 'Will be' — expressing confidence/certainty about the future.","'Is being' Present Continuous — not for future certainty.","'Was' Simple Past."]},
   {type:'grammar',tag:'Comparatives',q:"My new apartment is ___ my old one — it's much brighter.",opts:['better than','the best','good than','more good than'],ans:0,topicHint:"Two apartments compared. 'Good' is irregular.",topicHintTR:"İki daire karşılaştırılıyor. 'Good' düzensiz sıfat.",explanations:["✓ 'Better than' — irregular comparative of 'good'.","'The best' superlative — no 'than'.","'Good than' — 'than' alone is not enough.","'More good' — 'good' is irregular, doesn't use 'more'."]},
   {type:'grammar',tag:'Pronouns',q:"Don't touch it! You might hurt ___.",opts:['you','your','yourself','yours'],ans:2,topicHint:"Warning: the action would affect the same person doing it.",topicHintTR:"Uyarı: eylem aynı kişiyi etkiler.",explanations:["'You' object pronoun — someone else does it to you.","'Your' possessive adjective.","✓ 'Yourself' — reflexive, you are both subject and object.","'Yours' possessive pronoun."]},
+  // ── PRESENT PERFECT ──
+  {type:'grammar',tag:'Present Perfect',q:"I ___ London three times. It's a wonderful city.",
+   opts:['visited','have visited','was visiting','visit'],ans:1,
+   topicHint:"Multiple trips to London — experience accumulated over lifetime. No specific time given.",
+   topicHintTR:"Londra'ya birden fazla kez gidilmiş — hayat boyu biriken deneyim. Belirli bir zaman yok.",
+   explanations:[
+     "'Visited' = Simple Past, belirli bir geçmiş zaman gerektirir (yesterday, last year).",
+     "✓ 'Have visited' = Present Perfect. Belirli zaman olmadan hayat deneyimini anlatır.",
+     "'Was visiting' = Past Continuous, devam eden geçmiş eylem.",
+     "'Visit' = yalın hâl, zaman kipi yok."
+   ]},
+  {type:'grammar',tag:'Present Perfect',q:"She ___ her homework, so she can watch TV now.",
+   opts:['finish','finished','has finished','had finished'],ans:2,
+   topicHint:"The result matters NOW — she can watch TV. Which tense shows a past action with present result?",
+   topicHintTR:"Sonuç ŞU AN önemli — TV izleyebiliyor. Geçmiş eylem + şimdiki sonuç hangi zamanla anlatılır?",
+   explanations:[
+     "'Finish' = yalın hâl.",
+     "'Finished' = Simple Past, sadece geçmişi anlatır. Ama 'now' ifadesi şimdiki bağlantıya işaret ediyor.",
+     "✓ 'Has finished' = Present Perfect. Geçmişte tamamlandı, sonucu ŞU AN geçerli.",
+     "'Had finished' = Past Perfect, daha önceki geçmişi anlatır."
+   ]},
+  {type:'grammar',tag:'Present Perfect',q:"___ you ever eaten durian fruit? It has a very strange smell.",
+   opts:['Did','Have','Had','Do'],ans:1,
+   topicHint:"'Ever' signals a life experience question. Which auxiliary forms Present Perfect questions?",
+   topicHintTR:"'Ever' = hayat deneyimi sorusu. Present Perfect sorularını hangi yardımcı fiil kurar?",
+   explanations:[
+     "'Did you eat' = Simple Past soru. 'Ever' olmadan geçmiş zaman olurdu.",
+     "✓ 'Have you ever eaten' = Present Perfect deneyim sorusu. ever + Present Perfect kalıbı.",
+     "'Had you eaten' = Past Perfect.",
+     "'Do you eat' = Present Simple."
+   ]},
+  {type:'grammar',tag:'Present Perfect',q:"I haven't seen that film ___. Is it good?",
+   opts:['already','ever','yet','just'],ans:2,
+   topicHint:"The speaker has NOT seen it — implying they might see it later. Which word fits negatives?",
+   topicHintTR:"Konuşmacı henüz izlememiş — ileride izleyebilir. Olumsuz cümlelerde hangi kelime?",
+   explanations:[
+     "'Already' = olumlu cümlelerde 'zaten'. Olumsuzda anlamsız.",
+     "'Ever' = 'hiç' — soru ve olumsuzda kullanılır ama 'I haven't seen it ever' doğal değil.",
+     "✓ 'Yet' = henüz. Olumsuz ve sorularda: 'I haven't done it yet' / 'Have you done it yet?'",
+     "'Just' = az önce. Olumlu cümlede: 'I have just seen it' (az önce izledim)."
+   ]},
+  {type:'grammar',tag:'Present Perfect',q:"We ___ in this house since 2015.",
+   opts:['live','lived','have lived','are living'],ans:2,
+   topicHint:"'Since 2015' = from a specific point until now. The action is STILL continuing.",
+   topicHintTR:"'Since 2015' = belirli bir noktadan günümüze kadar. Eylem HÂLÂ devam ediyor.",
+   explanations:[
+     "'Live' = Present Simple, alışkanlık/genel gerçek. 'Since' ile kullanılmaz.",
+     "'Lived' = Simple Past. 'Since 2015' ile Simple Past kullanılırsa 'o tarihten önce' anlamı çıkar.",
+     "✓ 'Have lived' = Present Perfect + since. 2015'ten beri oturuyoruz (hâlâ).",
+     "'Are living' = Present Continuous. 'Since' ile bu yapı doğal değil."
+   ]},
+  {type:'grammar',tag:'Present Perfect',q:"Don't tell me the ending! I ___ watch the film yet.",
+   opts:["didn't","haven't","don't","won't"],ans:1,
+   topicHint:"'Yet' at the end = Present Perfect negative. Which auxiliary is needed?",
+   topicHintTR:"Sondaki 'yet' = Present Perfect olumsuz. Hangi yardımcı fiil gerekli?",
+   explanations:[
+     "'Didn't watch' = Simple Past olumsuz. 'Yet' ile Simple Past kullanılmaz.",
+     "✓ 'Haven't watched yet' = Present Perfect olumsuz + yet. Henüz izlemedim.",
+     "'Don't watch' = Present Simple olumsuz. 'Yet' ile bu yapı olmaz.",
+     "'Won't watch' = gelecek zaman olumsuz. Anlam tamamen değişir."
+   ]},
+  {type:'grammar',tag:'Present Perfect',q:"A: Is Tom here? B: No, he ___ just ___.",
+   opts:['has / left','have / left','did / leave','was / leaving'],ans:0,
+   topicHint:"'Just' = a moment ago. He left very recently. Which tense + just?",
+   topicHintTR:"'Just' = az önce. Çok yakın geçmişte ayrıldı. Hangi zaman + just?",
+   explanations:[
+     "✓ 'has just left' = Present Perfect + just. Az önce ayrıldı (şu an burada değil = şimdiki sonuç).",
+     "'have left' yanlış — 'he' 3. tekil → 'has' gerekir.",
+     "'did leave' = Simple Past. 'Just' ile Simple Past kullanılır ama daha az doğal ve İngiliz İngilizcesinde tercih edilmez.",
+     "'was leaving' = Past Continuous, devam eden geçmiş."
+   ]},
+  {type:'grammar',tag:'Present Perfect',q:"This is the first time she ___ a horse.",
+   opts:['rode','has ridden','rides','had ridden'],ans:1,
+   topicHint:"'This is the first time...' always triggers which tense?",
+   topicHintTR:"'This is the first time...' kalıbı hangi zaman zamanla gelir?",
+   explanations:[
+     "'Rode' = Simple Past. 'This is the first time' + Simple Past yanlış yapı.",
+     "✓ 'has ridden' = 'This is the first time + Present Perfect' — sabit kalıp. İlk kez yapılan eylem.",
+     "'rides' = Present Simple.",
+     "'had ridden' = Past Perfect, 'This was the first time' ile kullanılırdı."
+   ]},
+  {type:'grammar',tag:'Present Perfect',q:"How long ___ you ___ English?",
+   opts:['do / study','did / study','have / been studying','are / studying'],ans:2,
+   topicHint:"A continuous action from past to present — still happening. 'How long' + which form?",
+   topicHintTR:"Geçmişten günümüze devam eden eylem — hâlâ sürüyor. 'How long' + hangi yapı?",
+   explanations:[
+     "'Do you study' = Present Simple. 'How long' ile süreyi soramazsın.",
+     "'Did you study' = Simple Past. Bitmiş eylem anlamı verir — İngilizce öğrenmeyi bıraktın mı?",
+     "✓ 'have been studying' = Present Perfect Continuous. Geçmişten beri devam eden eylem + süre sorusu.",
+     "'Are you studying' = Present Continuous. 'How long' ile tek başına yetmez."
+   ]},
+  {type:'grammar',tag:'Present Perfect',q:"I went to Paris ___ year. It was amazing!",
+   opts:['this','last','for a','since'],ans:1,
+   topicHint:"'It was amazing' = past feeling. Which time expression forces Simple Past (not Present Perfect)?",
+   topicHintTR:"'It was amazing' = geçmiş his. Hangi zaman ifadesi Simple Past'i zorunlu kılar?",
+   explanations:[
+     "'This year' = bu yıl. 'I have been to Paris this year' de doğru olurdu (yıl bitmedi).",
+     "✓ 'Last year' = geçen yıl. Geçen yıl = tamamlanmış, kapalı zaman → Simple Past zorunlu.",
+     "'For a year' anlamsız bu bağlamda.",
+     "'Since' = başlangıç noktası. 'I went since' yanlış yapı."
+   ]},
 ];
 
 // ════════════════════════════════════════════════════
@@ -5071,6 +5233,7 @@ const UNIT_TOPIC_MAP = {
   7: 'Pronouns',
   8: 'Quantifiers',
   9: 'Vocabulary',
+  10: 'Present Perfect',
 };
 const UNIT_NAMES = {
   1: 'Simple Past',
@@ -5082,6 +5245,7 @@ const UNIT_NAMES = {
   7: 'Pronouns',
   8: 'Quantifiers',
   9: 'Vocabulary — Unit 4',
+  10: 'Present Perfect',
 };
 
 function getCompletedUnits() {
