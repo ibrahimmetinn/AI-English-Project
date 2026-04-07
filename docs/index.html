@@ -5128,7 +5128,7 @@ function exportGrammarPDF() {
       + '<div style="font-size:10px;color:#1a3a6e;margin-top:2px;line-height:1.5;">' + q.explanations[q.ans] + '</div></div>';
   });
   const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>GramLab Grammar Worksheet</title>'
-    + '<style>' + PDF_STYLE + '<\\/style><\/head><body>'
+    + '<style>' + PDF_STYLE + '</style></head><body>'
     + '<div class="cover"><h1>GramLab — Grammar Worksheet</h1>'
     + '<p>Date: ' + tarih + ' &nbsp;|&nbsp; ' + qs.length + ' questions<br>'
     + 'Name: _____________________________ &nbsp;&nbsp; Class: _________ &nbsp;&nbsp; Score: _____ / ' + qs.length + '</p></div>'
@@ -5208,7 +5208,7 @@ function exportVocabPDF() {
 
   const styleTitles = {cards:'Flash Cards', list:'Word List', test:'Fill in the Gaps'};
   const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>GramLab Vocabulary</title>'
-    + '<style>' + PDF_STYLE + '<\\/style><\/head><body>'
+    + '<style>' + PDF_STYLE + '</style></head><body>'
     + '<div class="cover" style="background:#0a2e1a;"><h1>GramLab — Vocabulary: ' + styleTitles[style] + '</h1>'
     + '<p>' + words.length + ' words &nbsp;|&nbsp; Date: ' + tarih + ' &nbsp;|&nbsp; produced by Ibrahim Metin</p></div>'
     + body
